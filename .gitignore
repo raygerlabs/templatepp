@@ -2,6 +2,7 @@
 !.clang-format
 !.gitignore
 !README.md
+!LICENSE
 !conanfile.txt
 !CMakeLists.txt
 !.github/
