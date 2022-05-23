@@ -6,4 +6,6 @@
 !conanfile.txt
 !CMakeLists.txt
 !.github/
-!project-init-cpp/
+!src/
+!include/
+!test/

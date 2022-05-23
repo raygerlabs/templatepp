@@ -1,42 +1,41 @@
 #---------------------------------------------------------------------#
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.20)
 project(project-init-cpp VERSION 0.1)
 #---------------------------------------------------------------------#
-
-# Build options
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(BUILD_TESTING "Build unit tests" ON)
-
-# Add conan output to cmake search paths
+#---------------------------------------------------------------------#
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
-
-# Force min. C++17
+#---------------------------------------------------------------------#
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+#---------------------------------------------------------------------#
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
-# Enable position independent code
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-# Set hidden ELF symbol visiblity by default
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
-
-# Enable IDE folders (eg. Visual Studio, Xcode)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(CMAKE_SUPPRESS_REGENERATION true)
 #---------------------------------------------------------------------#
-# Add testing functionality
+add_subdirectory(src)
 include(CTest)
 if (BUILD_TESTING)
   include(GoogleTest)
+  add_subdirectory(test)
 endif()
 #---------------------------------------------------------------------#
-# Package artifact
-# Set artifact name and version
+install(FILES ${CMAKE_SOURCE_DIR}/README.md DESTINATION .)
+install(FILES ${CMAKE_SOURCE_DIR}/LICENSE DESTINATION .)
+file(WRITE ${CMAKE_BINARY_DIR}/VERSION ${PROJECT_VERSION})
+install(FILES ${CMAKE_BINARY_DIR}/VERSION DESTINATION .)
+#---------------------------------------------------------------------#
 string(TOLOWER "${PROJECT_NAME}" _project_name_lower)
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" _system_name_lower)
 string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" _system_arch_lower)
@@ -48,21 +47,15 @@ install(FILES "${CMAKE_BINARY_DIR}/VERSION" DESTINATION .)
 set(CPACK_PACKAGE_FILE_NAME "${_full_project_name}")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${_full_project_name}-src")
 set(CPACK_PACKAGE_VERSION "${CMAKE_BINARY_DIR}/VERSION")
-# Add documents to the package
 set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
 set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/LICENSE)
-# Set the compression method
 set(_package_output_type TGZ)
 if(WIN32)
   set(_package_output_type ZIP)
 endif()
 set(CPACK_GENERATOR ${_package_output_type})
 set(CPACK_SOURCE_GENERATOR ${_package_output_type})
-# Set the package output path
 set(CPACK_OUTPUT_FILE_PREFIX ${CMAKE_BINARY_DIR})
 set(CPACK_PACKAGE_DIRECTORY ${CMAKE_BINARY_DIR})
 include(CPack)
-#---------------------------------------------------------------------#
-# Add project sources
-add_subdirectory(${PROJECT_NAME})
 #---------------------------------------------------------------------#
