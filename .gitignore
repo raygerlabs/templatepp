@@ -4,4 +4,5 @@
 !README.md
 !conanfile.txt
 !CMakeLists.txt
+!.github/
 !project-init-cpp/
