@@ -2,15 +2,28 @@
 cmake_minimum_required(VERSION 3.0)
 project(project-init-cpp VERSION 0.1)
 #---------------------------------------------------------------------#
+
+# Build options
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
-
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(BUILD_TESTING "Build unit tests" ON)
 
+# Add conan output to cmake search paths
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+
+# Force at least C++17
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Enable position independent code
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# Set default ELF symbol visiblity
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #---------------------------------------------------------------------#
