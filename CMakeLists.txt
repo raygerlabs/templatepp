@@ -2,9 +2,16 @@
 cmake_minimum_required(VERSION 3.0)
 project(project-init-cpp VERSION 0.1)
 #---------------------------------------------------------------------#
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(BUILD_TESTING "Build unit tests" ON)
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_BINARY_DIR})
+
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #---------------------------------------------------------------------#
 include(CTest)
