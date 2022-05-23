@@ -1,0 +1,38 @@
+#---------------------------------------------------------------------#
+cmake_minimum_required(VERSION 3.0)
+project(project-init-cpp VERSION 0.1)
+#---------------------------------------------------------------------#
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(BUILD_TESTING "Build unit tests" ON)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_BINARY_DIR})
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+#---------------------------------------------------------------------#
+include(CTest)
+if (BUILD_TESTING)
+  include(GoogleTest)
+endif()
+#---------------------------------------------------------------------#
+string(TOLOWER "${PROJECT_NAME}" _project_name_lower)
+string(TOLOWER "${CMAKE_SYSTEM_NAME}" _system_name_lower)
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" _system_arch_lower)
+set(_full_system_name "${_system_name_lower}-${_system_arch_lower}")
+set(_full_project_name "${_project_name_lower}-${_full_system_name}")
+file(WRITE "${CMAKE_BINARY_DIR}/VERSION" ${PROJECT_VERSION})
+install(FILES "${CMAKE_SOURCE_DIR}/README.md" DESTINATION .)
+install(FILES "${CMAKE_BINARY_DIR}/VERSION" DESTINATION .)
+set(CPACK_PACKAGE_FILE_NAME "${_full_project_name}")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${_full_project_name}-src")
+set(CPACK_PACKAGE_VERSION "${CMAKE_BINARY_DIR}/VERSION")
+set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
+set(_package_output_type TGZ)
+if(WIN32)
+  set(_package_output_type ZIP)
+endif()
+set(CPACK_GENERATOR ${_package_output_type})
+set(CPACK_SOURCE_GENERATOR ${_package_output_type})
+set(CPACK_OUTPUT_FILE_PREFIX ${CMAKE_BINARY_DIR})
+set(CPACK_PACKAGE_DIRECTORY ${CMAKE_BINARY_DIR})
+include(CPack)
+#---------------------------------------------------------------------#
+add_subdirectory(${PROJECT_NAME})
+#---------------------------------------------------------------------#

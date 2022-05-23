@@ -1,0 +1,43 @@
+#---------------------------------------------------------------------#
+Language                                          : Cpp
+BasedOnStyle                                      : LLVM
+Standard                                          : Cpp11
+#---------------------------------------------------------------------#
+ColumnLimit                                       : '80'
+IndentWidth                                       : '2'
+KeepEmptyLinesAtTheStartOfBlocks                  : 'true'
+MaxEmptyLinesToKeep                               : '1'
+AccessModifierOffset                              : '-2'
+IndentCaseLabels                                  : 'false'
+NamespaceIndentation                              : None
+ReflowComments                                    : 'true'
+FixNamespaceComments                              : 'true'
+SortIncludes                                      : 'true'
+SortUsingDeclarations                             : 'true'
+IncludeBlocks                                     : Regroup
+AlwaysBreakTemplateDeclarations                   : 'true'
+BreakBeforeBraces                                 : Allman
+BreakConstructorInitializers                      : BeforeColon
+BreakStringLiterals                               : 'true'
+AllowShortBlocksOnASingleLine                     : 'false'
+AllowShortCaseLabelsOnASingleLine                 : 'false'
+AllowShortFunctionsOnASingleLine                  : 'false'
+AllowShortIfStatementsOnASingleLine               : 'false'
+AllowShortLoopsOnASingleLine                      : 'false'
+SpaceAfterCStyleCast                              : 'false'
+SpaceAfterTemplateKeyword                         : 'false'
+SpaceBeforeAssignmentOperators                    : 'true'
+SpaceBeforeParens                                 : ControlStatements
+SpaceInEmptyParentheses                           : 'false'
+SpacesInAngles                                    : 'false'
+SpacesInCStyleCastParentheses                     : 'false'
+SpacesInContainerLiterals                         : 'false'
+SpacesInParentheses                               : 'false'
+SpacesInSquareBrackets                            : 'false'
+Cpp11BracedListStyle                              : 'true'
+PointerBindsToType                                : 'true'
+DerivePointerAlignment                            : 'true'
+DerivePointerBinding                              : 'false'
+TabWidth                                          : '2'
+UseTab                                            : Never
+#---------------------------------------------------------------------#

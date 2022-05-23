@@ -1,6 +1,7 @@
-# Ignore everything
-*
-
-# Except
+/*
+!.clang-format
 !.gitignore
 !README.md
+!conanfile.txt
+!CMakeLists.txt
+!project-init-cpp/
