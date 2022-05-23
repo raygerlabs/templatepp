@@ -1,11 +1,9 @@
 /*
+!.github/
+!project-init-cpp/
 !.clang-format
 !.gitignore
-!README.md
-!LICENSE
-!conanfile.txt
 !CMakeLists.txt
-!.github/
-!src/
-!include/
-!test/
+!conanfile.txt
+!LICENSE
+!README.md

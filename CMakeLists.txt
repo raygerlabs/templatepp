@@ -1,6 +1,8 @@
-#---------------------------------------------------------------------#
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 cmake_minimum_required(VERSION 3.20)
 project(project-init-cpp VERSION 0.1)
+#---------------------------------------------------------------------#
+include(CTest)
 #---------------------------------------------------------------------#
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -24,12 +26,7 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_SUPPRESS_REGENERATION true)
 #---------------------------------------------------------------------#
-add_subdirectory(src)
-include(CTest)
-if (BUILD_TESTING)
-  include(GoogleTest)
-  add_subdirectory(test)
-endif()
+add_subdirectory(${PROJECT_NAME})
 #---------------------------------------------------------------------#
 install(FILES ${CMAKE_SOURCE_DIR}/README.md DESTINATION .)
 install(FILES ${CMAKE_SOURCE_DIR}/LICENSE DESTINATION .)
@@ -58,4 +55,4 @@ set(CPACK_SOURCE_GENERATOR ${_package_output_type})
 set(CPACK_OUTPUT_FILE_PREFIX ${CMAKE_BINARY_DIR})
 set(CPACK_PACKAGE_DIRECTORY ${CMAKE_BINARY_DIR})
 include(CPack)
-#---------------------------------------------------------------------#
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
