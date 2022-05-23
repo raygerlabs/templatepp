@@ -1,21 +1,21 @@
 #---------------------------------------------------------------------#
-set(SOURCE_LIST
+set(SOURCE_FILE_LIST
   application.cpp
 )
-set(INCLUDE_LIST
+set(INCLUDE_FILE_LIST
   details/configure.hpp
   application.hpp
 )
 add_library(${PROJECT_NAME})
 target_sources(${PROJECT_NAME}
 PRIVATE
-  ${SOURCE_LIST}
+  ${SOURCE_FILE_LIST}
 PUBLIC
   FILE_SET HEADERS
     BASE_DIRS
       ${CMAKE_SOURCE_DIR}
     FILES
-      ${INCLUDE_LIST}
+      ${INCLUDE_FILE_LIST}
 )
 target_compile_definitions(${PROJECT_NAME}
 PUBLIC
@@ -41,32 +41,37 @@ source_group(
 TREE
   ${CMAKE_CURRENT_LIST_DIR}
 FILES
-  ${SOURCE_LIST}
-  ${INCLUDE_LIST}
+  ${SOURCE_FILE_LIST}
+  ${INCLUDE_FILE_LIST}
 )
 
 # Unit tests
 #---------------------------------------------------------------------#
-add_executable(${PROJECT_NAME}.test)
-target_sources(${PROJECT_NAME}.test
-PRIVATE
-  application.test.cpp
-)
-find_package(GTest CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME}.test
-  ${PROJECT_NAME}
-  GTest::gtest_main
-)
-set_target_properties(${PROJECT_NAME}.test
-PROPERTIES
-  FOLDER "Tests"
-)
-get_target_property(TEST_LIST ${PROJECT_NAME}.test SOURCES)
-source_group(
-  TREE
-    ${CMAKE_CURRENT_LIST_DIR}
-  FILES
-    ${TEST_LIST}
-)
-gtest_discover_tests(${PROJECT_NAME}.test)
+if (BUILD_TESTING)
+  set(TEST_PROJECT_NAME "${PROJECT_NAME}.test")
+  set(TEST_FILE_LIST
+    application.test.cpp
+  )
+  add_executable(${TEST_PROJECT_NAME})
+  target_sources(${TEST_PROJECT_NAME}
+  PRIVATE
+    ${TEST_FILE_LIST}
+  )
+  find_package(GTest CONFIG REQUIRED)
+  target_link_libraries(${TEST_PROJECT_NAME}
+    ${PROJECT_NAME}
+    GTest::gtest_main
+  )
+  set_target_properties(${TEST_PROJECT_NAME}
+  PROPERTIES
+    FOLDER "Tests"
+  )
+  source_group(
+    TREE
+      ${CMAKE_CURRENT_LIST_DIR}
+    FILES
+      ${TEST_FILE_LIST}
+  )
+  gtest_discover_tests(${TEST_PROJECT_NAME})
+endif(BUILD_TESTING)
 #---------------------------------------------------------------------#
