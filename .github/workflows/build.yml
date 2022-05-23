@@ -1,0 +1,44 @@
+name: build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - os: ubuntu-latest
+            asset_name: project-init-cpp-linux-x86_64.tar.gz
+          - os: macos-latest
+            asset_name: project-init-cpp-darwin-x86_64.tar.gz
+          - os: windows-latest
+            asset_name: project-init-cpp-windows-amd64.zip
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - run: pip3 install conan
+      - if: runner.os == 'Linux'
+        run: |
+          conan profile new default --detect
+          conan profile update settings.compiler.libcxx=libstdc++11 default
+      - run: conan install . -if build -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+      - run: cmake -B build
+      - run: cmake --build build --config ${{ env.BUILD_TYPE }}
+      - run: ctest --test-dir build -VV -C ${{ env.BUILD_TYPE }}
+      - run: cmake --build build --config ${{ env.BUILD_TYPE }} --target package
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.asset_name }}
+          path: ./build/${{ matrix.asset_name }}
