@@ -1,8 +1,0 @@
-[requires]
-gtest/1.11.0
-
-[options]
-gtest:shared=False
-
-[generators]
-CMakeDeps

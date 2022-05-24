@@ -18,11 +18,14 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            asset_name: project-init-cpp-linux-x86_64.tar.gz
+            asset_name: project-init-cpp-linux-x86_64.zip
+            asset_path: package/archive/project-init-cpp-linux-x86_64.tar.gz
           - os: macos-latest
-            asset_name: project-init-cpp-darwin-x86_64.tar.gz
+            asset_name: project-init-cpp-darwin-x86_64.zip
+            asset_path: package/archive/project-init-cpp-darwin-x86_64.tar.gz
           - os: windows-latest
-            asset_name: project-init-cpp-windows-amd64.zip
+            asset_name: project-init-cpp-windows-x86_64.zip
+            asset_path: package/archive/project-init-cpp-windows-x86_64.zip
 
     steps:
       - uses: actions/checkout@v2
@@ -32,15 +35,13 @@ jobs:
         run: |
           conan profile new default --detect
           conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: conan install . -if build -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
-      - run: cmake -B build
-      - run: cmake --build build --config ${{ env.BUILD_TYPE }}
-      - run: ctest --test-dir build -VV -C ${{ env.BUILD_TYPE }}
-      - run: cmake --build build --config ${{ env.BUILD_TYPE }} --target package
-      - uses: actions/upload-artifact@v2
+      - run: conan install . -if install -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+      - run: conan build . -bf build -if install
+      - run: conan package . -pf package -bf build -if install
+      - uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.asset_name }}
-          path: ./build/${{ matrix.asset_name }}
+          path: ${{ matrix.asset_path }}
 
   create-release:
     runs-on: ubuntu-latest
@@ -71,13 +72,13 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            asset_name: project-init-cpp-linux-x86_64.tar.gz
+            asset_name: project-init-cpp-linux-x86_64.zip
             asset_content_type: application/gzip
           - os: macos-latest
-            asset_name: project-init-cpp-darwin-x86_64.tar.gz
+            asset_name: project-init-cpp-darwin-x86_64.zip
             asset_content_type: application/gzip
           - os: windows-latest
-            asset_name: project-init-cpp-windows-amd64.zip
+            asset_name: project-init-cpp-windows-x86_64.zip
             asset_content_type: application/zip
     steps:
     - uses: actions/download-artifact@v2

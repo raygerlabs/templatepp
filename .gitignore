@@ -3,7 +3,7 @@
 !.gitignore
 !README.md
 !LICENSE
-!conanfile.txt
+!conanfile.py
 !CMakeLists.txt
 !.github/
 !src/
