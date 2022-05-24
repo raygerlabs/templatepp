@@ -33,6 +33,11 @@ jobs:
       - run: conan install . -if install -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
       - run: conan build . -bf build -if install
       - run: conan package . -pf package -bf build -if install
+      - id: archive_info
+        run: |
+          echo "::set-output name=archive_path::$(cat ./build/archive_path.txt)"
+          echo "::set-output name=archive_name::$(cat ./build/archive_name.txt)"
       - uses: actions/upload-artifact@v3
         with:
-          path: package/archive
+          path: ${{ steps.archive_info.outputs.archive_path }}
+          name: ${{ steps.archive_info.outputs.archive_name }}
