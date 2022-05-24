@@ -21,8 +21,8 @@ jobs:
             asset_name: project-init-cpp-linux-x86_64.zip
             asset_path: package/archive/project-init-cpp-linux-x86_64.tar.gz
           - os: macos-latest
-            asset_name: project-init-cpp-darwin-x86_64.zip
-            asset_path: package/archive/project-init-cpp-darwin-x86_64.tar.gz
+            asset_name: project-init-cpp-macos-x86_64.zip
+            asset_path: package/archive/project-init-cpp-macos-x86_64.tar.gz
           - os: windows-latest
             asset_name: project-init-cpp-windows-x86_64.zip
             asset_path: package/archive/project-init-cpp-windows-x86_64.zip
@@ -75,7 +75,7 @@ jobs:
             asset_name: project-init-cpp-linux-x86_64.zip
             asset_content_type: application/gzip
           - os: macos-latest
-            asset_name: project-init-cpp-darwin-x86_64.zip
+            asset_name: project-init-cpp-macos-x86_64.zip
             asset_content_type: application/gzip
           - os: windows-latest
             asset_name: project-init-cpp-windows-x86_64.zip
