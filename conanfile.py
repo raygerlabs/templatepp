@@ -42,9 +42,10 @@ class ProjectInitCpp(ConanFile):
     if self.settings.os == "Windows":
       fmt = "zip"
     archive = shutil.make_archive(archive, fmt, self.package_folder)
-    archive_dest = os.path.join(self.package_folder, "archive")
-    os.makedirs(archive_dest, exist_ok=False)
-    shutil.move(archive, os.path.join(archive_dest, os.path.basename(archive)))
+    dest = os.path.join(self.package_folder, "archive")
+    os.makedirs(dest, exist_ok=True)
+    final = shutil.move(archive, os.path.join(dest, os.path.basename(archive)))
+    print("archive_path={}".format(final))
 
   def package_info(self):
     self.cpp_info.libs = tools.collect_libs(self)
