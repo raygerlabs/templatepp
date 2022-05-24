@@ -33,19 +33,23 @@ class ProjectInitCpp(ConanFile):
     cmake.build()
     cmake.test()
 
+  def archive(self):
+    archive_name = f"{self.name}-v{self.version}-{self.settings.os}-{self.settings.arch}"
+    archive_name = archive_name.lower()
+    archive_format = "gztar"
+    if self.settings.os == "Windows":
+      archive_format = "zip"
+    archive_path = shutil.make_archive(archive_name, archive_format, self.package_folder)
+    with open("archive_path.txt", "w") as archive_path_file:
+      print(f"{archive_path}", file=archive_path_file)
+    with open("archive_name.txt", "w") as archive_name_file:
+      print(f"{os.path.basename(archive_path)}", file=archive_name_file)
+    return archive_path
+
   def package(self):
     cmake = self.configure_cmake()
     cmake.install()
-    archive = "{}-{}-{}".format(self.name, self.settings.os, self.settings.arch)
-    archive = archive.lower()
-    fmt = "gztar"
-    if self.settings.os == "Windows":
-      fmt = "zip"
-    archive = shutil.make_archive(archive, fmt, self.package_folder)
-    dest = os.path.join(self.package_folder, "archive")
-    os.makedirs(dest, exist_ok=True)
-    final = shutil.move(archive, os.path.join(dest, os.path.basename(archive)))
-    print("archive_path={}".format(final))
+    self.archive()
 
   def package_info(self):
     self.cpp_info.libs = tools.collect_libs(self)
