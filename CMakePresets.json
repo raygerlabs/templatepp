@@ -1,0 +1,57 @@
+{
+  "version": 4,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "paths",
+      "binaryDir": "${sourceDir}/build",
+      "installDir": "${sourceDir}/install",
+      "hidden": true
+    },
+    {
+      "name": "windowslike",
+      "condition": {
+        "type": "inList",
+        "string": "${hostSystemName}",
+        "list": ["Windows"]
+      },
+      "hidden": true
+    },
+    {
+      "name": "unixlike",
+      "generator": "Unix Makefiles",
+      "condition": {
+        "type": "inList",
+        "string": "${hostSystemName}",
+        "list": ["Linux", "Darwin"]
+      },
+      "hidden": true
+    },
+    {
+      "name": "gcc",
+      "inherits": ["paths", "unixlike"],
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-gcc.cmake"
+      }
+    },
+    {
+      "name": "clang",
+      "inherits": ["paths", "unixlike"],
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-clang.cmake"
+      }
+    },
+    {
+      "name": "msvc",
+      "inherits": ["paths", "windowslike"],
+      "architecture": "x64",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-msvc.cmake"
+      }
+    }
+  ]
+}

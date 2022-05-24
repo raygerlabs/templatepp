@@ -5,7 +5,9 @@
 !LICENSE
 !conanfile.py
 !CMakeLists.txt
+!CMakePresets.json
 !.github/
 !src/
 !include/
 !test/
+!cmake/
