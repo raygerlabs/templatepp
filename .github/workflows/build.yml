@@ -19,14 +19,8 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            asset_name: project-init-cpp-linux-x86_64.zip
-            asset_path: package/archive/project-init-cpp-linux-x86_64.tar.gz
           - os: macos-latest
-            asset_name: project-init-cpp-macos-x86_64.zip
-            asset_path: package/archive/project-init-cpp-macos-x86_64.tar.gz
           - os: windows-latest
-            asset_name: project-init-cpp-windows-x86_64.zip
-            asset_path: package/archive/project-init-cpp-windows-x86_64.zip
 
     steps:
       - uses: actions/checkout@v2
@@ -41,5 +35,4 @@ jobs:
       - run: conan package . -pf package -bf build -if install
       - uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.asset_name }}
-          path: ${{ matrix.asset_path }}
+          path: package/archive
