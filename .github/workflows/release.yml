@@ -10,22 +10,13 @@ env:
 
 jobs:
   build-artifact:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 30
 
     strategy:
       fail-fast: true
       matrix:
-        include:
-          - os: ubuntu-latest
-            asset_name: project-init-cpp-linux-x86_64.zip
-            asset_path: package/archive/project-init-cpp-linux-x86_64.tar.gz
-          - os: macos-latest
-            asset_name: project-init-cpp-macos-x86_64.zip
-            asset_path: package/archive/project-init-cpp-macos-x86_64.tar.gz
-          - os: windows-latest
-            asset_name: project-init-cpp-windows-x86_64.zip
-            asset_path: package/archive/project-init-cpp-windows-x86_64.zip
+        os: [ ubuntu, macos, windows ]
 
     steps:
       - uses: actions/checkout@v2
@@ -38,10 +29,24 @@ jobs:
       - run: conan install . -if install -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
       - run: conan build . -bf build -if install
       - run: conan package . -pf package -bf build -if install
+      - id: asset_info
+        run: |
+          echo "::set-output name=asset_name::$(cat ./build/asset_name.txt)"
+          echo "::set-output name=asset_path::$(cat ./build/asset_path.txt)"
+      - run: echo '${{ steps.archive_info.outputs.asset_name }}' > asset_name_${{ matrix.os }}.txt
+      - run: echo '${{ steps.archive_info.outputs.asset_path }}' > asset_path_${{ matrix.os }}.txt
       - uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.asset_name }}
-          path: ${{ matrix.asset_path }}
+          name: ${{ steps.archive_info.outputs.asset_name }}
+          path: ${{ steps.archive_info.outputs.asset_path }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: asset_name_${{ matrix.os }}
+          path: asset_name_${{ matrix.os }}.txt
+      - uses: actions/upload-artifact@v3
+        with:
+          name: asset_path_${{ matrix.os }}
+          path: asset_path_${{ matrix.os }}.txt
 
   create-release:
     runs-on: ubuntu-latest
@@ -50,7 +55,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/create-release@v1
-        id: create-release
+        id: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -59,10 +64,10 @@ jobs:
           body: ${{ env.BUILD_TYPE }}
           draft: false
           prerelease: false
-      - run: echo '${{ steps.create-release.outputs.upload_url }}' > upload_url.txt
+      - run: echo '${{ steps.release.outputs.upload_url }}' > upload_url.txt
       - uses: actions/upload-artifact@v2
         with:
-          name: create-release
+          name: release
           path: upload_url.txt
 
   upload-release:
@@ -70,30 +75,27 @@ jobs:
     needs: create-release
     strategy:
       matrix:
-        include:
-          - os: ubuntu-latest
-            asset_name: project-init-cpp-linux-x86_64.zip
-            asset_content_type: application/gzip
-          - os: macos-latest
-            asset_name: project-init-cpp-macos-x86_64.zip
-            asset_content_type: application/gzip
-          - os: windows-latest
-            asset_name: project-init-cpp-windows-x86_64.zip
-            asset_content_type: application/zip
+        os: [ ubuntu, macos, windows ]
+
     steps:
     - uses: actions/download-artifact@v2
       with:
-        name: ${{ matrix.asset_name }}
+        name: archive_name_${{ matrix.os }}
     - uses: actions/download-artifact@v2
       with:
-        name: create-release
-    - id: release-retrieval
+        name: release
+    - id: release
       run: echo "::set-output name=upload_url::$(cat upload_url.txt)"
+    - id: asset_info
+      run: |
+        echo "::set-output name=asset_name::$(cat asset_name_${{ matrix_os }})"
+        echo "::set-output name=asset_path::$(cat asset_path_${{ matrix_os }})"
+        echo "::set-output name=asset_content_type::$(if [ runner.os == "Windows" ]; then echo "application/zip"; else echo "application/gzip"; fi)"
     - uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.release-retrieval.outputs.upload_url }}
-        asset_path: ${{ matrix.asset_name }}
-        asset_name: ${{ matrix.asset_name }}
-        asset_content_type: ${{ matrix.asset_content_type }}
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        asset_name: ${{ steps.asset_info.outputs.asset_name }}
+        asset_path: ${{ steps.asset_info.outputs.asset_path }}
+        asset_content_type: ${{ steps.asset_info.outputs.asset_content_type }}

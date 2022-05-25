@@ -11,16 +11,13 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 30
 
     strategy:
       fail-fast: true
       matrix:
-        include:
-          - os: ubuntu-latest
-          - os: macos-latest
-          - os: windows-latest
+        os: [ ubuntu, macos, windows ]
 
     steps:
       - uses: actions/checkout@v2
@@ -33,11 +30,11 @@ jobs:
       - run: conan install . -if install -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
       - run: conan build . -bf build -if install
       - run: conan package . -pf package -bf build -if install
-      - id: archive_info
+      - id: asset_info
         run: |
-          echo "::set-output name=archive_path::$(cat ./build/archive_path.txt)"
-          echo "::set-output name=archive_name::$(cat ./build/archive_name.txt)"
+          echo "::set-output name=asset_name::$(cat ./build/asset_name.txt)"
+          echo "::set-output name=asset_path::$(cat ./build/asset_path.txt)"
       - uses: actions/upload-artifact@v3
         with:
-          path: ${{ steps.archive_info.outputs.archive_path }}
-          name: ${{ steps.archive_info.outputs.archive_name }}
+          name: ${{ steps.asset_info.outputs.asset_name }}
+          path: ${{ steps.asset_info.outputs.asset_path }}
