@@ -12,6 +12,7 @@ class ProjectInitCpp(ConanFile):
   settings = "os", "compiler", "build_type", "arch"
   requires = "gtest/1.11.0"
   generators = "CMakeDeps"
+  build_policy = "missing"
 
   def configure_cmake(self):
     cmake = CMake(self)

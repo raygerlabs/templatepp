@@ -7,12 +7,6 @@
   },
   "configurePresets": [
     {
-      "name": "paths",
-      "binaryDir": "${sourceDir}/build",
-      "installDir": "${sourceDir}/install",
-      "hidden": true
-    },
-    {
       "name": "windowslike",
       "condition": {
         "type": "inList",
@@ -33,21 +27,21 @@
     },
     {
       "name": "gcc",
-      "inherits": ["paths", "unixlike"],
+      "inherits": ["unixlike"],
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-gcc.cmake"
       }
     },
     {
       "name": "clang",
-      "inherits": ["paths", "unixlike"],
+      "inherits": ["unixlike"],
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-clang.cmake"
       }
     },
     {
       "name": "msvc",
-      "inherits": ["paths", "windowslike"],
+      "inherits": ["windowslike"],
       "architecture": "x64",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-msvc.cmake"
