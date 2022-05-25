@@ -26,8 +26,8 @@ jobs:
         run: |
           conan profile new default --detect
           conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: mkdir -p build && cd build
-      - run: conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+      - run: mkdir build && cd build
+      - run: conan install ..
       - run: conan build ..
       - run: conan package ..
       - id: archive_data
@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/create-release@v1
-        id: release
+        id: release_data
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -65,7 +65,7 @@ jobs:
           body: ${{ env.BUILD_TYPE }}
           draft: false
           prerelease: false
-      - run: echo '${{ steps.release.outputs.upload_url }}' > upload_url.txt
+      - run: echo '${{ steps.release_data.outputs.upload_url }}' > upload_url.txt
       - uses: actions/upload-artifact@v2
         with:
           name: upload_url

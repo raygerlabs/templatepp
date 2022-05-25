@@ -27,8 +27,8 @@ jobs:
         run: |
           conan profile new default --detect
           conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: mkdir -p build && cd build
-      - run: conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+      - run: mkdir build && cd build
+      - run: conan install ..
       - run: conan build ..
       - run: conan package ..
       - id: archive_data
