@@ -20,22 +20,34 @@ jobs:
         os: [ ubuntu, macos, windows ]
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - run: pip3 install conan
+      - name: Checkout project
+        uses: actions/checkout@v2
+      - name: Setup python environment
+        uses: actions/setup-python@v2
+      - name: Install conan package manager
+        run: pip3 install conan
       - if: runner.os == 'Linux'
+        name: Setup local conan profile
         run: |
           conan profile new default --detect
           conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: mkdir build && cd build
-      - run: conan install ..
-      - run: conan build ..
-      - run: conan package ..
-      - id: archive_data
+      - name: Create build directory
+        run: mkdir -p build
+      - name: Enter build directory
+        run: cd build
+      - name: Install project requirements
+        run: conan install ..
+      - name: Build the project
+        run: conan build ..
+      - name: Package the project
+        run: conan package ..
+      - name: Retrieve the artifact information
+        id: archive_data
         run: |
           echo "::set-output name=archive_name::$(cat archive_name.txt)"
           echo "::set-output name=archive_path::$(cat archive_path.txt)"
-      - uses: actions/upload-artifact@v3
+      - name: Upload the artifact
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.archive_data.outputs.archive_name }}
           path: ${{ steps.archive_data.outputs.archive_path }}
