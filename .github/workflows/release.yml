@@ -26,16 +26,15 @@ jobs:
         run: |
           conan profile new default --detect
           conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: mkdir build && cd build
-      - run: conan install ..
-      - run: conan build ..
-      - run: conan package ..
+      - run: mkdir -p build
       - id: archive_data
+        working-directory: ${{ github.workspace }}/build
         run: |
+          conan install .. -s build_type=Release -pr:b default --build missing
+          conan build ..
+          conan package ..
           echo "::set-output name=archive_name::$(cat archive_name.txt)"
           echo "::set-output name=archive_path::$(cat archive_path.txt)"
-      - run: echo '${{ steps.archive_info.outputs.archive_name }}' > archive_name_${{ matrix.os }}.txt
-      - run: echo '${{ steps.archive_info.outputs.archive_path }}' > archive_path_${{ matrix.os }}.txt
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.archive_data.outputs.archive_name }}

@@ -31,7 +31,7 @@ jobs:
       - id: archive_data
         working-directory: ${{ github.workspace }}/build
         run: |
-          conan install ..
+          conan install .. -s build_type=Release -pr:b default --build missing
           conan build ..
           conan package ..
           echo "::set-output name=archive_name::$(cat archive_name.txt)"
