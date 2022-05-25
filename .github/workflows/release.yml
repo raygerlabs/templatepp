@@ -26,27 +26,28 @@ jobs:
         run: |
           conan profile new default --detect
           conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: conan install . -if install -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
-      - run: conan build . -bf build -if install
-      - run: conan package . -pf package -bf build -if install
-      - id: asset_info
+      - run: mkdir -p build && cd build
+      - run: conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+      - run: conan build ..
+      - run: conan package ..
+      - id: archive_data
         run: |
-          echo "::set-output name=asset_name::$(cat ./build/asset_name.txt)"
-          echo "::set-output name=asset_path::$(cat ./build/asset_path.txt)"
-      - run: echo '${{ steps.archive_info.outputs.asset_name }}' > asset_name_${{ matrix.os }}.txt
-      - run: echo '${{ steps.archive_info.outputs.asset_path }}' > asset_path_${{ matrix.os }}.txt
+          echo "::set-output name=archive_name::$(cat archive_name.txt)"
+          echo "::set-output name=archive_path::$(cat archive_path.txt)"
+      - run: echo '${{ steps.archive_info.outputs.archive_name }}' > archive_name_${{ matrix.os }}.txt
+      - run: echo '${{ steps.archive_info.outputs.archive_path }}' > archive_path_${{ matrix.os }}.txt
       - uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.archive_info.outputs.asset_name }}
-          path: ${{ steps.archive_info.outputs.asset_path }}
+          name: ${{ steps.archive_data.outputs.archive_name }}
+          path: ${{ steps.archive_data.outputs.archive_path }}
       - uses: actions/upload-artifact@v3
         with:
-          name: asset_name_${{ matrix.os }}
-          path: asset_name_${{ matrix.os }}.txt
+          name: archive_name_${{ matrix.os }}
+          path: archive_name_${{ matrix.os }}.txt
       - uses: actions/upload-artifact@v3
         with:
-          name: asset_path_${{ matrix.os }}
-          path: asset_path_${{ matrix.os }}.txt
+          name: archive_path_${{ matrix.os }}
+          path: archive_path_${{ matrix.os }}.txt
 
   create-release:
     runs-on: ubuntu-latest
@@ -67,7 +68,7 @@ jobs:
       - run: echo '${{ steps.release.outputs.upload_url }}' > upload_url.txt
       - uses: actions/upload-artifact@v2
         with:
-          name: release
+          name: upload_url
           path: upload_url.txt
 
   upload-release:
@@ -83,18 +84,18 @@ jobs:
         name: archive_name_${{ matrix.os }}
     - uses: actions/download-artifact@v2
       with:
-        name: release
-    - id: release
+        name: upload_url
+    - id: release_data
       run: echo "::set-output name=upload_url::$(cat upload_url.txt)"
-    - id: asset_info
+    - id: archive_data
       run: |
-        echo "::set-output name=asset_name::$(cat asset_name_${{ matrix_os }})"
-        echo "::set-output name=asset_path::$(cat asset_path_${{ matrix_os }})"
+        echo "::set-output name=archive_name::$(cat archive_name_${{ matrix_os }})"
+        echo "::set-output name=archive_path::$(cat archive_path_${{ matrix_os }})"
     - uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_name: ${{ steps.asset_info.outputs.asset_name }}
-        asset_path: ${{ steps.asset_info.outputs.asset_path }}
+        upload_url: ${{ steps.release_data.outputs.upload_url }}
+        asset_name: ${{ steps.archive_data.outputs.archive_name }}
+        asset_path: ${{ steps.archive_data.outputs.archive_path }}
         asset_content_type: application/octet-stream

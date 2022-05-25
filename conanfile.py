@@ -40,9 +40,9 @@ class ProjectInitCpp(ConanFile):
     if self.settings.os == "Windows":
       archive_format = "zip"
     archive_path = shutil.make_archive(archive_name, archive_format, self.package_folder)
-    with open("asset_name.txt", "w") as archive_name_file:
+    with open("archive_name.txt", "w") as archive_name_file:
       print(f"{os.path.basename(archive_path)}", file=archive_name_file)
-    with open("asset_path.txt", "w") as archive_path_file:
+    with open("archive_path.txt", "w") as archive_path_file:
       print(f"{archive_path}", file=archive_path_file)
     return archive_path
 

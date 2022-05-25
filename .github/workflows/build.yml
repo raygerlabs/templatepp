@@ -27,14 +27,15 @@ jobs:
         run: |
           conan profile new default --detect
           conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: conan install . -if install -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
-      - run: conan build . -bf build -if install
-      - run: conan package . -pf package -bf build -if install
-      - id: asset_info
+      - run: mkdir -p build && cd build
+      - run: conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+      - run: conan build ..
+      - run: conan package ..
+      - id: archive_data
         run: |
-          echo "::set-output name=asset_name::$(cat ./build/asset_name.txt)"
-          echo "::set-output name=asset_path::$(cat ./build/asset_path.txt)"
+          echo "::set-output name=archive_name::$(cat archive_name.txt)"
+          echo "::set-output name=archive_path::$(cat archive_path.txt)"
       - uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.asset_info.outputs.asset_name }}
-          path: ${{ steps.asset_info.outputs.asset_path }}
+          name: ${{ steps.archive_data.outputs.archive_name }}
+          path: ${{ steps.archive_data.outputs.archive_path }}
