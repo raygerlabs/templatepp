@@ -90,7 +90,6 @@ jobs:
       run: |
         echo "::set-output name=asset_name::$(cat asset_name_${{ matrix_os }})"
         echo "::set-output name=asset_path::$(cat asset_path_${{ matrix_os }})"
-        echo "::set-output name=asset_content_type::$(if [ runner.os == "Windows" ]; then echo "application/zip"; else echo "application/gzip"; fi)"
     - uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -98,4 +97,4 @@ jobs:
         upload_url: ${{ steps.release.outputs.upload_url }}
         asset_name: ${{ steps.asset_info.outputs.asset_name }}
         asset_path: ${{ steps.asset_info.outputs.asset_path }}
-        asset_content_type: ${{ steps.asset_info.outputs.asset_content_type }}
+        asset_content_type: application/octet-stream
