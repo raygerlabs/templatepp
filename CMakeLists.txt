@@ -33,7 +33,7 @@ add_subdirectory(src)
 include(CTest)
 if (BUILD_TESTING)
   include(GoogleTest)
-  add_subdirectory(test)
+  add_subdirectory(tests)
 endif()
 #---------------------------------------------------------------------#
 install(FILES "${CMAKE_SOURCE_DIR}/README.md" DESTINATION .)
