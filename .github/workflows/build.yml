@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - master
+
+env:
+  CONAN_V2_MODE: true
+  CONAN_REVISIONS_ENABLED: true
+  CONAN_SCM_TO_CONANDATA: true
+  CONAN_SYSREQUIRES_MODE: enabled
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -24,11 +31,7 @@ jobs:
           key: conan-package-cache-${{ steps.branch_data.outputs.name }}
           restore-keys: |
             conan-package-cache-master
-      - run: pip3 install --upgrade conan
-      - if: runner.os == 'Linux'
-        run: |
-          conan profile new default --detect
-          conan profile update settings.compiler.libcxx=libstdc++11 default
+      - run: pip3 install --user conan
       - run: cmake -E make_directory ${{ github.workspace }}/build
       - run: |
           conan config set general.request_timeout=120
