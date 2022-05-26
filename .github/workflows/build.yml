@@ -8,10 +8,6 @@ on:
 
 env:
   BUILD_TYPE: Release
-  CONAN_V2_MODE: true
-  CONAN_REVISIONS_ENABLED: true
-  CONAN_SCM_TO_CONANDATA: true
-  CONAN_SYSREQUIRES_MODE: enabled
 
 jobs:
   build:
@@ -34,6 +30,10 @@ jobs:
           key: conan-package-cache-${{ steps.this_branch.outputs.name }}
           restore-keys: conan-package-cache-master
       - run: pip3 install conan
+      - if: runner.os == 'Linux'
+        run: |
+          conan profile new default --detect
+          conan profile update settings.compiler.libcxx=libstdc++11 default
       - run: cmake -E make_directory ${{ github.workspace }}/build
       - working-directory: ${{ github.workspace }}/build
         run: conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
