@@ -10,6 +10,7 @@ env:
   CONAN_V2_MODE: 1
   CONAN_REVISIONS_ENABLED: 1
   CONAN_SCM_TO_CONANDATA: 1
+  CONAN_USE_ALWAYS_SHORT_PATHS: 1
   CONAN_SYSREQUIRES_MODE: enabled
 
 jobs:
@@ -54,7 +55,6 @@ jobs:
           pip3 install --upgrade conan
           conan --version
           conan user
-          conan profile new default --detect
 
       - name: Create build directory
         run: |
