@@ -19,8 +19,9 @@ class ProjectInitCpp(ConanFile):
       cmake.configure(args=["--preset=msvc"])
     elif self.settings.compiler == "gcc":
       cmake.configure(args=["--preset=gcc"])
-    elif self.settings.compiler == "clang"
-      or self.settings.compiler == "apple-clang":
+    elif self.settings.compiler == "clang":
+      cmake.configure(args=["--preset=clang"])
+    elif self.settings.compiler == "apple-clang":
       cmake.configure(args=["--preset=clang"])
     else:
       cmake.configure()
