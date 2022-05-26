@@ -8,6 +8,8 @@ on:
 
 env:
   CONAN_V2_MODE: 1
+  CONAN_REVISIONS_ENABLED: 1
+  CONAN_SCM_TO_CONANDATA: 1
   CONAN_SYSREQUIRES_MODE: enabled
 
 jobs:
@@ -19,9 +21,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu
-          - os: macos
-          - os: windows
+          - name: ubuntu
+            os: ubuntu
+          - name: macos
+            os: macos
+          - name: windows
+            os: windows
 
     steps:
       - uses: actions/checkout@v2
@@ -34,7 +39,7 @@ jobs:
           echo "##[set-output name=name;]$(echo ${GITHUB_REF#refs/heads/})"
         id: branch_data
 
-      - name: Cache conan packages
+      - name: Cache Conan packages
         uses: actions/cache@v2
         with:
           path: ~/.conan
@@ -42,9 +47,14 @@ jobs:
           restore-keys: |
             conan-package-cache-master
 
-      - name: Install conan
+      - name: Install Conan
         run: |
-          pip3 install conan
+          export PATH=~/.local/bin:$PATH
+          pip3 install --upgrade pip wheel setuptools
+          pip3 install --upgrade conan
+          conan --version
+          conan user
+          conan profile new default --detect
 
       - name: Create build directory
         run: |
