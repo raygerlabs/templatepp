@@ -1,5 +1,0 @@
-if(EXISTS "C:/workspace/project-init-cpp/tests/project-init-cpp-tests[1]_tests.cmake")
-  include("C:/workspace/project-init-cpp/tests/project-init-cpp-tests[1]_tests.cmake")
-else()
-  add_test(project-init-cpp-tests_NOT_BUILT project-init-cpp-tests_NOT_BUILT)
-endif()

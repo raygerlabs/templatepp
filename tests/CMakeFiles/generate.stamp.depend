@@ -1,9 +1,0 @@
-# CMake generation dependency list for this directory.
-C:/Program Files/CMake/share/cmake-3.23/Modules/CMakeFindDependencyMacro.cmake
-C:/workspace/project-init-cpp/dist/GTest-Target-release.cmake
-C:/workspace/project-init-cpp/dist/GTest-release-x86_64-data.cmake
-C:/workspace/project-init-cpp/dist/GTestConfig.cmake
-C:/workspace/project-init-cpp/dist/GTestConfigVersion.cmake
-C:/workspace/project-init-cpp/dist/GTestTargets.cmake
-C:/workspace/project-init-cpp/dist/cmakedeps_macros.cmake
-C:/workspace/project-init-cpp/tests/CMakeLists.txt
