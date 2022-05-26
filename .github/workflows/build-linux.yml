@@ -1,4 +1,4 @@
-name: build
+name: linux
 
 on:
   push:
@@ -15,24 +15,11 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 30
 
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - name: linux
-            os: ubuntu-latest
-            compiler: gcc
-
-          - name: macos
-            os: macos-latest
-            compiler: apple-clang
-
-          - name: windows
-            os: windows-latest
-            compiler: msvc
 
     steps:
       - uses: actions/checkout@v2
@@ -40,44 +27,37 @@ jobs:
       - uses: actions/setup-python@v2
 
       - name: Extract branch name
+        id: this_branch
         shell: bash
-        run: |
-          echo "##[set-output name=name;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: branch_data
+        run: echo "##[set-output name=name;]$(echo ${GITHUB_REF#refs/heads/})"
 
       - name: Cache Conan packages
         uses: actions/cache@v2
         with:
           path: ~/.conan
-          key: conan-package-cache-${{ steps.branch_data.outputs.name }}
-          restore-keys: |
-            conan-package-cache-master
+          key: conan-package-cache-${{ steps.this_branch.outputs.name }}
+          restore-keys: conan-package-cache-master
 
       - name: Install Conan
         run: |
           pip3 install --upgrade conan
-          conan profile update settings.compiler=${{ matrix.compiler }} default
           conan --version
           conan user
 
       - name: Create build directory
-        run: |
-          cmake -E make_directory ${{ github.workspace }}/build
+        run: cmake -E make_directory ${{ github.workspace }}/build
 
-      - name: Install dependencies
-        run: |
-          conan install .. -pr:b default --build missing
+      - name: Install project requirements
         working-directory: ${{ github.workspace }}/build
+        run: conan install .. -pr:b default --build missing
 
-      - name: Execute build
-        run: |
-          conan build ..
+      - name: Build project
         working-directory: ${{ github.workspace }}/build
+        run: conan build ..
 
-      - name: Create artifact
-        run: |
-          conan package ..
+      - name: Package project
         working-directory: ${{ github.workspace }}/build
+        run: conan package ..
 
       - name: Extract artifact information
         shell: bash

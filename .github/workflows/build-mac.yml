@@ -1,0 +1,67 @@
+name: mac
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+
+      - name: Extract branch name
+        id: this_branch
+        shell: bash
+        run: echo "##[set-output name=name;]$(echo ${GITHUB_REF#refs/heads/})"
+
+      - name: Cache Conan packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.conan
+          key: conan-package-cache-${{ steps.this_branch.outputs.name }}
+          restore-keys: conan-package-cache-master
+
+      - name: Install Conan
+        run: |
+          pip3 install --upgrade conan
+          conan --version
+          conan user
+
+      - name: Create build directory
+        run: cmake -E make_directory ${{ github.workspace }}/build
+
+      - name: Install project requirements
+        working-directory: ${{ github.workspace }}/build
+        run: conan install .. -pr:b default --build missing
+
+      - name: Build project
+        working-directory: ${{ github.workspace }}/build
+        run: conan build ..
+
+      - name: Package project
+        working-directory: ${{ github.workspace }}/build
+        run: conan package ..
+
+      - name: Extract artifact information
+        shell: bash
+        run: |
+          echo "::set-output name=name::$(cat artifact_name.txt)"
+          echo "::set-output name=path::$(cat artifact_path.txt)"
+        id: artifact_data
+        working-directory: ${{ github.workspace }}/build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.artifact_data.outputs.name }}
+          path: ${{ steps.artifact_data.outputs.path }}

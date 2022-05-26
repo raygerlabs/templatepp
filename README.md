@@ -1,4 +1,6 @@
-[![build](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build.yml/badge.svg)](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build.yml)
+[![linux](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-linux.yml/badge.svg)](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-linux.yml)
+[![mac](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-mac.yml/badge.svg)](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-mac.yml)
+[![win](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-win.yml/badge.svg)](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-win.yml)
 
 # project-init-cpp
 
