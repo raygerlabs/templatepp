@@ -27,8 +27,11 @@ jobs:
       - name: Checkout project (${{ matrix.name }})
         uses: actions/checkout@v2
 
+      - name: Setup Python environment (${{ matrix.name }})
+        uses: actions/setup-python@v2
+
       - name: Install conan package manager (${{ matrix.name }})
-        run: pip3 install --user conan
+        run: pip3 install conan
 
       - name: Retrieve branch name (${{ matrix.name }})
         id: branch_data
