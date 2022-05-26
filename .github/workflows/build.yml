@@ -50,9 +50,9 @@ jobs:
 
       - name: Install Conan
         run: |
-          export PATH=~/.local/bin:$PATH
-          pip3 install --upgrade pip wheel setuptools
-          pip3 install --upgrade conan
+          pip3 install --upgrade --user pip wheel setuptools
+          pip3 install --upgrade --user conan
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
           conan --version
           conan user
 
