@@ -15,19 +15,24 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: ubuntu
-            os: ubuntu
+          - name: linux
+            os: ubuntu-latest
+            compiler: gcc
+
           - name: macos
             os: macos
+            compiler: apple-clang
+
           - name: windows
             os: windows
+            compiler: msvc
 
     steps:
       - uses: actions/checkout@v2
@@ -50,11 +55,12 @@ jobs:
 
       - name: Install Conan
         run: |
-          pip3 install --upgrade --user pip wheel setuptools
-          pip3 install --upgrade --user conan
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          pip3 install --upgrade conan
           conan --version
           conan user
+          conan profile remove default 2>/dev/null || true
+          conan profile new default --detect
+          conan profile update settings.compiler=${{ matrix.compiler }} default
 
       - name: Create build directory
         run: |
