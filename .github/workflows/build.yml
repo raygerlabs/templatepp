@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  CONAN_V2_MODE: 1
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}-latest
@@ -24,29 +21,62 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - id: this_branch
-        run: echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
+
       - uses: actions/setup-python@v2
-      - uses: actions/cache@v2
+
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "##[set-output name=name;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: branch_data
+
+      - name: Cache conan packages
+        uses: actions/cache@v2
         with:
           path: ~/.conan
-          key: conan-package-cache-${{ steps.this_branch.outputs.name }}
+          key: conan-package-cache-${{ steps.branch_data.outputs.name }}
           restore-keys: |
             conan-package-cache-master
-      - run: pip3 install conan
-      - run: cmake -E make_directory ${{ github.workspace }}/build
-      - run: conan install .. --build missing
+
+      - name: Install conan
+        run: |
+          pip3 install conan
+
+      - name: Update local conan profile
+        if: runner.os == "Linux"
+        run: |
+          conan profile new default --detect
+          conan profile update settings.compiler.libcxx=libstdc++11 default
+
+      - name: Create build directory
+        run: |
+          cmake -E make_directory ${{ github.workspace }}/build
+
+      - name: Install dependencies
+        run: |
+          conan install .. -pr:b default --build missing
         working-directory: ${{ github.workspace }}/build
-      - run: conan build ..
+
+      - name: Execute build
+        run: |
+          conan build ..
         working-directory: ${{ github.workspace }}/build
-      - run: conan package ..
+
+      - name: Create artifact
+        run: |
+          conan package ..
         working-directory: ${{ github.workspace }}/build
-      - id: this_artifact
+
+      - name: Extract artifact information
+        shell: bash
         run: |
           echo "::set-output name=name::$(cat artifact_name.txt)"
           echo "::set-output name=path::$(cat artifact_path.txt)"
+        id: artifact_data
         working-directory: ${{ github.workspace }}/build
-      - uses: actions/upload-artifact@v2
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.this_artifact.outputs.name }}
-          path: ${{ steps.this_artifact.outputs.path }}
+          name: ${{ steps.artifact_data.outputs.name }}
+          path: ${{ steps.artifact_data.outputs.path }}
