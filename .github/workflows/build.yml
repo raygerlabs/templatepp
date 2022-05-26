@@ -38,6 +38,8 @@ jobs:
         run: conan install .. -pr:b default --build missing
       - working-directory: ${{ github.workspace }}/build
         run: conan build ..
+      - working-directory: ${{ github.workspace }}/build
+        run: conan package ..
       - id: archive_data
         working-directory: ${{ github.workspace }}/build
         shell: bash
