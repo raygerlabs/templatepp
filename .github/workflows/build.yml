@@ -7,38 +7,46 @@ on:
     branches: [ master ]
 
 env:
-  BUILD_TYPE: Release
+  CONAN_V2_MODE: 1
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 30
 
     strategy:
       fail-fast: true
       matrix:
         include:
-          - os: ubuntu-latest
-            asset_name: project-init-cpp-linux-x86_64.tar.gz
-          - os: macos-latest
-            asset_name: project-init-cpp-darwin-x86_64.tar.gz
-          - os: windows-latest
-            asset_name: project-init-cpp-windows-amd64.zip
+          - os: ubuntu
+          - os: macos
+          - os: windows
 
     steps:
       - uses: actions/checkout@v2
+      - id: this_branch
+        run: echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
       - uses: actions/setup-python@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.conan
+          key: conan-package-cache-${{ steps.this_branch.outputs.name }}
+          restore-keys: |
+            conan-package-cache-master
       - run: pip3 install conan
-      - if: runner.os == 'Linux'
+      - run: cmake -E make_directory ${{ github.workspace }}/build
+      - run: conan install .. --build missing
+        working-directory: ${{ github.workspace }}/build
+      - run: conan build ..
+        working-directory: ${{ github.workspace }}/build
+      - run: conan package ..
+        working-directory: ${{ github.workspace }}/build
+      - id: this_artifact
         run: |
-          conan profile new default --detect
-          conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: conan install . -if build -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
-      - run: cmake -B build
-      - run: cmake --build build --config ${{ env.BUILD_TYPE }}
-      - run: ctest --test-dir build -VV -C ${{ env.BUILD_TYPE }}
-      - run: cmake --build build --config ${{ env.BUILD_TYPE }} --target package
+          echo "::set-output name=name::$(cat artifact_name.txt)"
+          echo "::set-output name=path::$(cat artifact_path.txt)"
+        working-directory: ${{ github.workspace }}/build
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.asset_name }}
-          path: ./build/${{ matrix.asset_name }}
+          name: ${{ steps.this_artifact.outputs.name }}
+          path: ${{ steps.this_artifact.outputs.path }}
