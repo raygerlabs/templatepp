@@ -56,11 +56,9 @@ jobs:
       - name: Install Conan
         run: |
           pip3 install --upgrade conan
+          conan profile update settings.compiler=${{ matrix.compiler }} default
           conan --version
           conan user
-          conan profile remove default 2>/dev/null || true
-          conan profile new default --detect
-          conan profile update settings.compiler=${{ matrix.compiler }} default
 
       - name: Create build directory
         run: |
