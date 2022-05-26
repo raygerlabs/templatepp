@@ -37,15 +37,13 @@ class ProjectInitCpp(ConanFile):
   def archive(self):
     archive_name = f"{self.name}-v{self.version}-{self.settings.os}-{self.settings.arch}"
     archive_name = archive_name.lower()
+    archive_path = os.path.join("archive", archive_name)
     archive_format = "gztar"
     if self.settings.os == "Windows":
       archive_format = "zip"
-    archive_path = shutil.make_archive(archive_name, archive_format, self.package_folder)
-    with open("archive_name.txt", "w") as archive_name_file:
-      print(f"{os.path.basename(archive_path)}", file=archive_name_file)
-    with open("archive_path.txt", "w") as archive_path_file:
-      print(f"{archive_path}", file=archive_path_file)
-    return archive_path
+    shutil.make_archive(archive_path, archive_format, self.package_folder)
+    with open("archive_name.txt", "w") as save:
+      print(f"{os.path.basename(archive_path)}", file=save)
 
   def package(self):
     cmake = self.configure_cmake()

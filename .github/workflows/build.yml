@@ -1,40 +1,49 @@
 name: build
-
-on:
-  push:
-    branches: [ master ]
+on: 
   pull_request:
-    branches: [ master ]
-
-env:
-  BUILD_TYPE: Release
-
+  push:
+    branches:
+      - master
 jobs:
   build:
-    runs-on: ${{ matrix.os }}-latest
-    timeout-minutes: 30
-
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: true
       matrix:
-        os: [ ubuntu, macos, windows ]
-
+        include:
+          - os: ubuntu-latest
+          - os: macos-latest
+          - os: windows-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - run: pip3 install conan
+      - id: branch_data
+        shell: bash
+        run: echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
+      - uses: actions/cache@v2
+        with:
+          path: ~/.conan
+          key: conan-package-cache-${{ steps.branch_data.outputs.name }}
+          restore-keys: |
+            conan-package-cache-master
+      - run: pip3 install --upgrade --user conan
       - if: runner.os == 'Linux'
         run: |
           conan profile new default --detect
           conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: conan install . -if install -pr:b default --build missing
-      - run: conan build . -if install -bf build
-      - run: conan package . -if install -bf build -pf package
-      - id: archive_data
+      - run: cmake -E make_directory ${{ github.workspace }}/build
+      - working-directory: ${{ github.workspace }}/build
         run: |
-          echo "::set-output name=archive_name::$(cat ./build/archive_name.txt)"
-          echo "::set-output name=archive_path::$(cat ./build/archive_path.txt)"
-      - uses: actions/upload-artifact@v3
+          conan config set general.request_timeout=120
+          conan install .. -pr:b default --build missing
+      - working-directory: ${{ github.workspace }}/build
+        run: conan build ..
+      - working-directory: ${{ github.workspace }}/build
+        run: conan package ..
+      - working-directory: ${{ github.workspace }}/build
+        id: archive_data
+        shell: bash
+        run: echo "::set-output name=name::$(cat archive_name.txt)"
+      - working-directory: ${{ github.workspace }}/build
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.archive_data.outputs.archive_name }}
-          path: ${{ steps.archive_data.outputs.archive_path }}
+          path: ${{ steps.archive_data.outputs.archive_name }}
