@@ -6,13 +6,17 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  CONAN_V2_MODE: 1
+  CONAN_SYSREQUIRES_MODE: enabled
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 30
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - os: ubuntu
