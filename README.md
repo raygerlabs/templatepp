@@ -1,7 +1,3 @@
-[![linux](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-linux.yml/badge.svg)](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-linux.yml)
-[![mac](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-mac.yml/badge.svg)](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-mac.yml)
-[![win](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-win.yml/badge.svg)](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build-win.yml)
-
 # project-init-cpp
 
 A cross-platform project template for modern C and C++.
