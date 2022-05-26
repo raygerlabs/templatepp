@@ -22,7 +22,7 @@ class ProjectInitCpp(ConanFile):
 
   def imports(self):
     self.copy("*.dll", dst=f"bin/{self.settings.build_type}", src="@bindirs")
-    self.copy("*.dylib", dst="lib", src="@libdirs")
+    self.copy("*.dylib", dst=f"bin/{self.settings.build_type}", src="@libdirs")
 
   def configure_cmake(self):
     cmake = CMake(self)
