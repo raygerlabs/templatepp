@@ -41,7 +41,7 @@ class ProjectInitCpp(ConanFile):
     archive_format = "gztar"
     if self.settings.os == "Windows":
       archive_format = "zip"
-    shutil.make_archive(archive_path, archive_format, self.package_folder)
+    archive_path = shutil.make_archive(archive_path, archive_format, self.package_folder)
     with open("archive_name.txt", "w") as save:
       print(f"{os.path.basename(archive_path)}", file=save)
 
