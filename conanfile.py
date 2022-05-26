@@ -10,9 +10,19 @@ class ProjectInitCpp(ConanFile):
   url = "https://www.github.com/raygerlabs/project-init-cpp"
   description = "A cross-platform project template for modern C and C++"
   settings = "os", "compiler", "build_type", "arch"
-  requires = "gtest/1.11.0"
+  options = { "shared": [True, False] }
+  default_options = { "shared": True }
   generators = "CMakeDeps"
-  build_policy = "missing"
+
+  def requirements(self):
+    self.requires("gtest/1.11.0")
+
+  def configure(self):
+    self.options["*"].shared = self.options.shared
+
+  def imports(self):
+    self.copy("*.dll", dst=f"bin/{self.settings.build_type}", src="@bindirs")
+    self.copy("*.dylib", dst="lib", src="@libdirs")
 
   def configure_cmake(self):
     cmake = CMake(self)
