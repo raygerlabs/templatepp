@@ -9,6 +9,7 @@ on:
 env:
   BUILD_TYPE: Release
   CONAN_V2_MODE: true
+  CONAN_SYSREQUIRES_MODE: enabled
 
 jobs:
   build:
@@ -18,7 +19,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu, macos, windows ]
+       include:
+         - os: ubuntu
+         - os: macos
+         - os: windows
 
     steps:
       - uses: actions/checkout@v2
@@ -28,19 +32,15 @@ jobs:
       - working-directory: ${{ github.workspace }}/build
         run: conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
       - working-directory: ${{ github.workspace }}/build
-        run: cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} ..
+        run: conan build ..
       - working-directory: ${{ github.workspace }}/build
-        run: cmake --build . --config ${{ env.BUILD_TYPE }}
-      - working-directory: ${{ github.workspace }}/build
-        run: ctest -VV -C ${{ env.BUILD_TYPE }}
-      - working-directory: ${{ github.workspace }}/build
-        run: cmake --install . --config ${{ env.BUILD_TYPE }} --prefix install
-      - working-directory: ${{ github.workspace }}/build
-        run: cpack
+        run: conan package ..
       - working-directory: ${{ github.workspace }}/build
         id: this_archive
-        run: echo "##[set-output name=name;]$(cat archive_name.txt)"
+        run: |
+          echo "##[set-output name=name;]$(cat archive_name.txt)"
+          echo "##[set-output name=path;]$(cat archive_path.txt)"
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.this_archive.outputs.name }}
-          path: ${{ github.workspace }}/build/${{ steps.this_archive.outputs.name }}
+          path: ${{ steps.this_archive.outputs.path }}
