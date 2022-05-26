@@ -7,44 +7,35 @@
   },
   "configurePresets": [
     {
-      "name": "windowslike",
-      "condition": {
-        "type": "inList",
-        "string": "${hostSystemName}",
-        "list": ["Windows"]
-      },
-      "hidden": true
+      "name": "conf-common",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CONFIGURATION_TYPES": ["Debug", "Profile", "Release"]
+      }
     },
     {
-      "name": "unixlike",
-      "generator": "Unix Makefiles",
+      "name": "gcc",
+      "inherits": ["conf-common"],
       "condition": {
         "type": "inList",
         "string": "${hostSystemName}",
         "list": ["Linux", "Darwin"]
       },
-      "hidden": true
-    },
-    {
-      "name": "gcc",
-      "inherits": ["unixlike"],
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-gcc.cmake"
-      }
-    },
-    {
-      "name": "clang",
-      "inherits": ["unixlike"],
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-clang.cmake"
+        "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/overrides-gcc.cmake"
       }
     },
     {
       "name": "msvc",
-      "inherits": ["windowslike"],
+      "inherits": ["conf-common"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
       "architecture": "x64",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-msvc.cmake"
+        "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/overrides-msvc.cmake"
       }
     }
   ]

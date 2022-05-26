@@ -23,16 +23,7 @@ set(CMAKE_CXX_FLAGS_INIT
   -Wsign-conversion           # Warn on sign conversions
   -Wmisleading-indentation    # Warn if indentation implies blocks
                               # where blocks do not exist
-  -Wduplicated-cond           # Warn if if / else chain has
-                              # duplicated conditions
-  -Wduplicated-branches       # Warn if if / else branches have
-                              # duplicated code
-  -Wlogical-op                # Warn about logical operations
-                              # being used where bitwise were
-                              # probably wanted
   -Wnull-dereference          # Warn if a null dereference is detected
-  -Wuseless-cast              # Warn if you perform a
-                              # cast to the same type
   -Wdouble-promotion          # Warn if float is implicit
                               # promoted to double
   -Wformat=2                  # Warn on security issues around functions

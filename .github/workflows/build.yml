@@ -17,36 +17,57 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-          - os: macos-latest
-          - os: windows-latest
+          - name: linux
+            os: ubuntu-latest
+          - name: mac
+            os: macos-latest
+          - name: windows
+            os: windows-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - run: pip3 install conan
-      - id: branch_data
-        shell: bash
+      - name: Checkout project (${{ matrix.name }})
+        uses: actions/checkout@v2
+
+      - name: Install conan package manager (${{ matrix.name }})
+        run: pip3 install --user conan
+
+      - name: Retrieve branch name (${{ matrix.name }})
+        id: branch_data
         run: echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
-      - uses: actions/cache@v2
+
+      # Retrieve conan packages from the cache,
+      # unless something is merged to the master branch
+      - name: Cache conan packages (${{ matrix.name }})
+        uses: actions/cache@v2
         with:
           path: ~/.conan
           key: conan-package-cache-${{ steps.branch_data.outputs.name }}
           restore-keys: |
             conan-package-cache-master
-      - run: cmake -E make_directory ${{ github.workspace }}/build
-      - working-directory: ${{ github.workspace }}/build
-        run: conan install .. -pr:b default --build missing
-      - working-directory: ${{ github.workspace }}/build
-        run: conan build ..
-      - working-directory: ${{ github.workspace }}/build
-        run: conan package ..
-      - id: archive_data
+
+      - name: Create build directory (${{ matrix.name }})
+        run: cmake -E make_directory ${{ github.workspace }}/build
+
+      - name: Install project dependencies (${{ matrix.name }})
         working-directory: ${{ github.workspace }}/build
-        shell: bash
+        run: conan install .. -pr:b default --build missing
+
+      - name: Build project (${{ matrix.name }})
+        working-directory: ${{ github.workspace }}/build
+        run: conan build ..
+
+      - name: Package project (${{ matrix.name }})
+        working-directory: ${{ github.workspace }}/build
+        run: conan package ..
+
+      - name: Retrieve artifact information (${{ matrix.name }})
+        working-directory: ${{ github.workspace }}/build
+        id: artifact_data
         run: |
-          echo "::set-output name=name::$(cat archive_name.txt)"
-          echo "::set-output name=path::$(cat archive_path.txt)"
-      - uses: actions/upload-artifact@v3
+          echo "::set-output name=name::$(cat artifact_name.txt)"
+          echo "::set-output name=path::$(cat artifact_path.txt)"
+
+      - name: Upload artifact (${{ matrix.name }})
+        uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.archive_data.outputs.name }}
-          path: ${{ steps.archive_data.outputs.path }}
+          name: ${{ steps.artifact_data.outputs.name }}
+          path: ${{ steps.artifact_data.outputs.path }}
