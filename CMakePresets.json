@@ -10,7 +10,7 @@
       "name": "conf-common",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CONFIGURATION_TYPES": ["Debug", "Profile", "Release"]
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Profile;Release"
       }
     },
     {
