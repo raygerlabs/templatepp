@@ -27,11 +27,11 @@ jobs:
             compiler: gcc
 
           - name: macos
-            os: macos
+            os: macos-latest
             compiler: apple-clang
 
           - name: windows
-            os: windows
+            os: windows-latest
             compiler: msvc
 
     steps:

@@ -7,43 +7,19 @@
   },
   "configurePresets": [
     {
-      "name": "paths",
-      "hidden": true,
-      "binaryDir": "${sourceDir}/build",
-      "installDir": "${sourceDir}/build"
-    },
-    {
       "name": "gcc",
-      "inherits": ["paths"],
-      "condition": {
-        "type": "inList",
-        "string": "${hostSystemName}",
-        "list": ["Linux"]
-      },
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-gcc.cmake"
       }
     },
     {
       "name": "clang",
-      "inherits": ["paths"],
-      "condition": {
-        "type": "inList",
-        "string": "${hostSystemName}",
-        "list": ["Linux", "Darwin"]
-      },
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-clang.cmake"
       }
     },
     {
       "name": "msvc",
-      "inherits": ["paths"],
-      "condition": {
-        "type": "inList",
-        "string": "${hostSystemName}",
-        "list": ["Windows"]
-      },
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-msvc.cmake"
       }
