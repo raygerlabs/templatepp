@@ -8,6 +8,7 @@ on:
 
 env:
   BUILD_TYPE: Release
+  CONAN_V2_MODE: true
 
 jobs:
   build:
@@ -22,18 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - id: this_branch
-        run: echo "##[set-output name=name;]$(echo ${GITHUB_REF#refs/heads/})"
-      - uses: actions/cache@v2
-        with:
-          path: ~/.conan
-          key: conan-package-cache-${{ steps.this_branch.outputs.name }}
-          restore-keys: conan-package-cache-master
       - run: pip3 install conan
-      - if: runner.os == 'Linux'
-        run: |
-          conan profile new default --detect
-          conan profile update settings.compiler.libcxx=libstdc++11 default
       - run: cmake -E make_directory ${{ github.workspace }}/build
       - working-directory: ${{ github.workspace }}/build
         run: conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
