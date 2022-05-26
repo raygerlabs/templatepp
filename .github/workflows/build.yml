@@ -43,8 +43,10 @@ jobs:
       - id: archive_data
         working-directory: ${{ github.workspace }}/build
         shell: bash
-        run: echo "::set-output name=name::$(cat archive_name.txt)"
+        run: |
+          echo "::set-output name=name::$(cat archive_name.txt)"
+          echo "::set-output name=path::$(cat archive_path.txt)"
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.archive_data.outputs.name }}
-          path: ./build/${{ steps.archive_data.outputs.name }}
+          path: ${{ steps.archive_data.outputs.path }}
