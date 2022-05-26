@@ -24,7 +24,7 @@ jobs:
           key: conan-package-cache-${{ steps.branch_data.outputs.name }}
           restore-keys: |
             conan-package-cache-master
-      - run: pip3 install --upgrade --user conan
+      - run: pip3 install --upgrade conan
       - if: runner.os == 'Linux'
         run: |
           conan profile new default --detect
