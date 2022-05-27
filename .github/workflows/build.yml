@@ -8,8 +8,6 @@ on:
 
 env:
   BUILD_TYPE: Release
-  ACTIONS_RUNNER_DEBUG: 1
-  ACTIONS_STEP_DEBUG: 1
 
 jobs:
   build:
