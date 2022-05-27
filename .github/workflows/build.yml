@@ -61,7 +61,7 @@ jobs:
 
       - name: Install/Upgrade Conan
         run: |
-          pip3 install --upgrade --user conan
+          pip3 install --upgrade conan
           conan --version
           conan user
           conan profile show default
