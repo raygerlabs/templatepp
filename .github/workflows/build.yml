@@ -38,7 +38,7 @@ jobs:
            os: windows-latest
            os_build: Windows
            arch: x86_64
-           compiler: Visual Studio
+           compiler: "Visual Studio"
            compiler_version: 17
            compiler_libcxx: cppstd
 
