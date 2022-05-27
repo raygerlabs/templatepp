@@ -8,10 +8,12 @@ on:
 
 env:
   BUILD_TYPE: Release
+  ACTIONS_RUNNER_DEBUG: 1
+  ACTIONS_STEP_DEBUG: 1
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.vm }}
     timeout-minutes: 30
 
     strategy:
@@ -19,24 +21,24 @@ jobs:
       matrix:
        include:
          - name: linux
-           os: ubuntu-latest
-           os_build: Linux
+           vm: ubuntu-latest
+           os: Linux
            arch: x86_64
            compiler: gcc
            compiler_version: 9
            compiler_libcxx: libstdc++11
 
          - name: macos
-           os: macos-latest
-           os_build: Macos
+           vm: macos-latest
+           os: Macos
            arch: x86_64
            compiler: apple-clang
            compiler_version: 13.0
            compiler_libcxx: libc++
 
          - name: windows
-           os: windows-latest
-           os_build: Windows
+           vm: windows-latest
+           os: Windows
            arch: x86_64
            compiler: "Visual Studio"
            compiler_version: 17
@@ -72,9 +74,10 @@ jobs:
           conan --version
           conan user
           conan profile new --force default
-          conan profile update settings.os=${{ matrix.os_build }} default
-          conan profile update settings.os_build=${{ matrix.os_build }} default
+          conan profile update settings.os=${{ matrix.os }} default
+          conan profile update settings.os_build=${{ matrix.os }} default
           conan profile update settings.arch=${{ matrix.arch }} default
+          conan profile update settings.arch_build=${{ matrix.arch }} default
           conan profile update settings.compiler=${{ matrix.compiler }} default
           conan profile update settings.compiler.version=${{ matrix.compiler_version }} default
           conan profile update settings.compiler.libcxx=${{ matrix.compiler_libcxx }} default
