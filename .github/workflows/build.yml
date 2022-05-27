@@ -36,7 +36,7 @@ jobs:
            os: windows-latest
            os_build: Windows
            compiler: Visual Studio
-           compiler_version: 16
+           compiler_version: 17
            compiler_libcxx: cppstd
 
     steps:
@@ -68,7 +68,7 @@ jobs:
           pip3 install --upgrade conan
           conan --version
           conan user
-          conan profile new --detect --force default
+          conan profile new --force default
           conan profile update settings.os_build=${{ matrix.os_build }} default
           conan profile update settings.compiler=${{ matrix.compiler }} default
           conan profile update settings.compiler.version=${{ matrix.compiler_version }} default
