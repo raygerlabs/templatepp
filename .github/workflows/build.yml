@@ -65,7 +65,7 @@ jobs:
           pip3 install --upgrade conan
           conan --version
           conan user
-          conan profile --detect default
+          conan profile new --detect --force default
           conan profile update settings.os_build=${{ matrix.name }} default
           conan profile update settings.compiler=${{ matrix.compiler }} default
           conan profile update settings.compiler.version=${{ matrix.compiler_version }} default
