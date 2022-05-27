@@ -65,6 +65,7 @@ jobs:
           conan --version
           conan user
           conan profile show default
+          uname -r
 
 #      - name: Create build directory
 #        run: cmake -E make_directory ${{ github.workspace }}/build
