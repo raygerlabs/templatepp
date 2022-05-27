@@ -23,27 +23,71 @@ jobs:
          - os: windows
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - run: pip3 install conan
-      # gtest requires c++11 conan profile explicitly
-      - if: startsWith(runner.os, 'Linux')
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Retrieve current branch name
+        id: this_branch
         run: |
-          conan profile new default --detect
+          echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
+
+      # For speeding up the build, let's create a cache for conan packages.
+      # A new branch will create a copy of the master cache,
+      # but the master cache isn't updated until a merge to the master branch.
+      - name: Cache Conan
+        uses: actions/cache@v2
+        with:
+          path: ~/.conan
+          key: conan-package-cache-${{ steps.this_branch.outputs.name }}
+          restore-keys: |
+            conan-package-cache-master
+
+      - name: Setup Python environment
+        uses: actions/setup-python@v2
+
+      - name: Install/Upgrade Conan
+        run: pip3 install --upgrade conan
+
+      - name: Create build directory
+        run: cmake -E make_directory ${{ github.workspace }}/build
+
+      - name: Configure
+        if: startsWith(runner.os, "Linux")
+        working-directory: ${{ github.workspace }}/build
+        run: |
           conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: cmake -E make_directory ${{ github.workspace }}/build
-      - working-directory: ${{ github.workspace }}/build
-        run: conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
-      - working-directory: ${{ github.workspace }}/build
+          conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+
+      - name: Configure
+        if: startsWith(runner.os, "macOS")
+        working-directory: ${{ github.workspace }}/build
+        run: |
+          conan profile update settings.compiler.libcxx=libc++ default
+          conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+
+      - name: Configure
+        if: startsWith(runner.os, "Windows")
+        working-directory: ${{ github.workspace }}/build
+        run: |
+          conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+
+      - name: Build
+        working-directory: ${{ github.workspace }}/build
         run: conan build ..
-      - working-directory: ${{ github.workspace }}/build
+
+      - name: Package
+        working-directory: ${{ github.workspace }}/build
         run: conan package ..
-      - working-directory: ${{ github.workspace }}/build
+
+      - name: Retrieve artifact information
+        working-directory: ${{ github.workspace }}/build
         id: artifact_data
         run: |
           echo "::set-output name=name::$(cat artifact_name.txt)"
           echo "::set-output name=path::$(cat artifact_path.txt)"
-      - uses: actions/upload-artifact@v2
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.artifact_data.outputs.name }}
           path: ${{ steps.artifact_data.outputs.path }}
