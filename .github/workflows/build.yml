@@ -52,21 +52,21 @@ jobs:
         run: cmake -E make_directory ${{ github.workspace }}/build
 
       - name: Configure
-        if: startsWith(runner.os, "Linux")
+        if: startsWith(runner.os, 'Linux')
         working-directory: ${{ github.workspace }}/build
         run: |
           conan profile update settings.compiler.libcxx=libstdc++11 default
           conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
 
       - name: Configure
-        if: startsWith(runner.os, "macOS")
+        if: startsWith(runner.os, 'macOS')
         working-directory: ${{ github.workspace }}/build
         run: |
           conan profile update settings.compiler.libcxx=libc++ default
           conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
 
       - name: Configure
-        if: startsWith(runner.os, "Windows")
+        if: startsWith(runner.os, 'Windows')
         working-directory: ${{ github.workspace }}/build
         run: |
           conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
