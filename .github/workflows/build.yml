@@ -42,7 +42,7 @@ jobs:
            arch: x86_64
            compiler: "Visual Studio"
            compiler_version: 17
-           compiler_libcxx: cppstd
+           compiler_libcxx:
 
     steps:
       - name: Checkout project
