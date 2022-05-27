@@ -20,21 +20,21 @@ jobs:
        include:
          - name: linux
            os: ubuntu-latest
-#           compiler: gcc
-#           compiler_version: 9
-#           compiler_libcxx: libstdc++11
+           compiler: gcc
+           compiler_version: 9
+           compiler_libcxx: libstdc++11
 
          - name: mac
            os: macos-latest
-#           compiler: apple-clang
-#           compiler_version: 13.0
-#           compiler_libcxx: libc++
+           compiler: apple-clang
+           compiler_version: 13.0
+           compiler_libcxx: libc++
 
          - name: windows
            os: windows-latest
-#           compiler: Visual Studio
-#           compiler_version: 16
-#           compiler_libcxx: cppstd
+           compiler: Visual Studio
+           compiler_version: 16
+           compiler_libcxx: cppstd
 
     steps:
       - name: Checkout project
@@ -60,33 +60,41 @@ jobs:
         uses: actions/setup-python@v2
 
       - name: Install/Upgrade Conan
-        run: pip3 install --upgrade conan
-
-      - name: Create build directory
-        run: cmake -E make_directory ${{ github.workspace }}/build
-
-      - name: Configure
-        working-directory: ${{ github.workspace }}/build
         run: |
-          conan install .. -s build_type=${{ env.BUILD_TYPE }} --build missing
+          pip3 install --upgrade --user conan
+          conan --version
+          conan user
+          conan profile show default
 
-      - name: Build
-        working-directory: ${{ github.workspace }}/build
-        run: conan build ..
+#      - name: Create build directory
+#        run: cmake -E make_directory ${{ github.workspace }}/build
 
-      - name: Package
-        working-directory: ${{ github.workspace }}/build
-        run: conan package ..
+#      - name: Configure
+#        working-directory: ${{ github.workspace }}/build
+#        run: |
+#          conan profile new default --detect
+#          conan profile update settings.compiler=${{ matrix.compiler }} default
+#          conan profile update settings.compiler.version=${{ matrix.compiler_version }} default
+#          conan profile update settings.compiler.libcxx=${{ matrix.compiler_libcxx }} default
+#          conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
 
-      - name: Retrieve artifact information
-        working-directory: ${{ github.workspace }}/build
-        id: artifact_data
-        run: |
-          echo "::set-output name=name::$(cat artifact_name.txt)"
-          echo "::set-output name=path::$(cat artifact_path.txt)"
+#      - name: Build
+#        working-directory: ${{ github.workspace }}/build
+#        run: conan build ..
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ steps.artifact_data.outputs.name }}
-          path: ${{ steps.artifact_data.outputs.path }}
+#      - name: Package
+#        working-directory: ${{ github.workspace }}/build
+#        run: conan package ..
+
+#      - name: Retrieve artifact information
+#        working-directory: ${{ github.workspace }}/build
+#        id: artifact_data
+#        run: |
+#          echo "::set-output name=name::$(cat artifact_name.txt)"
+#          echo "::set-output name=path::$(cat artifact_path.txt)"
+
+#      - name: Upload artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: ${{ steps.artifact_data.outputs.name }}
+#          path: ${{ steps.artifact_data.outputs.path }}
