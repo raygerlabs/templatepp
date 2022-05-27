@@ -26,6 +26,11 @@ source_group(
   FILES
     ${SOURCE_LIST}
 )
+set_property(TEST ${PROJECT_NAME}-tests
+  PROPERTY
+  ENVIRONMENT
+    "DYLD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+)
 #---------------------------------------------------------------------#
 gtest_discover_tests(${PROJECT_NAME}-tests)
 #---------------------------------------------------------------------#
