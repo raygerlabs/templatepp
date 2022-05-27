@@ -67,7 +67,6 @@ jobs:
           conan user
           conan profile show default
           uname -r
-          cat /etc/os-release
           lsb release -a
 
 #      - name: Create build directory
