@@ -37,9 +37,7 @@ jobs:
       # gtest wants to know where dylibs are
       - if: startsWith(runner.os, 'macOS')
         run: |
-          ls -la ${{ github.workspace }}/build
-          ls -la ${{ github.workspace }}/build/lib
-          export LD_LIBRARY_PATH=${{ github.workspace }}/build/lib
+          export DYLD_LIBRARY_PATH=${{ github.workspace }}/build/lib
       - working-directory: ${{ github.workspace }}/build
         run: conan build ..
       - working-directory: ${{ github.workspace }}/build
