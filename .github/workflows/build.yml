@@ -42,7 +42,6 @@ jobs:
            arch: x86_64
            compiler: "Visual Studio"
            compiler_version: 17
-           compiler_libcxx:
 
     steps:
       - name: Checkout project
@@ -80,7 +79,9 @@ jobs:
           conan profile update settings.arch_build="${{ matrix.arch }}" default
           conan profile update settings.compiler="${{ matrix.compiler }}" default
           conan profile update settings.compiler.version="${{ matrix.compiler_version }}" default
-          conan profile update settings.compiler.libcxx="${{ matrix.compiler_libcxx }}" default
+          if [ runner.os != "Windows" ]; then
+            conan profile update settings.compiler.libcxx="${{ matrix.compiler_libcxx }}" default
+          fi
           conan profile show default
 
       - name: Create build directory

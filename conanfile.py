@@ -20,8 +20,6 @@ class ProjectInitCpp(ConanFile):
   def configure(self):
     self.options["*"].shared = self.options.shared
     self.options["gtest"].shared = False
-    if self.settings.compiler == "Visual Studio":
-      del self.settings.compiler.libcxx
 
   def imports(self):
     self.copy("*.dll", src="bin", dst=f"bin/{self.settings.build_type}")
