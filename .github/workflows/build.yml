@@ -24,7 +24,7 @@ jobs:
            compiler_version: 9
            compiler_libcxx: libstdc++11
 
-         - name: mac
+         - name: macos
            os: macos-latest
            compiler: apple-clang
            compiler_version: 13.0
@@ -65,39 +65,38 @@ jobs:
           pip3 install --upgrade conan
           conan --version
           conan user
+          conan profile --detect default
+          conan profile update settings.os_build=${{ matrix.name }} default
+          conan profile update settings.compiler=${{ matrix.compiler }} default
+          conan profile update settings.compiler.version=${{ matrix.compiler_version }} default
+          conan profile update settings.compiler.libcxx=${{ matrix.compiler_libcxx }} default
           conan profile show default
-          uname -r
-          cat /etc/*-release
 
-#      - name: Create build directory
-#        run: cmake -E make_directory ${{ github.workspace }}/build
+      - name: Create build directory
+        run: cmake -E make_directory ${{ github.workspace }}/build
 
-#      - name: Configure
-#        working-directory: ${{ github.workspace }}/build
-#        run: |
-#          conan profile new default --detect
-#          conan profile update settings.compiler=${{ matrix.compiler }} default
-#          conan profile update settings.compiler.version=${{ matrix.compiler_version }} default
-#          conan profile update settings.compiler.libcxx=${{ matrix.compiler_libcxx }} default
-#          conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+      - name: Configure
+        working-directory: ${{ github.workspace }}/build
+        run: |
+          conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
 
-#      - name: Build
-#        working-directory: ${{ github.workspace }}/build
-#        run: conan build ..
+      - name: Build
+        working-directory: ${{ github.workspace }}/build
+        run: conan build ..
 
-#      - name: Package
-#        working-directory: ${{ github.workspace }}/build
-#        run: conan package ..
+      - name: Package
+        working-directory: ${{ github.workspace }}/build
+        run: conan package ..
 
-#      - name: Retrieve artifact information
-#        working-directory: ${{ github.workspace }}/build
-#        id: artifact_data
-#        run: |
-#          echo "::set-output name=name::$(cat artifact_name.txt)"
-#          echo "::set-output name=path::$(cat artifact_path.txt)"
+      - name: Retrieve artifact information
+        working-directory: ${{ github.workspace }}/build
+        id: artifact_data
+        run: |
+          echo "::set-output name=name::$(cat artifact_name.txt)"
+          echo "::set-output name=path::$(cat artifact_path.txt)"
 
-#      - name: Upload artifact
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: ${{ steps.artifact_data.outputs.name }}
-#          path: ${{ steps.artifact_data.outputs.path }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.artifact_data.outputs.name }}
+          path: ${{ steps.artifact_data.outputs.path }}
