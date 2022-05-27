@@ -20,18 +20,21 @@ jobs:
        include:
          - name: linux
            os: ubuntu-latest
+           os_build: Linux
            compiler: gcc
            compiler_version: 9
            compiler_libcxx: libstdc++11
 
          - name: macos
            os: macos-latest
+           os_build: Macos
            compiler: apple-clang
            compiler_version: 13.0
            compiler_libcxx: libc++
 
          - name: windows
            os: windows-latest
+           os_build: Windows
            compiler: Visual Studio
            compiler_version: 16
            compiler_libcxx: cppstd
@@ -66,7 +69,7 @@ jobs:
           conan --version
           conan user
           conan profile new --detect --force default
-          conan profile update settings.os_build=${{ matrix.name }} default
+          conan profile update settings.os_build=${{ matrix.os_build }} default
           conan profile update settings.compiler=${{ matrix.compiler }} default
           conan profile update settings.compiler.version=${{ matrix.compiler_version }} default
           conan profile update settings.compiler.libcxx=${{ matrix.compiler_libcxx }} default
