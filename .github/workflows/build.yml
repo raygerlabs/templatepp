@@ -62,8 +62,7 @@ jobs:
         if: startsWith(runner.os, 'macOS')
         working-directory: ${{ github.workspace }}/build
         run: |
-          conan profile update settings.compiler.libcxx=libstdc++11 default
-          conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+          conan install .. -s compiler=apple-clang -s build_type=${{ env.BUILD_TYPE }} --build missing
 
       - name: Configure
         if: startsWith(runner.os, 'Windows')
