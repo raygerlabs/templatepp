@@ -10,7 +10,7 @@ env:
 
 jobs:
   build-release:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.vm }}
     timeout-minutes: 30
 
     strategy:
@@ -18,29 +18,34 @@ jobs:
       matrix:
        include:
          - name: linux
-           os: ubuntu-latest
+           vm: ubuntu-latest
+           os: Linux
+           arch: x86_64
            compiler: gcc
            compiler_version: 9
            compiler_libcxx: libstdc++11
 
-         - name: mac
-           os: macos-latest
+         - name: macos
+           vm: macos-latest
+           os: Macos
+           arch: x86_64
            compiler: apple-clang
            compiler_version: 13.0
            compiler_libcxx: libc++
 
          - name: windows
-           os: windows-latest
-           compiler: Visual Studio
-           compiler_version: 16
-           compiler_libcxx: cppstd
+           vm: windows-latest
+           os: Windows
+           arch: x86_64
+           compiler: "Visual Studio"
+           compiler_version: 17
 
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
 
       - name: Retrieve current branch name
-        id: this_branch
+        id: current_branch
         run: |
           echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
 
@@ -51,7 +56,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.conan
-          key: conan-package-cache-${{ steps.this_branch.outputs.name }}
+          key: conan-package-cache-${{ steps.current_branch.outputs.name }}
           restore-keys: |
             conan-package-cache-master
 
@@ -59,7 +64,23 @@ jobs:
         uses: actions/setup-python@v2
 
       - name: Install/Upgrade Conan
-        run: pip3 install --upgrade conan
+        shell: bash
+        run: |
+          pip3 install --upgrade conan
+          conan --version
+          conan user
+          conan profile new --force default
+          conan profile update settings.os="${{ matrix.os }}" default
+          conan profile update settings.os_build="${{ matrix.os }}" default
+          conan profile update settings.arch="${{ matrix.arch }}" default
+          conan profile update settings.arch_build="${{ matrix.arch }}" default
+          conan profile update settings.compiler="${{ matrix.compiler }}" default
+          conan profile update settings.compiler.version="${{ matrix.compiler_version }}" default
+          conan profile update settings.compiler.libcxx="${{ matrix.compiler_libcxx }}" default
+          conan profile show default
+      - if: matrix.compiler == 'Visual Studio'
+        run: |
+          conan profile remove settings.compiler.libcxx default
 
       - name: Create build directory
         run: cmake -E make_directory ${{ github.workspace }}/build
@@ -67,9 +88,6 @@ jobs:
       - name: Configure
         working-directory: ${{ github.workspace }}/build
         run: |
-          conan profile update settings.compiler=${{ matrix.compiler }} default
-          conan profile update settings.compiler.version=${{ matrix.compiler_version }} default
-          conan profile update settings.compiler.libcxx=${{ matrix.compiler_libcxx }} default
           conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
 
       - name: Build
@@ -82,7 +100,7 @@ jobs:
 
       - name: Retrieve artifact information
         working-directory: ${{ github.workspace }}/build
-        id: artifact_data
+        id: current_artifact
         run: |
           echo "::set-output name=name::$(cat artifact_name.txt)"
           echo "::set-output name=path::$(cat artifact_path.txt)"
@@ -99,11 +117,11 @@ jobs:
           name: artifact_path_${{ matrix.name }}
           path: ./build/artifact_path.txt
 
-      - name: Upload artifact (${{ matrix.name }})
-        uses: actions/upload-artifact@v3
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.artifact_data.outputs.name }}
-          path: ${{ steps.artifact_data.outputs.path }}
+          name: ${{ steps.current_artifact.outputs.name }}
+          path: ${{ steps.current_artifact.outputs.path }}
 
   create-release:
     runs-on: ubuntu-latest
@@ -112,7 +130,7 @@ jobs:
     steps:
       - name: Create a new release
         uses: actions/create-release@v1
-        id: release_data
+        id: current_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -123,7 +141,7 @@ jobs:
           prerelease: false
 
       - name: Save release information
-        run: echo '${{ steps.release_data.outputs.upload_url }}' > upload_url.txt
+        run: echo '${{ steps.current_release.outputs.upload_url }}' > upload_url.txt
 
       - name: Upload release information
         uses: actions/upload-artifact@v2
@@ -139,7 +157,7 @@ jobs:
         include:
           - name: linux
             os: ubuntu-latest
-          - name: mac
+          - name: macos
             os: macos-latest
           - name: windows
             os: windows-latest
@@ -161,12 +179,12 @@ jobs:
         name: upload_url
 
     - name: Load release information (${{ matrix.name }})
-      id: release_data
+      id: current_release
       run: |
-        echo "::set-output name=upload_url::$(cat upload_url.txt)"
+        echo "::set-output name=url::$(cat upload_url.txt)"
 
     - name: Load artifact information (${{ matrix.name }})
-      id: artifact_data
+      id: current_artifact
       run: |
         echo "::set-output name=name::$(cat artifact_name_${{ matrix.name }})"
         echo "::set-output name=path::$(cat artifact_path_${{ matrix.name }})"
@@ -176,7 +194,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.release_data.outputs.upload_url }}
-        asset_name: ${{ steps.artifact_data.outputs.name }}
-        asset_path: ${{ steps.artifact_data.outputs.path }}
+        upload_url: ${{ steps.current_release.outputs.url }}
+        asset_name: ${{ steps.current_artifact.outputs.name }}
+        asset_path: ${{ steps.current_artifact.outputs.path }}
         asset_content_type: application/octet-stream
