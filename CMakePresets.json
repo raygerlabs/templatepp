@@ -1,0 +1,28 @@
+{
+  "version": 4,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "gcc",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-gcc.cmake"
+      }
+    },
+    {
+      "name": "clang",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-clang.cmake"
+      }
+    },
+    {
+      "name": "msvc",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-msvc.cmake"
+      }
+    }
+  ]
+}

@@ -3,12 +3,13 @@ add_executable(${PROJECT_NAME}-tests)
 target_sources(${PROJECT_NAME}-tests 
   PRIVATE
     application_test.cpp
+    main.cpp
 )
 #---------------------------------------------------------------------#
 find_package(GTest CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME}-tests
   ${PROJECT_NAME}
-  GTest::gtest_main
+  GTest::gtest
 )
 #---------------------------------------------------------------------#
 set_target_properties(${PROJECT_NAME}-tests

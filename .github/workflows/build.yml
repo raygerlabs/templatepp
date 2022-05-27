@@ -11,34 +11,103 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.vm }}
     timeout-minutes: 30
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-latest
-            asset_name: project-init-cpp-linux-x86_64.tar.gz
-          - os: macos-latest
-            asset_name: project-init-cpp-darwin-x86_64.tar.gz
-          - os: windows-latest
-            asset_name: project-init-cpp-windows-amd64.zip
+       include:
+         - name: linux
+           vm: ubuntu-latest
+           os: Linux
+           arch: x86_64
+           compiler: gcc
+           compiler_version: 9
+           compiler_libcxx: libstdc++11
+
+         - name: macos
+           vm: macos-latest
+           os: Macos
+           arch: x86_64
+           compiler: apple-clang
+           compiler_version: 13.0
+           compiler_libcxx: libc++
+
+         - name: windows
+           vm: windows-latest
+           os: Windows
+           arch: x86_64
+           compiler: "Visual Studio"
+           compiler_version: 17
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - run: pip3 install conan
-      - if: runner.os == 'Linux'
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Retrieve current branch name
+        id: this_branch
         run: |
-          conan profile new default --detect
-          conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: conan install . -if build -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
-      - run: cmake -B build
-      - run: cmake --build build --config ${{ env.BUILD_TYPE }}
-      - run: ctest --test-dir build -VV -C ${{ env.BUILD_TYPE }}
-      - run: cmake --build build --config ${{ env.BUILD_TYPE }} --target package
-      - uses: actions/upload-artifact@v2
+          echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
+
+      # For speeding up the build, let's create a cache for conan packages.
+      # A new branch will create a copy of the master cache,
+      # but the master cache isn't updated until a merge to the master branch.
+      - name: Cache Conan
+        uses: actions/cache@v2
         with:
-          name: ${{ matrix.asset_name }}
-          path: ./build/${{ matrix.asset_name }}
+          path: ~/.conan
+          key: conan-package-cache-${{ steps.this_branch.outputs.name }}
+          restore-keys: |
+            conan-package-cache-master
+
+      - name: Setup Python environment
+        uses: actions/setup-python@v2
+
+      - name: Install/Upgrade Conan
+        shell: bash
+        run: |
+          pip3 install --upgrade conan
+          conan --version
+          conan user
+          conan profile new --force default
+          conan profile update settings.os="${{ matrix.os }}" default
+          conan profile update settings.os_build="${{ matrix.os }}" default
+          conan profile update settings.arch="${{ matrix.arch }}" default
+          conan profile update settings.arch_build="${{ matrix.arch }}" default
+          conan profile update settings.compiler="${{ matrix.compiler }}" default
+          conan profile update settings.compiler.version="${{ matrix.compiler_version }}" default
+          conan profile update settings.compiler.libcxx="${{ matrix.compiler_libcxx }}" default
+          conan profile show default
+      - if: matrix.compiler == 'Visual Studio'
+        run: |
+          conan profile remove settings.compiler.libcxx default
+
+      - name: Create build directory
+        run: cmake -E make_directory ${{ github.workspace }}/build
+
+      - name: Configure
+        working-directory: ${{ github.workspace }}/build
+        run: |
+          conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+
+      - name: Build
+        working-directory: ${{ github.workspace }}/build
+        run: conan build ..
+
+      - name: Package
+        working-directory: ${{ github.workspace }}/build
+        run: conan package ..
+
+      - name: Retrieve artifact information
+        working-directory: ${{ github.workspace }}/build
+        id: artifact_data
+        run: |
+          echo "::set-output name=name::$(cat artifact_name.txt)"
+          echo "::set-output name=path::$(cat artifact_path.txt)"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.artifact_data.outputs.name }}
+          path: ${{ steps.artifact_data.outputs.path }}
