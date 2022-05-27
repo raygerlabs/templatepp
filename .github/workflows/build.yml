@@ -21,6 +21,7 @@ jobs:
          - name: linux
            os: ubuntu-latest
            os_build: Linux
+           arch: x86_64
            compiler: gcc
            compiler_version: 9
            compiler_libcxx: libstdc++11
@@ -28,6 +29,7 @@ jobs:
          - name: macos
            os: macos-latest
            os_build: Macos
+           arch: x86_64
            compiler: apple-clang
            compiler_version: 13.0
            compiler_libcxx: libc++
@@ -35,6 +37,7 @@ jobs:
          - name: windows
            os: windows-latest
            os_build: Windows
+           arch: x86_64
            compiler: Visual Studio
            compiler_version: 17
            compiler_libcxx: cppstd
@@ -70,6 +73,7 @@ jobs:
           conan user
           conan profile new --force default
           conan profile update settings.os_build=${{ matrix.os_build }} default
+          conan profile update settings.arch=${{ matrix.arch }} default
           conan profile update settings.compiler=${{ matrix.compiler }} default
           conan profile update settings.compiler.version=${{ matrix.compiler_version }} default
           conan profile update settings.compiler.libcxx=${{ matrix.compiler_libcxx }} default
