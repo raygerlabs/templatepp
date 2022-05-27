@@ -67,7 +67,7 @@ jobs:
           conan user
           conan profile show default
           uname -r
-          lsb release -a
+          hostnamectl
 
 #      - name: Create build directory
 #        run: cmake -E make_directory ${{ github.workspace }}/build
