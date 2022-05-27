@@ -60,12 +60,15 @@ jobs:
         uses: actions/setup-python@v2
 
       - name: Install/Upgrade Conan
+        shell: bash
         run: |
           pip3 install --upgrade conan
           conan --version
           conan user
           conan profile show default
           uname -r
+          cat /etc/os-release
+          lsb release -a
 
 #      - name: Create build directory
 #        run: cmake -E make_directory ${{ github.workspace }}/build
