@@ -8,8 +8,6 @@ on:
 
 env:
   BUILD_TYPE: Release
-  CONAN_V2_MODE: true
-  CONAN_SYSREQUIRES_MODE: enabled
 
 jobs:
   build:
@@ -28,6 +26,11 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - run: pip3 install conan
+      # gtest requires c++11 conan profile explicitly
+      - if: runner.os == 'Linux'
+        run: |
+          conan profile new default --detect
+          conan profile update settings.compiler.libcxx=libstdc++11 default
       - run: cmake -E make_directory ${{ github.workspace }}/build
       - working-directory: ${{ github.workspace }}/build
         run: conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
