@@ -4,7 +4,7 @@ import shutil
 
 class ProjectInitCpp(ConanFile):
   name = "project-init-cpp"
-  version = "0.1"
+  version = "0.2"
   license = "MIT"
   author = "Rajmund Kail"
   url = "https://www.github.com/raygerlabs/project-init-cpp"

@@ -1,6 +1,6 @@
 #---------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.20)
-project(project-init-cpp VERSION 0.1)
+project(project-init-cpp)
 #---------------------------------------------------------------------#
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
