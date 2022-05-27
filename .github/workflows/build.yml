@@ -8,6 +8,7 @@ on:
 
 env:
   BUILD_TYPE: Release
+  DYLD_LIBRARY_PATH: "${{ github.workspace }}/build/lib:$DYLD_LIBRARY_PATH"
 
 jobs:
   build:
