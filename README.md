@@ -25,25 +25,26 @@ The intended usage is subsequent string replacement of project names and setting
 
 ### Build
 
-Conan is introduced as a package manager for managing third-parties but Cmake build is the primary focus.
+Conan is introduced as a package manager for managing third-parties but it is capable of managing whole SW build cycle so effectively replaced Cmake.
+
+#### Conan Workflow
 
 ```
-# 1. Install project dependencies:
-$ conan install . -if build -s build_type=Release -pr:b default --build missing
+# Create build directory:
+$ mkdir build
+$ cd build
 
-# 2.a For a single-configuration generator:
-$ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-$ cmake --build build
-$ cmake --install build --prefix /path/to/wherever
+# Install project dependencies:
+$ conan install .. -s build_type=Release -pr:b default --build missing
 
-# 2.b For a multi-configuration generator:
-$ cmake -S . -B build
-$ cmake --build build --config Release
-$ cmake --install build --config Release --prefix /path/to/wherever
+# Build project
+$ conan build .. --configure # only run cmake.configure(). Other methods will do nothing
+$ conan build .. --build     # only run cmake.build(). Other methods will do nothing
+$ conan build .. --install   # only run cmake.install(). Other methods will do nothing
+$ conan build .. --test      # only run cmake.test(). Other methods will do nothing
+# They can be combined
+$ conan build .. -c -b # run cmake.configure() + cmake.build(), but not cmake.install() nor cmake.test
 
-# 3. Execute unit tests
-$ ctest --test-dir build -VV -C Release
-
-# 4. Create package
-$ cmake --build build --config Release --target package
+# 3. Package project
+$ conan package ..
 ```
