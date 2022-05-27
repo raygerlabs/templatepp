@@ -9,47 +9,110 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build-artifact:
+  build-release:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-latest
-            asset_name: project-init-cpp-linux-x86_64.tar.gz
-          - os: macos-latest
-            asset_name: project-init-cpp-darwin-x86_64.tar.gz
-          - os: windows-latest
-            asset_name: project-init-cpp-windows-amd64.zip
+       include:
+         - name: linux
+           os: ubuntu-latest
+           compiler: gcc
+           compiler_version: 9
+           compiler_libcxx: libstdc++11
+
+         - name: mac
+           os: macos-latest
+           compiler: apple-clang
+           compiler_version: 13.0
+           compiler_libcxx: libc++
+
+         - name: windows
+           os: windows-latest
+           compiler: Visual Studio
+           compiler_version: 16
+           compiler_libcxx: cppstd
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - run: pip3 install conan
-      - if: runner.os == 'Linux'
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Retrieve current branch name
+        id: this_branch
         run: |
-          conan profile new default --detect
-          conan profile update settings.compiler.libcxx=libstdc++11 default
-      - run: conan install . -if build -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
-      - run: cmake -B build
-      - run: cmake --build build --config ${{ env.BUILD_TYPE }}
-      - run: ctest --test-dir build -VV -C ${{ env.BUILD_TYPE }}
-      - run: cmake --build build --config ${{ env.BUILD_TYPE }} --target package
-      - uses: actions/upload-artifact@v2
+          echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
+
+      # For speeding up the build, let's create a cache for conan packages.
+      # A new branch will create a copy of the master cache,
+      # but the master cache isn't updated until a merge to the master branch.
+      - name: Cache Conan
+        uses: actions/cache@v2
         with:
-          name: ${{ matrix.asset_name }}
-          path: ./build/${{ matrix.asset_name }}
+          path: ~/.conan
+          key: conan-package-cache-${{ steps.this_branch.outputs.name }}
+          restore-keys: |
+            conan-package-cache-master
+
+      - name: Setup Python environment
+        uses: actions/setup-python@v2
+
+      - name: Install/Upgrade Conan
+        run: pip3 install --upgrade conan
+
+      - name: Create build directory
+        run: cmake -E make_directory ${{ github.workspace }}/build
+
+      - name: Configure
+        working-directory: ${{ github.workspace }}/build
+        run: |
+          conan profile update settings.compiler=${{ matrix.compiler }} default
+          conan profile update settings.compiler.version=${{ matrix.compiler_version }} default
+          conan profile update settings.compiler.libcxx=${{ matrix.compiler_libcxx }} default
+          conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+
+      - name: Build
+        working-directory: ${{ github.workspace }}/build
+        run: conan build ..
+
+      - name: Package
+        working-directory: ${{ github.workspace }}/build
+        run: conan package ..
+
+      - name: Retrieve artifact information
+        working-directory: ${{ github.workspace }}/build
+        id: artifact_data
+        run: |
+          echo "::set-output name=name::$(cat artifact_name.txt)"
+          echo "::set-output name=path::$(cat artifact_path.txt)"
+
+      - name: Upload artifact information, part 1
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact_name_${{ matrix.name }}
+          path: ./build/artifact_name.txt
+
+      - name: Upload artifact information, part 2
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact_path_${{ matrix.name }}
+          path: ./build/artifact_path.txt
+
+      - name: Upload artifact (${{ matrix.name }})
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.artifact_data.outputs.name }}
+          path: ${{ steps.artifact_data.outputs.path }}
 
   create-release:
     runs-on: ubuntu-latest
     needs:
-      - build-artifact
+      - build-release
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/create-release@v1
-        id: create-release
+      - name: Create a new release
+        uses: actions/create-release@v1
+        id: release_data
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -58,10 +121,14 @@ jobs:
           body: ${{ env.BUILD_TYPE }}
           draft: false
           prerelease: false
-      - run: echo '${{ steps.create-release.outputs.upload_url }}' > upload_url.txt
-      - uses: actions/upload-artifact@v2
+
+      - name: Save release information
+        run: echo '${{ steps.release_data.outputs.upload_url }}' > upload_url.txt
+
+      - name: Upload release information
+        uses: actions/upload-artifact@v2
         with:
-          name: create-release
+          name: upload_url
           path: upload_url.txt
 
   upload-release:
@@ -70,29 +137,46 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            asset_name: project-init-cpp-linux-x86_64.tar.gz
-            asset_content_type: application/gzip
-          - os: macos-latest
-            asset_name: project-init-cpp-darwin-x86_64.tar.gz
-            asset_content_type: application/gzip
-          - os: windows-latest
-            asset_name: project-init-cpp-windows-amd64.zip
-            asset_content_type: application/zip
+          - name: linux
+            os: ubuntu-latest
+          - name: mac
+            os: macos-latest
+          - name: windows
+            os: windows-latest
+
     steps:
-    - uses: actions/download-artifact@v2
+    - name: Download artifact information, part 1
+      uses: actions/download-artifact@v2
       with:
-        name: ${{ matrix.asset_name }}
-    - uses: actions/download-artifact@v2
+        name: artifact_name_${{ matrix.name }}
+
+    - name: Download artifact information, part 2
+      uses: actions/download-artifact@v2
       with:
-        name: create-release
-    - id: release-retrieval
-      run: echo "::set-output name=upload_url::$(cat upload_url.txt)"
-    - uses: actions/upload-release-asset@v1
+        name: artifact_path_${{ matrix.name }}
+
+    - name: Download release information (${{ matrix.name }})
+      uses: actions/download-artifact@v2
+      with:
+        name: upload_url
+
+    - name: Load release information (${{ matrix.name }})
+      id: release_data
+      run: |
+        echo "::set-output name=upload_url::$(cat upload_url.txt)"
+
+    - name: Load artifact information (${{ matrix.name }})
+      id: artifact_data
+      run: |
+        echo "::set-output name=name::$(cat artifact_name_${{ matrix.name }})"
+        echo "::set-output name=path::$(cat artifact_path_${{ matrix.name }})"
+
+    - name: Upload release artifact (${{ matrix.name }})
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.release-retrieval.outputs.upload_url }}
-        asset_path: ${{ matrix.asset_name }}
-        asset_name: ${{ matrix.asset_name }}
-        asset_content_type: ${{ matrix.asset_content_type }}
+        upload_url: ${{ steps.release_data.outputs.upload_url }}
+        asset_name: ${{ steps.artifact_data.outputs.name }}
+        asset_path: ${{ steps.artifact_data.outputs.path }}
+        asset_content_type: application/octet-stream

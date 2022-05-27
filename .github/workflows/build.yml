@@ -11,16 +11,30 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
 
     strategy:
       fail-fast: false
       matrix:
        include:
-         - os: ubuntu
-         - os: macos
-         - os: windows
+         - name: linux
+           os: ubuntu-latest
+           compiler: gcc
+           compiler_version: 9
+           compiler_libcxx: libstdc++11
+
+         - name: mac
+           os: macos-latest
+           compiler: apple-clang
+           compiler_version: 13.0
+           compiler_libcxx: libc++
+
+         - name: windows
+           os: windows-latest
+           compiler: Visual Studio
+           compiler_version: 16
+           compiler_libcxx: cppstd
 
     steps:
       - name: Checkout project
@@ -52,26 +66,11 @@ jobs:
         run: cmake -E make_directory ${{ github.workspace }}/build
 
       - name: Configure
-        if: startsWith(runner.os, 'Linux')
         working-directory: ${{ github.workspace }}/build
         run: |
-          conan profile update settings.compiler=gcc default
-          conan profile update settings.compiler.libcxx=libstdc++11 default
-          conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
-
-      - name: Configure
-        if: startsWith(runner.os, 'macOS')
-        working-directory: ${{ github.workspace }}/build
-        run: |
-          conan profile update settings.compiler=apple-clang default
-          conan profile update settings.compiler.version=13.0 default
-          conan profile update settings.compiler.libcxx=libc++ default
-          conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
-
-      - name: Configure
-        if: startsWith(runner.os, 'Windows')
-        working-directory: ${{ github.workspace }}/build
-        run: |
+          conan profile update settings.compiler=${{ matrix.compiler }} default
+          conan profile update settings.compiler.version=${{ matrix.compiler_version }} default
+          conan profile update settings.compiler.libcxx=${{ matrix.compiler_libcxx }} default
           conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
 
       - name: Build
