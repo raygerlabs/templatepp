@@ -64,7 +64,7 @@ jobs:
         working-directory: ${{ github.workspace }}/build
         run: |
           conan profile update settings.compiler=apple-clang default
-          conan profile update settings.compiler.version=13.1 default
+          conan profile update settings.compiler.version=13.0 default
           conan profile update settings.compiler.libcxx=libc++ default
           conan install .. -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
 
