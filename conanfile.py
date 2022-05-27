@@ -19,10 +19,7 @@ class ProjectInitCpp(ConanFile):
 
   def configure(self):
     self.options["*"].shared = self.options.shared
-
-  def imports(self):
-    self.copy("*.dll", dst=f"bin/{self.settings.build_type}", src="@bindirs")
-    self.copy("*.dylib", dst=f"bin/{self.settings.build_type}", src="@libdirs")
+    self.options["gtest"].shared = False
 
   def configure_cmake(self):
     cmake = CMake(self)
