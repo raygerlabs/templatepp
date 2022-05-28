@@ -45,6 +45,11 @@ install(TARGETS ${PROJECT_NAME}
     lib
   INCLUDES DESTINATION
     include
-  FILE_SET HEADERS
+  FILE_SET
+    HEADERS
+  COMPONENT
+    ${PROJECT_NAME}
 )
+#---------------------------------------------------------------------#
+cpack_add_component(${PROJECT_NAME})
 #---------------------------------------------------------------------#
