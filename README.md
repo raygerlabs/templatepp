@@ -1,4 +1,5 @@
 [![build](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build.yml/badge.svg)](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build.yml)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 # project-init-cpp
 
