@@ -1,6 +1,6 @@
 #include <application.hpp>
 
-namespace rglabs
+namespace templatepp
 {
 void application::start()
 {
@@ -8,4 +8,4 @@ void application::start()
 void application::stop()
 {
 }
-} // namespace rglabs
+} // namespace templatepp

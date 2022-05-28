@@ -1,23 +1,23 @@
 #---------------------------------------------------------------------#
-add_executable(${PROJECT_NAME}-tests)
-target_sources(${PROJECT_NAME}-tests 
+add_executable(${PROJECT_NAME}_tests)
+target_sources(${PROJECT_NAME}_tests 
   PRIVATE
     application_test.cpp
     main.cpp
 )
 #---------------------------------------------------------------------#
 find_package(GTest CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME}-tests
+target_link_libraries(${PROJECT_NAME}_tests
   ${PROJECT_NAME}
   GTest::gtest
 )
 #---------------------------------------------------------------------#
-set_target_properties(${PROJECT_NAME}-tests
+set_target_properties(${PROJECT_NAME}_tests
   PROPERTIES
     FOLDER "Tests"
 )
 get_target_property(SOURCE_LIST
-  ${PROJECT_NAME}-tests
+  ${PROJECT_NAME}_tests
     SOURCES
 )
 source_group(
@@ -27,5 +27,5 @@ source_group(
     ${SOURCE_LIST}
 )
 #---------------------------------------------------------------------#
-gtest_discover_tests(${PROJECT_NAME}-tests)
+gtest_discover_tests(${PROJECT_NAME}_tests)
 #---------------------------------------------------------------------#
