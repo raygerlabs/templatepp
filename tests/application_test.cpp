@@ -3,7 +3,7 @@
 
 TEST(application_test, application_starts_and_stops_gracefully)
 {
-  rglabs::application app{};
+  templatepp::application app{};
   ASSERT_NO_THROW(app.start());
   ASSERT_NO_THROW(app.stop());
 }

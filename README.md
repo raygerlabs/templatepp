@@ -1,6 +1,7 @@
-[![build](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build.yml/badge.svg)](https://github.com/raygerlabs/project-init-cpp/actions/workflows/build.yml)
+[![build](https://github.com/raygerlabs/templatepp/actions/workflows/build.yml/badge.svg)](https://github.com/raygerlabs/templatepp/actions/workflows/build.yml)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-# project-init-cpp
+# templatepp
 
 A cross-platform project template for modern C and C++.
 

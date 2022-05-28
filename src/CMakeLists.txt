@@ -21,7 +21,7 @@ target_sources(${PROJECT_NAME}
 #---------------------------------------------------------------------#
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC
-    $<$<BOOL:${BUILD_SHARED_LIBS}>:RGLABS_DLL=1>
+    $<$<BOOL:${BUILD_SHARED_LIBS}>:TEMPLATEPP_DLL=1>
 )
 #---------------------------------------------------------------------#
 target_include_directories(${PROJECT_NAME}
