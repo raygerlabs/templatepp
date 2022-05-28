@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Retrieve current branch name
-        id: this_branch
+        id: current_branch
         run: |
           echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
 
@@ -57,7 +57,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.conan
-          key: conan-package-cache-${{ steps.this_branch.outputs.name }}
+          key: conan-package-cache-${{ steps.current_branch.outputs.name }}
           restore-keys: |
             conan-package-cache-master
 
@@ -84,7 +84,8 @@ jobs:
           conan profile remove settings.compiler.libcxx default
 
       - name: Create build directory
-        run: cmake -E make_directory ${{ github.workspace }}/build
+        run: |
+          cmake -E make_directory ${{ github.workspace }}/build
 
       - name: Configure
         working-directory: ${{ github.workspace }}/build
@@ -93,15 +94,17 @@ jobs:
 
       - name: Build
         working-directory: ${{ github.workspace }}/build
-        run: conan build ..
+        run: |
+          conan build ..
 
       - name: Package
         working-directory: ${{ github.workspace }}/build
-        run: conan package ..
+        run: |
+          conan package ..
 
       - name: Retrieve artifact information
         working-directory: ${{ github.workspace }}/build
-        id: artifact_data
+        id: current_artifact
         run: |
           echo "::set-output name=name::$(cat artifact_name.txt)"
           echo "::set-output name=path::$(cat artifact_path.txt)"
@@ -109,5 +112,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.artifact_data.outputs.name }}
-          path: ${{ steps.artifact_data.outputs.path }}
+          name: ${{ steps.current_artifact.outputs.name }}
+          path: ${{ steps.current_artifact.outputs.path }}

@@ -83,7 +83,8 @@ jobs:
           conan profile remove settings.compiler.libcxx default
 
       - name: Create build directory
-        run: cmake -E make_directory ${{ github.workspace }}/build
+        run: |
+          cmake -E make_directory ${{ github.workspace }}/build
 
       - name: Configure
         working-directory: ${{ github.workspace }}/build
@@ -92,11 +93,13 @@ jobs:
 
       - name: Build
         working-directory: ${{ github.workspace }}/build
-        run: conan build ..
+        run: |
+          conan build ..
 
       - name: Package
         working-directory: ${{ github.workspace }}/build
-        run: conan package ..
+        run: |
+          conan package ..
 
       - name: Retrieve artifact information
         working-directory: ${{ github.workspace }}/build
@@ -141,7 +144,8 @@ jobs:
           prerelease: false
 
       - name: Save release information
-        run: echo '${{ steps.current_release.outputs.upload_url }}' > upload_url.txt
+        run: |
+          echo '${{ steps.current_release.outputs.upload_url }}' > upload_url.txt
 
       - name: Upload release information
         uses: actions/upload-artifact@v2
