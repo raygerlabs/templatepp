@@ -1,6 +1,6 @@
 #---------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.20)
-project(project-init-cpp VERSION 0.2.0)
+project(project_init_cpp VERSION 0.2.0)
 #---------------------------------------------------------------------#
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -27,13 +27,13 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #---------------------------------------------------------------------#
 install(FILES "${CMAKE_SOURCE_DIR}/README.md" DESTINATION .)
-install(FILES "${CMAKE_SOURCE_DIR}/LICENSE" DESTINATION .)
+install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.txt" DESTINATION .)
 #---------------------------------------------------------------------#
 # NOTE: These variables must be set BEFORE including cpack!
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
 
 include(CPack) # cpack_add_component(), cpack_add_component_group() ...
 #---------------------------------------------------------------------#

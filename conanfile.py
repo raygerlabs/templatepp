@@ -46,8 +46,8 @@ class ProjectInitCpp(ConanFile):
     cmake.test()
 
   def make_archive(self):
-    archive_type = "ZIP" if self.settings.os == "Windows" else "TGZ"
-    #archive_type = "WIX" if self.settings.os == "Windows" else "DEB"
+    #archive_type = "ZIP" if self.settings.os == "Windows" else "TGZ"
+    archive_type = "WIX" if self.settings.os == "Windows" else "DEB"
     self.run(f"cpack -G {archive_type}", self.build_folder)
 
   def package(self):
