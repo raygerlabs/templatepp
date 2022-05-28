@@ -2,12 +2,12 @@ from conans import ConanFile, CMake, tools
 import os
 import shutil
 
-class ProjectInitCpp(ConanFile):
-  name = "project-init-cpp"
+class templatepp(ConanFile):
+  name = "templatepp"
   version = "0.2"
   license = "MIT"
   author = "Rajmund Kail"
-  url = "https://www.github.com/raygerlabs/project-init-cpp"
+  url = "https://www.github.com/raygerlabs/templatepp"
   description = "A cross-platform project template for modern C and C++"
   settings = "os", "compiler", "build_type", "arch"
   options = { "shared": [True, False] }
