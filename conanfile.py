@@ -1,3 +1,6 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#-------------------------------------------------------------------------------------------------------------------#
+
 from conans import ConanFile, CMake, tools
 import os
 import shutil
@@ -14,6 +17,8 @@ class templatepp(ConanFile):
   default_options = { "shared": True }
   generators = "CMakeDeps"
 
+#-------------------------------------------------------------------------------------------------------------------#
+
   def requirements(self):
     self.requires("gtest/1.11.0")
 
@@ -25,6 +30,8 @@ class templatepp(ConanFile):
     self.copy("*.dll", src="bin", dst=f"bin/{self.settings.build_type}")
     self.copy("*.dylib*", src="lib", dst="lib")
     self.copy("*.so*", src="lib", dst="lib")
+
+#-------------------------------------------------------------------------------------------------------------------#
 
   def configure_cmake(self):
     cmake = CMake(self)
@@ -41,20 +48,22 @@ class templatepp(ConanFile):
     cmake.verbose = True
     return cmake
 
+#-------------------------------------------------------------------------------------------------------------------#
+
   def build(self):
     cmake = self.configure_cmake()
     cmake.build()
     cmake.test()
 
-  def make_archive(self):
-    #archive_type = "ZIP" if self.settings.os == "Windows" else "TGZ"
-    archive_type = "WIX" if self.settings.os == "Windows" else "DEB"
-    self.run(f"cpack -G {archive_type}", self.build_folder)
+#-------------------------------------------------------------------------------------------------------------------#
 
   def package(self):
     cmake = self.configure_cmake()
     cmake.install()
-    self.make_archive()
+    self.run("cpack", self.build_folder)
 
   def package_info(self):
     self.cpp_info.libs = tools.collect_libs(self)
+
+#-------------------------------------------------------------------------------------------------------------------#
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

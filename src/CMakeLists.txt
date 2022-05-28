@@ -1,55 +1,43 @@
-#---------------------------------------------------------------------#
-add_library(${PROJECT_NAME})
-
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#-------------------------------------------------------------------------------------------------------------------#
 list(APPEND SOURCE_LIST
-  application.cpp
+  "application.cpp"
 )
 list(APPEND HEADER_LIST
-  ../include/${PROJECT_NAME}/details/configure.hpp
-  ../include/${PROJECT_NAME}/application.hpp
+  "../include/${PROJECT_NAME}/details/configure.hpp"
+  "../include/${PROJECT_NAME}/application.hpp"
 )
-target_sources(${PROJECT_NAME}
+add_library(templatepp)
+target_sources(templatepp
   PRIVATE
-    ${SOURCE_LIST}
+    "${SOURCE_LIST}"
   PUBLIC
     FILE_SET HEADERS
       BASE_DIRS
-        ${CMAKE_SOURCE_DIR}
+        "${CMAKE_SOURCE_DIR}"
       FILES
-        ${HEADER_LIST}
+        "${HEADER_LIST}"
 )
-#---------------------------------------------------------------------#
-target_compile_definitions(${PROJECT_NAME}
+#-------------------------------------------------------------------------------------------------------------------#
+target_compile_definitions(templatepp
   PUBLIC
-    $<$<BOOL:${BUILD_SHARED_LIBS}>:TEMPLATEPP_DLL=1>
+    "$<$<BOOL:${BUILD_SHARED_LIBS}>:TEMPLATEPP_DLL=1>"
 )
-#---------------------------------------------------------------------#
-target_include_directories(${PROJECT_NAME}
+target_include_directories(templatepp
   PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}>
-    $<INSTALL_INTERFACE:include>
+    "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}>"
+    "$<INSTALL_INTERFACE:include>"
   PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>"
 )
-#---------------------------------------------------------------------#
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Runtime")
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCE_LIST})
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${HEADER_LIST})
-#---------------------------------------------------------------------#
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION
-    bin
-  LIBRARY DESTINATION
-    lib
-  ARCHIVE DESTINATION
-    lib
-  INCLUDES DESTINATION
-    include
-  FILE_SET
-    HEADERS
-  COMPONENT
-    ${PROJECT_NAME}
+set_target_properties(templatepp PROPERTIES FOLDER "Runtime")
+source_group(TREE "${CMAKE_SOURCE_DIR}" FILES "${SOURCE_LIST}" "${HEADER_LIST}")
+install(TARGETS templatepp
+  RUNTIME DESTINATION "bin"
+  LIBRARY DESTINATION "lib"
+  ARCHIVE DESTINATION "lib"
+  INCLUDES DESTINATION "include"
+  FILE_SET HEADERS
 )
-#---------------------------------------------------------------------#
-cpack_add_component(${PROJECT_NAME})
-#---------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------------#
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

@@ -44,15 +44,12 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-      - name: Retrieve current branch name
+      - name: Retrieve branch name
         id: current_branch
         run: |
           echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
 
-      # For speeding up the build, let's create a cache for conan packages.
-      # A new branch will create a copy of the master cache,
-      # but the master cache isn't updated until a merge to the master branch.
-      - name: Cache Conan
+      - name: Cache Conan packages  # For speeding up the build, copy the master branch
         uses: actions/cache@v2
         with:
           path: ~/.conan
@@ -78,7 +75,9 @@ jobs:
           conan profile update settings.compiler.version="${{ matrix.compiler_version }}" default
           conan profile update settings.compiler.libcxx="${{ matrix.compiler_libcxx }}" default
           conan profile show default
-      - if: matrix.compiler == 'Visual Studio'
+      
+      - name: Remove invalid Conan profile setting (Visual Studio)
+        if: matrix.compiler == 'Visual Studio'
         run: |
           conan profile remove settings.compiler.libcxx default
 
@@ -106,25 +105,18 @@ jobs:
         id: current_artifact
         run: |
           echo "::set-output name=name::$(cat artifact_name.txt)"
-          echo "::set-output name=path::$(cat artifact_path.txt)"
-
-      - name: Upload artifact information, part 1
-        uses: actions/upload-artifact@v3
-        with:
-          name: artifact_name_${{ matrix.name }}
-          path: ./build/artifact_name.txt
-
-      - name: Upload artifact information, part 2
-        uses: actions/upload-artifact@v3
-        with:
-          name: artifact_path_${{ matrix.name }}
-          path: ./build/artifact_path.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.current_artifact.outputs.name }}
-          path: ${{ steps.current_artifact.outputs.path }}
+          path: ./build/${{ steps.current_artifact.outputs.name }}
+
+      - name: Upload artifact information
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact_name_${{ matrix.name }}
+          path: ./build/artifact_name.txt
 
   create-release:
     runs-on: ubuntu-latest
@@ -143,7 +135,7 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Save release information
+      - name: Retrieve release information
         run: |
           echo '${{ steps.current_release.outputs.upload_url }}' > upload_url.txt
 
@@ -167,38 +159,32 @@ jobs:
             os: windows-latest
 
     steps:
-    - name: Download artifact information, part 1
+    - name: Download artifact information
       uses: actions/download-artifact@v2
       with:
         name: artifact_name_${{ matrix.name }}
 
-    - name: Download artifact information, part 2
-      uses: actions/download-artifact@v2
-      with:
-        name: artifact_path_${{ matrix.name }}
-
-    - name: Download release information (${{ matrix.name }})
+    - name: Download release information
       uses: actions/download-artifact@v2
       with:
         name: upload_url
 
-    - name: Load release information (${{ matrix.name }})
+    - name: Retrieve release information (${{ matrix.name }})
       id: current_release
       run: |
         echo "::set-output name=url::$(cat upload_url.txt)"
 
-    - name: Load artifact information (${{ matrix.name }})
+    - name: Retrieve artifact information (${{ matrix.name }})
       id: current_artifact
       run: |
         echo "::set-output name=name::$(cat artifact_name_${{ matrix.name }})"
-        echo "::set-output name=path::$(cat artifact_path_${{ matrix.name }})"
 
-    - name: Upload release artifact (${{ matrix.name }})
+    - name: Upload release artifact
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.current_release.outputs.url }}
         asset_name: ${{ steps.current_artifact.outputs.name }}
-        asset_path: ${{ steps.current_artifact.outputs.path }}
+        asset_path: ./${{ steps.current_artifact.outputs.name }}
         asset_content_type: application/octet-stream
