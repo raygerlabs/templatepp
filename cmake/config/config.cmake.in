@@ -1,0 +1,15 @@
+# - Cmake configuration file for @TARGET_NAME@
+#
+# Defines:
+# - @PACKAGE_PREFIX@_INCLUDE_DIRS
+# - @PACKAGE_PREFIX@_LIBRARIES
+
+# Compute paths
+get_filename_component(@PACKAGE_PREFIX@_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(@PACKAGE_PREFIX@_INCLUDE_DIRS "@CONFIG_INCLUDE_DIRS@")
+
+# Target imports
+if(NOT TARGET @TARGET_NAME@)
+  include("${@PACKAGE_PREFIX@_CMAKE_DIR}/@EXPORT_NAME@.cmake")
+endif()
+set(@PACKAGE_PREFIX@_LIBRARIES ${TARGET_NAME})

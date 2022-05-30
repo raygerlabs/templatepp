@@ -100,23 +100,23 @@ jobs:
         run: |
           conan package ..
 
-      - name: Retrieve artifact information
+      - name: Retrieve package information
         working-directory: ${{ github.workspace }}/build
-        id: current_artifact
+        id: current_package
         run: |
-          echo "::set-output name=name::$(cat artifact_name.txt)"
+          echo "::set-output name=name::$(cat package_info.txt)"
 
-      - name: Upload artifact
+      - name: Upload package
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.current_artifact.outputs.name }}
-          path: ./build/${{ steps.current_artifact.outputs.name }}
+          name: ${{ steps.current_package.outputs.name }}
+          path: ./build/${{ steps.current_package.outputs.name }}
 
-      - name: Upload artifact information
+      - name: Upload package information
         uses: actions/upload-artifact@v3
         with:
-          name: artifact_name_${{ matrix.name }}
-          path: ./build/artifact_name.txt
+          name: package_info_${{ matrix.name }}
+          path: ./build/package_info.txt
 
   create-release:
     runs-on: ubuntu-latest
@@ -159,10 +159,10 @@ jobs:
             os: windows-latest
 
     steps:
-    - name: Download artifact information
+    - name: Download package information
       uses: actions/download-artifact@v2
       with:
-        name: artifact_name_${{ matrix.name }}
+        name: package_info_${{ matrix.name }}
 
     - name: Download release information
       uses: actions/download-artifact@v2
@@ -174,17 +174,17 @@ jobs:
       run: |
         echo "::set-output name=url::$(cat upload_url.txt)"
 
-    - name: Retrieve artifact information (${{ matrix.name }})
-      id: current_artifact
+    - name: Retrieve package information (${{ matrix.name }})
+      id: current_package
       run: |
-        echo "::set-output name=name::$(cat artifact_name_${{ matrix.name }})"
+        echo "::set-output name=name::$(cat package_name_${{ matrix.name }})"
 
-    - name: Upload release artifact
+    - name: Upload package for release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.current_release.outputs.url }}
-        asset_name: ${{ steps.current_artifact.outputs.name }}
-        asset_path: ./${{ steps.current_artifact.outputs.name }}
+        asset_name: ${{ steps.current_package.outputs.name }}
+        asset_path: ./${{ steps.current_package.outputs.name }}
         asset_content_type: application/octet-stream

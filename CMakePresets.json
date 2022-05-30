@@ -9,19 +9,19 @@
     {
       "name": "gcc",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-gcc.cmake"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain/toolchain-gcc.cmake"
       }
     },
     {
       "name": "clang",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-clang.cmake"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain/toolchain-clang.cmake"
       }
     },
     {
       "name": "msvc",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-msvc.cmake"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain/toolchain-msvc.cmake"
       }
     }
   ]
