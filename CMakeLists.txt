@@ -44,11 +44,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Enable position independent code
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Export DLL
-if (MSVC)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-endif()
-
 # Specify default visibility of ELF symbols
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)

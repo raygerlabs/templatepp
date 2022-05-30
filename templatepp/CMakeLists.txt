@@ -16,6 +16,10 @@ target_sources(${TARGET_NAME}
         application.hpp
         details/config.hpp
 )
+target_compile_definitions(templatepp
+  PUBLIC
+    "$<$<BOOL:${BUILD_SHARED_LIBS}>:_IS_DLL=1>"
+)
 target_include_directories(${TARGET_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
