@@ -24,7 +24,11 @@ set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README.md")
 set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE")
 
-# Default package settings
+# Add Cpack support
+include(CPack)
+
+# NOTE: Some of these values set by CPack, therefore must be AFTER the include!
+# Default package overrides
 set (CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}")
 if (CPACK_PACKAGE_ARCHITECTURE)
   set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CPACK_PACKAGE_ARCHITECTURE}")
@@ -36,8 +40,5 @@ set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}" CACHE STRING "CPack pac
 set(CPACK_FULL_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}${CPACK_PACKAGE_FILE_EXTENSION}")
 string(TOLOWER "${CPACK_FULL_PACKAGE_FILE_NAME}" CPACK_FULL_PACKAGE_FILE_NAME)
 file(WRITE "${PROJECT_BINARY_DIR}/package_info.txt" "${CPACK_FULL_PACKAGE_FILE_NAME}")
-
-# Add Cpack support
-include(CPack)
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
