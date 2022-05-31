@@ -21,6 +21,8 @@ if (NOT CPACK_GENERATOR)
     set(ARCHIVE_EXTENSION ".zip")
   endif()
 endif()
+set(CPACK_GENERATOR "${CPACK_GENERATOR}" CACHE STRING "CPack package generator type")
+set(CPACK_SOURCE_GENERATOR "${CPACK_GENERATOR}" CACHE STRING "CPack source generator type")
 
 # Package information
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
@@ -51,6 +53,7 @@ set (CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${C
 if (CPACK_PACKAGE_ARCHITECTURE)
   set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CPACK_PACKAGE_ARCHITECTURE}")
 endif()
+message(STATUS "CPACK_PACKAGE_FILE_NAME: " ${CPACK_PACKAGE_FILE_NAME})
 file(WRITE "${PROJECT_BINARY_DIR}/package_info.txt" "${CPACK_PACKAGE_FILE_NAME}")
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
