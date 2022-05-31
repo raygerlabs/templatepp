@@ -106,8 +106,8 @@ jobs:
       - name: Store package information
         shell: bash
         run: |
-          echo "##[set-output name=name;]$(basename $(find ${{ github.workspace }}/ -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz"))" > package_name.txt
-          echo "##[set-output name=path;]$(find ${{ github.workspace }}/ -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")" > package_path.txt
+          echo "$(basename "$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")")" > package_name.txt
+          echo "$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")" > package_path.txt
 
       - name: Retrieve package information
         id: current_package
@@ -118,14 +118,14 @@ jobs:
       - name: Upload package information, pt.1
         uses: actions/upload-artifact@v3
         with:
-          name: package_info_${{ matrix.name }}
-          path: ./build/package_name.txt
+          name: package_name_${{ matrix.name }}
+          path: package_name.txt
 
       - name: Upload package information, pt.2
         uses: actions/upload-artifact@v3
         with:
-          name: package_info_${{ matrix.name }}
-          path: ./build/package_path.txt
+          name: package_path_${{ matrix.name }}
+          path: package_path.txt
 
       - name: Upload package
         uses: actions/upload-artifact@v3
