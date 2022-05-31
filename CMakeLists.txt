@@ -1,6 +1,6 @@
 #---------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.20)
-project(templatepp VERSION 0.2.0)
+project(templatepp VERSION 0.3.0)
 #---------------------------------------------------------------------#
 # User options
 if (NOT CMAKE_BUILD_TYPE)

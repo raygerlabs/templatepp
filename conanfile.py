@@ -4,7 +4,7 @@ import shutil
 
 class templatepp(ConanFile):
   name = "templatepp"
-  version = "0.2.0"
+  version = "0.3.0"
   license = "MIT"
   author = "Rajmund Kail"
   url = "https://www.github.com/raygerlabs/templatepp"
