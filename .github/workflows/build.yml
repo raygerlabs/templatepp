@@ -112,6 +112,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.current_package.outputs.name }}
-          path: |
-            ./build/${{ steps.current_package.outputs.name }}.zip
-            ./build/${{ steps.current_package.outputs.name }}.tar.gz
+          path: ./build/${{ steps.current_package.outputs.name }}

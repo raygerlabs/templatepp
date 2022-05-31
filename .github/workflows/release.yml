@@ -118,9 +118,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.current_package.outputs.name }}
-          path: |
-            ./build/${{ steps.current_package.outputs.name }}.zip
-            ./build/${{ steps.current_package.outputs.name }}.tar.gz
+          path: ./build/${{ steps.current_package.outputs.name }}
 
 
   create-release:
@@ -191,5 +189,5 @@ jobs:
       with:
         upload_url: ${{ steps.current_release.outputs.url }}
         asset_name: ${{ steps.current_package.outputs.name }}
-        asset_path: ${{ steps.current_package.outputs.path }}
+        asset_path: ${{ steps.current_package.outputs.name }}
         asset_content_type: application/octet-stream
