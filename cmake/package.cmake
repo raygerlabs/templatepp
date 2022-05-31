@@ -51,6 +51,6 @@ set (CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${C
 if (CPACK_PACKAGE_ARCHITECTURE)
   set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CPACK_PACKAGE_ARCHITECTURE}")
 endif()
-file(WRITE "${PROJECT_BINARY_DIR}/package_info.txt" "${CPACK_PACKAGE_FILE_NAME}${ARCHIVE_EXTENSION}")
+file(WRITE "${PROJECT_BINARY_DIR}/package_info.txt" "${CPACK_PACKAGE_FILE_NAME}")
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
