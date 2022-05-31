@@ -29,6 +29,12 @@ if (CPACK_PACKAGE_ARCHITECTURE)
   set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CPACK_PACKAGE_ARCHITECTURE}")
 endif()
 string(TOLOWER "${CPACK_PACKAGE_FILE_NAME}" CPACK_PACKAGE_FILE_NAME)
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}" CACHE STRING "CPack package file name")
+
+# Generate package information
 set(CPACK_FULL_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}${CPACK_PACKAGE_FILE_EXTENSION}")
+string(TOLOWER "${CPACK_FULL_PACKAGE_FILE_NAME}" CPACK_FULL_PACKAGE_FILE_NAME)
+set(CPACK_FULL_PACKAGE_FILE_NAME "${CPACK_FULL_PACKAGE_FILE_NAME}" CACHE STRING "CPack package file name (+ext)")
 file(WRITE "${PROJECT_BINARY_DIR}/package_info.txt" "${CPACK_FULL_PACKAGE_FILE_NAME}")
+
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
