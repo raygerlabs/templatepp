@@ -46,28 +46,9 @@ class templatepp(ConanFile):
     cmake.build()
     cmake.test()
 
-  def archive_package(self):
-    # This function is created for the purpose of automating github release creation;
-    # Currently tar.gz and zip format is supported only.
-    # - For Windows platform, zip is the preferred archive format;
-    # - For other platform tar.gz
-    # NOTE: CPack documentation lacks many details and doesn't provide
-    # the tools for generating runtime information regarding the package or archive;
-    # This is unfortunate, until we find something better, we generate the archive like this
-    archive_name = f"{self.name}-v{self.version}-{self.settings.os}-{self.settings.arch}"
-    archive_name = archive_name.lower()
-    archive_generator = "gztar"
-    if self.settings.os == "Windows":
-      archive_generator = "zip"
-    archive_path = shutil.make_archive(archive_name, archive_generator, self.package_folder)
-    with open("package_info.txt", "w") as archive_info:
-      print(f"{os.path.basename(archive_path)}", file=archive_info)
-    self.output.success(f"Package archive '{os.path.basename(archive_path)}' created")
-
   def package(self):
     cmake = self.configure_cmake()
     cmake.install()
-    #self.archive_package()
     self.run("cpack", self.build_folder)
 
   def package_info(self):
