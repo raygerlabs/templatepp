@@ -115,24 +115,17 @@ jobs:
           echo "::set-output name=name::$(cat package_name.txt)"
           echo "::set-output name=path::$(cat package_path.txt)"
 
-      - name: Upload package information, pt.1
-        uses: actions/upload-artifact@v3
-        with:
-          name: package_name_${{ matrix.name }}
-          path: package_name.txt
-
-      - name: Upload package information, pt.2
-        uses: actions/upload-artifact@v3
-        with:
-          name: package_path_${{ matrix.name }}
-          path: package_path.txt
-
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.current_package.outputs.name }}
           path: ${{ steps.current_package.outputs.path }}
 
+      - name: Upload package information
+        uses: actions/upload-artifact@v3
+        with:
+          name: package_name_${{ matrix.name }}
+          path: package_name.txt
 
   create-release:
     runs-on: ubuntu-latest
@@ -175,16 +168,6 @@ jobs:
             os: windows-latest
 
     steps:
-    - name: Download package information, pt.1
-      uses: actions/download-artifact@v2
-      with:
-        name: package_name_${{ matrix.name }}
-
-    - name: Download package information, pt.2
-      uses: actions/download-artifact@v2
-      with:
-        name: package_path_${{ matrix.name }}
-
     - name: Download release information
       uses: actions/download-artifact@v2
       with:
@@ -195,18 +178,27 @@ jobs:
       run: |
         echo "::set-output name=url::$(cat upload_url.txt)"
 
+    - name: Download package information
+      uses: actions/download-artifact@v2
+      with:
+        name: package_name_${{ matrix.name }}
+
     - name: Load package information
       id: current_package
       run: |
         echo "::set-output name=name::$(cat package_name_${{ matrix.name }})"
-        echo "::set-output name=path::$(cat package_path_${{ matrix.name }})"
 
-    - name: Upload package for release
+    - name: Download release package
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{ steps.current_package.outputs.name }}
+
+    - name: Upload release package
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.current_release.outputs.url }}
         asset_name: ${{ steps.current_package.outputs.name }}
-        asset_path: ${{ steps.current_package.outputs.path }}
+        asset_path: ${{ steps.current_package.outputs.name }}
         asset_content_type: application/octet-stream
