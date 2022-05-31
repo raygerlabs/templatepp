@@ -173,20 +173,20 @@ jobs:
       with:
         name: upload_url
 
-    - name: Load release information
-      id: current_release
-      run: |
-        echo "::set-output name=url::$(cat upload_url.txt)"
-
     - name: Download package information
       uses: actions/download-artifact@v2
       with:
         name: package_name_${{ matrix.name }}
 
+    - name: Load release information
+      id: current_release
+      run: |
+        echo "::set-output name=url::$(cat ${{ github.workspace }}/upload_url.txt)"
+
     - name: Load package information
       id: current_package
       run: |
-        echo "::set-output name=name::$(cat package_name_${{ matrix.name }})"
+        echo "::set-output name=name::$(cat ${{ github.workspace }}/package_name.txt)"
 
     - name: Download release package
       uses: actions/download-artifact@v2
