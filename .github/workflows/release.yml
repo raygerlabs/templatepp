@@ -104,6 +104,7 @@ jobs:
           conan package ..
 
       - name: Store package information
+        shell: bash
         run: |
           echo "$(basename $(find -iname '${{ env.APP_NAME }}*.zip' -or -iname '${{ env.APP_NAME }}*.tar.gz'|head -1))" > package_name.txt
           echo "$(find -iname '${{ env.APP_NAME }}*.zip' -or -iname '${{ env.APP_NAME }}*.tar.gz'|head -1)" > package_path.txt
