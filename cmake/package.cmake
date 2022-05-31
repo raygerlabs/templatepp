@@ -11,19 +11,20 @@ endif()
 set(CONFIG_INSTALL_DIR ${CONFIG_INSTALL_DIR} CACHE PATH "Installation path for CMake config files")
 
 # Package generators
-if(NOT CPACK_GENERATOR)
-  # Generate tar.gz
-  set(CPACK_GENERATOR "TGZ")
-  if (WIN32)
-    # On Windows generate zip
-    set(CPACK_GENERATOR "ZIP")
-  endif()
+# Generate tar.gz
+set(CPACK_GENERATOR "TGZ")
+set(ARCHIVE_EXTENSION ".tar.gz")
+if (WIN32)
+  # On Windows generate zip
+  set(CPACK_GENERATOR "ZIP")
+  set(ARCHIVE_EXTENSION ".zip")
 endif()
 
 # Package information
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
-
+set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
+set(CPACK_DEB_COMPONENT_INSTALL ON)
 # Package documentation
 set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_SOURCE_DIR}/README.md")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
@@ -48,6 +49,7 @@ set (CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${C
 if (CPACK_PACKAGE_ARCHITECTURE)
   set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CPACK_PACKAGE_ARCHITECTURE}")
 endif()
-file(WRITE "${PROJECT_BINARY_DIR}/package_info.txt" "${CPACK_PACKAGE_FILE_NAME}")
+set(CPACK_ARCHIVE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}${ARCHIVE_EXTENSION}")
+file(WRITE "${PROJECT_BINARY_DIR}/package_info.txt" "${CPACK_ARCHIVE_FILE_NAME}")
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

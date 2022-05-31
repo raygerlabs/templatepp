@@ -78,7 +78,8 @@ jobs:
           conan profile update settings.compiler.version="${{ matrix.compiler_version }}" default
           conan profile update settings.compiler.libcxx="${{ matrix.compiler_libcxx }}" default
           conan profile show default
-      - if: matrix.compiler == 'Visual Studio'
+      - name: Remove invalid setting from conan profile (Visual Studio)
+        if: matrix.compiler == 'Visual Studio'
         run: |
           conan profile remove settings.compiler.libcxx default
 
@@ -117,7 +118,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.current_package.outputs.name }}
-          path: ./build/${{ steps.current_package.outputs.name }}
+          path: |
+            ./build/${{ steps.current_package.outputs.name }}.zip
+            ./build/${{ steps.current_package.outputs.name }}.tar.gz
 
 
   create-release:
