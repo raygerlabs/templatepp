@@ -29,7 +29,6 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_SUPPRESS_REGENERATION ON)
-set(CMAKE_SUPPRESS_REGENERATION ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 #---------------------------------------------------------------------#
 # Source
