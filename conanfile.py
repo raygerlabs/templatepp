@@ -67,7 +67,8 @@ class templatepp(ConanFile):
   def package(self):
     cmake = self.configure_cmake()
     cmake.install()
-    self.archive_package()
+    #self.archive_package()
+    self.run("cpack", self.build_folder)
 
   def package_info(self):
     self.cpp_info.libs = tools.collect_libs(self)
