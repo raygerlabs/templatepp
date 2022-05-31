@@ -106,8 +106,8 @@ jobs:
       - name: Store package information
         shell: bash
         run: |
-          echo "$(basename $(find -iname '${{ env.APP_NAME }}*.zip' -or -iname '${{ env.APP_NAME }}*.tar.gz'|head -1))" > package_name.txt
-          echo "$(find -iname '${{ env.APP_NAME }}*.zip' -or -iname '${{ env.APP_NAME }}*.tar.gz'|head -1)" > package_path.txt
+          echo "$(basename $(find ${{ github.workspace }} -maxdepth 1 -name '${{ env.APP_NAME }}*.zip' -or -name '${{ env.APP_NAME }}*.tar.gz'))" > package_name.txt
+          echo "$(find ${{ github.workspace }} -maxdepth 1 -name '${{ env.APP_NAME }}*.zip' -or -name '${{ env.APP_NAME }}*.tar.gz')" > package_path.txt
 
       - name: Retrieve package information
         id: current_package
