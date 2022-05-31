@@ -78,7 +78,8 @@ jobs:
           conan profile update settings.compiler.version="${{ matrix.compiler_version }}" default
           conan profile update settings.compiler.libcxx="${{ matrix.compiler_libcxx }}" default
           conan profile show default
-      - if: matrix.compiler == 'Visual Studio'
+      - name: Remove invalid setting from conan profile (Visual Studio)
+        if: matrix.compiler == 'Visual Studio'
         run: |
           conan profile remove settings.compiler.libcxx default
 
@@ -101,30 +102,24 @@ jobs:
         run: |
           conan package ..
 
-      - name: Retrieve artifact information
+      - name: Retrieve package information
         working-directory: ${{ github.workspace }}/build
-        id: current_artifact
+        id: current_package
         run: |
-          echo "::set-output name=name::$(cat artifact_name.txt)"
-          echo "::set-output name=path::$(cat artifact_path.txt)"
+          echo "::set-output name=name::$(cat package_info.txt)"
 
-      - name: Upload artifact information, part 1
+      - name: Upload package information
         uses: actions/upload-artifact@v3
         with:
-          name: artifact_name_${{ matrix.name }}
-          path: ./build/artifact_name.txt
+          name: package_info_${{ matrix.name }}
+          path: ./build/package_info.txt
 
-      - name: Upload artifact information, part 2
+      - name: Upload package
         uses: actions/upload-artifact@v3
         with:
-          name: artifact_path_${{ matrix.name }}
-          path: ./build/artifact_path.txt
+          name: ${{ steps.current_package.outputs.name }}
+          path: ${{ github.workspace }}/build/${{ steps.current_package.outputs.name }}
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ steps.current_artifact.outputs.name }}
-          path: ${{ steps.current_artifact.outputs.path }}
 
   create-release:
     runs-on: ubuntu-latest
@@ -167,38 +162,32 @@ jobs:
             os: windows-latest
 
     steps:
-    - name: Download artifact information, part 1
+    - name: Download package information
       uses: actions/download-artifact@v2
       with:
-        name: artifact_name_${{ matrix.name }}
+        name: package_info_${{ matrix.name }}
 
-    - name: Download artifact information, part 2
-      uses: actions/download-artifact@v2
-      with:
-        name: artifact_path_${{ matrix.name }}
-
-    - name: Download release information (${{ matrix.name }})
+    - name: Download release information
       uses: actions/download-artifact@v2
       with:
         name: upload_url
 
-    - name: Load release information (${{ matrix.name }})
+    - name: Load release information
       id: current_release
       run: |
         echo "::set-output name=url::$(cat upload_url.txt)"
 
-    - name: Load artifact information (${{ matrix.name }})
-      id: current_artifact
+    - name: Load package information
+      id: current_package
       run: |
-        echo "::set-output name=name::$(cat artifact_name_${{ matrix.name }})"
-        echo "::set-output name=path::$(cat artifact_path_${{ matrix.name }})"
+        echo "::set-output name=name::$(cat package_info_${{ matrix.name }})"
 
-    - name: Upload release artifact (${{ matrix.name }})
+    - name: Upload package for release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.current_release.outputs.url }}
-        asset_name: ${{ steps.current_artifact.outputs.name }}
-        asset_path: ${{ steps.current_artifact.outputs.path }}
+        asset_name: ${{ steps.current_package.outputs.name }}
+        asset_path: ${{ steps.current_package.outputs.name }}
         asset_content_type: application/octet-stream

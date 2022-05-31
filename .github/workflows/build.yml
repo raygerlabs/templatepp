@@ -102,15 +102,14 @@ jobs:
         run: |
           conan package ..
 
-      - name: Retrieve artifact information
+      - name: Retrieve package information
         working-directory: ${{ github.workspace }}/build
-        id: current_artifact
+        id: current_package
         run: |
-          echo "::set-output name=name::$(cat artifact_name.txt)"
-          echo "::set-output name=path::$(cat artifact_path.txt)"
+          echo "::set-output name=name::$(cat package_info.txt)"
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload package
+        uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.current_artifact.outputs.name }}
-          path: ${{ steps.current_artifact.outputs.path }}
+          name: ${{ steps.current_package.outputs.name }}
+          path: ${{ github.workspace }}/build/${{ steps.current_package.outputs.name }}
