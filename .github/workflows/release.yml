@@ -118,7 +118,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.current_package.outputs.name }}
-          path: ./build/${{ steps.current_package.outputs.name }}
+          path: ${{ github.workspace }}/build/${{ steps.current_package.outputs.name }}
 
 
   create-release:
