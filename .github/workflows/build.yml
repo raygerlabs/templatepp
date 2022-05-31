@@ -7,6 +7,7 @@ on:
     branches: [ master ]
 
 env:
+  APP_NAME: templatepp
   BUILD_TYPE: Release
 
 jobs:
@@ -102,14 +103,19 @@ jobs:
         run: |
           conan package ..
 
+      - name: Save package information
+        run: |
+          echo "$(basename $(find -iname '${{ env.APP_NAME }}*.zip' -or -iname '${{ env.APP_NAME }}*.tar.gz'|head -1))" > package_name.txt
+          echo "$(find -iname '${{ env.APP_NAME }}*.zip' -or -iname '${{ env.APP_NAME }}*.tar.gz'|head -1)" > package_path.txt
+
       - name: Retrieve package information
-        working-directory: ${{ github.workspace }}/build
         id: current_package
         run: |
-          echo "::set-output name=name::$(cat package_info.txt)"
+          echo "::set-output name=name::$(cat package_name.txt)"
+          echo "::set-output name=path::$(cat package_path.txt)"
 
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.current_package.outputs.name }}
-          path: ${{ github.workspace }}/build/${{ steps.current_package.outputs.name }}
+          path: ${{ steps.current_package.outputs.path }}
