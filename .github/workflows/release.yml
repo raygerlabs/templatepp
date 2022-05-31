@@ -6,6 +6,7 @@ on:
       - 'v*'
 
 env:
+  APP_NAME: templatepp
   BUILD_TYPE: Release
 
 jobs:
@@ -102,23 +103,35 @@ jobs:
         run: |
           conan package ..
 
+      - name: Store package information
+        shell: bash
+        run: |
+          echo "$(basename "$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")")" > package_name.txt
+          echo "$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")" > package_path.txt
+
       - name: Retrieve package information
-        working-directory: ${{ github.workspace }}/build
         id: current_package
         run: |
-          echo "::set-output name=name::$(cat package_info.txt)"
+          echo "::set-output name=name::$(cat package_name.txt)"
+          echo "::set-output name=path::$(cat package_path.txt)"
 
-      - name: Upload package information
+      - name: Upload package information, pt.1
         uses: actions/upload-artifact@v3
         with:
-          name: package_info_${{ matrix.name }}
-          path: ./build/package_info.txt
+          name: package_name_${{ matrix.name }}
+          path: package_name.txt
+
+      - name: Upload package information, pt.2
+        uses: actions/upload-artifact@v3
+        with:
+          name: package_path_${{ matrix.name }}
+          path: package_path.txt
 
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.current_package.outputs.name }}
-          path: ${{ github.workspace }}/build/${{ steps.current_package.outputs.name }}
+          path: ${{ steps.current_package.outputs.path }}
 
 
   create-release:
@@ -162,10 +175,15 @@ jobs:
             os: windows-latest
 
     steps:
-    - name: Download package information
+    - name: Download package information, pt.1
       uses: actions/download-artifact@v2
       with:
-        name: package_info_${{ matrix.name }}
+        name: package_name_${{ matrix.name }}
+
+    - name: Download package information, pt.2
+      uses: actions/download-artifact@v2
+      with:
+        name: package_path_${{ matrix.name }}
 
     - name: Download release information
       uses: actions/download-artifact@v2
@@ -180,7 +198,8 @@ jobs:
     - name: Load package information
       id: current_package
       run: |
-        echo "::set-output name=name::$(cat package_info_${{ matrix.name }})"
+        echo "::set-output name=name::$(cat package_name_${{ matrix.name }})"
+        echo "::set-output name=path::$(cat package_path_${{ matrix.name }})"
 
     - name: Upload package for release
       uses: actions/upload-release-asset@v1
@@ -189,5 +208,5 @@ jobs:
       with:
         upload_url: ${{ steps.current_release.outputs.url }}
         asset_name: ${{ steps.current_package.outputs.name }}
-        asset_path: ${{ steps.current_package.outputs.name }}
+        asset_path: ${{ steps.current_package.outputs.path }}
         asset_content_type: application/octet-stream
