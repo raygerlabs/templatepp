@@ -1,42 +1,59 @@
-#---------------------------------------------------------------------#
-add_library(${PROJECT_NAME})
-
-list(APPEND SOURCE_LIST
-  application.cpp
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#----------------------------------------------------------------------
+add_library(${PACKAGE_NAME})
+#----------------------------------------------------------------------
+configure_file("config.hpp.in"
+  "${PROJECT_BINARY_DIR}/include/${PACKAGE_NAME}/config.hpp"
 )
-list(APPEND HEADER_LIST
-  ../include/${PROJECT_NAME}/details/configure.hpp
-  ../include/${PROJECT_NAME}/application.hpp
+configure_file("version.hpp.in"
+  "${PROJECT_BINARY_DIR}/include/${PACKAGE_NAME}/version.hpp"
 )
-target_sources(${PROJECT_NAME}
-  PRIVATE
-    ${SOURCE_LIST}
-  PUBLIC
-    FILE_SET HEADERS
-      BASE_DIRS
-        ${CMAKE_SOURCE_DIR}
-      FILES
-        ${HEADER_LIST}
+#----------------------------------------------------------------------
+target_sources(
+  ${PACKAGE_NAME}
+    PRIVATE
+      application.cpp
+    PUBLIC
+      FILE_SET HEADERS
+        BASE_DIRS
+          ${PROJECT_SOURCE_DIR}/include/${PACKAGE_NAME}
+          ${PROJECT_BINARY_DIR}/include/${PACKAGE_NAME}
+        FILES
+          ../include/${PACKAGE_NAME}/application.hpp
+          ../build/include/${PACKAGE_NAME}/config.hpp
+          ../build/include/${PACKAGE_NAME}/version.hpp
 )
-#---------------------------------------------------------------------#
-target_compile_definitions(${PROJECT_NAME}
-  PUBLIC
-    $<$<BOOL:${BUILD_SHARED_LIBS}>:TEMPLATEPP_DLL=1>
+#----------------------------------------------------------------------
+target_include_directories(
+  ${PACKAGE_NAME}
+    PUBLIC
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/${PACKAGE_NAME}>
+      $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/${PACKAGE_NAME}>
+      $<INSTALL_INTERFACE:include>
+    PRIVATE
+      ${CMAKE_CURRENT_LIST_DIR}
 )
-#---------------------------------------------------------------------#
-target_include_directories(${PROJECT_NAME}
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}>
-    $<INSTALL_INTERFACE:include>
-  PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+#----------------------------------------------------------------------
+set_target_properties(
+  ${PACKAGE_NAME}
+    PROPERTIES
+      FOLDER "Runtime"
 )
-#---------------------------------------------------------------------#
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Runtime")
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCE_LIST})
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${HEADER_LIST})
-#---------------------------------------------------------------------#
-install(TARGETS ${PROJECT_NAME}
+get_target_property(
+  SOURCES
+    ${PACKAGE_NAME}
+      SOURCES
+)
+get_target_property(
+  HEADERS
+    ${PACKAGE_NAME}
+      HEADER_SET_${PACKAGE_NAME}
+)
+source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})
+#----------------------------------------------------------------------
+install(
+  TARGETS
+    ${PACKAGE_NAME}
   RUNTIME DESTINATION
     bin
   LIBRARY DESTINATION
@@ -47,4 +64,4 @@ install(TARGETS ${PROJECT_NAME}
     include
   FILE_SET HEADERS
 )
-#---------------------------------------------------------------------#
+#----------------------------------------------------------------------

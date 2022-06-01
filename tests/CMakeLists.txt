@@ -1,31 +1,23 @@
-#---------------------------------------------------------------------#
-add_executable(${PROJECT_NAME}_tests)
-target_sources(${PROJECT_NAME}_tests 
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#----------------------------------------------------------------------
+add_executable(${PACKAGE_NAME}_tests)
+target_sources(${PACKAGE_NAME}_tests 
   PRIVATE
     application_test.cpp
-    main.cpp
 )
-#---------------------------------------------------------------------#
+#----------------------------------------------------------------------
 find_package(GTest CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME}_tests
-  ${PROJECT_NAME}
-  GTest::gtest
+target_link_libraries(
+  ${PACKAGE_NAME}_tests
+    ${PACKAGE_NAME}
+    GTest::gtest
+    GTest::gtest_main
 )
-#---------------------------------------------------------------------#
-set_target_properties(${PROJECT_NAME}_tests
-  PROPERTIES
-    FOLDER "Tests"
-)
-get_target_property(SOURCE_LIST
-  ${PROJECT_NAME}_tests
-    SOURCES
-)
-source_group(
-  TREE
-    ${CMAKE_CURRENT_LIST_DIR}
-  FILES
-    ${SOURCE_LIST}
-)
-#---------------------------------------------------------------------#
-gtest_discover_tests(${PROJECT_NAME}_tests)
-#---------------------------------------------------------------------#
+#----------------------------------------------------------------------
+set_target_properties(${PACKAGE_NAME}_tests PROPERTIES FOLDER "Tests")
+get_target_property(SOURCES ${PACKAGE_NAME}_tests SOURCES)
+source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${SOURCES})
+#----------------------------------------------------------------------
+gtest_discover_tests(${PACKAGE_NAME}_tests)
+#----------------------------------------------------------------------
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

@@ -1,0 +1,9 @@
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#----------------------------------------------------------------------
+get_filename_component(@PACKAGE_PREFIX@_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(@PACKAGE_PREFIX@_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+if(NOT TARGET @PACKAGE_NAME@)
+  include("${@PACKAGE_PREFIX@_CMAKE_DIR}/@EXPORT_NAME@.cmake")
+endif()
+set(@PACKAGE_PREFIX@_LIBRARIES @PACKAGE_NAME@)
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
