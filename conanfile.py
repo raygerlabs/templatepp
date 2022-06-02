@@ -28,16 +28,17 @@ class templatepp(ConanFile):
 
   def configure_cmake(self):
     cmake = CMake(self)
-    if self.settings.compiler == "Visual Studio":
-      cmake.configure(args=["--preset=msvc"])
-    elif self.settings.compiler == "clang":
-      cmake.configure(args=["--preset=clang"])
-    elif self.settings.compiler == "apple-clang":
-      cmake.configure(args=["--preset=clang"])
-    elif self.settings.compiler == "gcc":
-      cmake.configure(args=["--preset=gcc"])
-    else:
-      cmake.configure()
+    #if self.settings.compiler == "Visual Studio":
+    #  cmake.configure(args=["--preset=msvc"])
+    #elif self.settings.compiler == "clang":
+    #  cmake.configure(args=["--preset=clang"])
+    #elif self.settings.compiler == "apple-clang":
+    #  cmake.configure(args=["--preset=clang"])
+    #elif self.settings.compiler == "gcc":
+    #  cmake.configure(args=["--preset=gcc"])
+    #else:
+    #  cmake.configure()
+    cmake.configure()
     cmake.verbose = True
     return cmake
 
