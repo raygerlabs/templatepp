@@ -54,6 +54,8 @@ source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})
 install(
   TARGETS
     ${PACKAGE_NAME}
+  EXPORT
+    ${EXPORT_NAME}
   RUNTIME DESTINATION
     bin
   LIBRARY DESTINATION
@@ -64,4 +66,19 @@ install(
     include
   FILE_SET HEADERS
 )
+install(
+  EXPORT
+    ${EXPORT_NAME}
+  NAMESPACE
+    ${PACKAGE_NAME}::
+  DESTINATION
+    ${CONFIG_INSTALL_PATH}
+)
+#----------------------------------------------------------------------
+export (
+  TARGETS ${PACKAGE_NAME}
+  NAMESPACE ${PACKAGE_NAME}::
+  FILE "${PROJECT_BINARY_DIR}/${EXPORT_NAME}.cmake"
+)
+export(PACKAGE ${PACKAGE_NAME})
 #----------------------------------------------------------------------
