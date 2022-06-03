@@ -1,8 +1,9 @@
-#---------------------------------------------------------------------#
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#----------------------------------------------------------------------
 Language                                          : Cpp
 BasedOnStyle                                      : LLVM
 Standard                                          : Cpp11
-#---------------------------------------------------------------------#
+#----------------------------------------------------------------------
 ColumnLimit                                       : '80'
 IndentWidth                                       : '2'
 KeepEmptyLinesAtTheStartOfBlocks                  : 'true'
@@ -12,7 +13,7 @@ IndentCaseLabels                                  : 'false'
 NamespaceIndentation                              : None
 ReflowComments                                    : 'true'
 FixNamespaceComments                              : 'true'
-SortIncludes                                      : 'true'
+SortIncludes                                      : 'false'
 SortUsingDeclarations                             : 'true'
 IncludeBlocks                                     : Regroup
 AlwaysBreakTemplateDeclarations                   : 'true'
@@ -40,4 +41,5 @@ DerivePointerAlignment                            : 'true'
 DerivePointerBinding                              : 'false'
 TabWidth                                          : '2'
 UseTab                                            : Never
-#---------------------------------------------------------------------#
+#----------------------------------------------------------------------
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

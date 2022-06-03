@@ -5,6 +5,7 @@ namespace templatepp
 void application::start()
 {
 }
+
 void application::stop()
 {
 }

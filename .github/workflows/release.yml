@@ -101,7 +101,14 @@ jobs:
       - name: Package
         working-directory: ${{ github.workspace }}/build
         run: |
-          conan package ..
+          conan conan export-pkg .. user/channel
+
+      - name: Run integration test
+        working-directory: ${{ github.workspace }}/test
+        run: |
+          mkdir build
+          pushd build
+          conan test .. templatepp/0.4.0@user/channel
 
       - name: Store package information
         shell: bash
