@@ -15,12 +15,17 @@ class TemplateppRecipe(ConanFile):
   options = { "shared": [True, False] }
   default_options = { "shared": True }
   generators = "CMakeDeps", "CMakeToolchain"
+  exports = ("LICENSE")
+  exports_sources = ("cmake/*",
+                     "include/*",
+                     "templatepp/*",
+                     "test/*",
+                     "CMakeLists.txt",
+                     "README.md",
+                     "LICENSE")
 
   def build_requirements(self):
     self.test_requires("gtest/[^1.11.0]@")
-
-  def requirements(self):
-    self.requires("rapidjson/[^1.1.0]@")
 
   def configure(self):
     self.options["*"].shared = self.options.shared

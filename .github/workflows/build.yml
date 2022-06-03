@@ -51,6 +51,11 @@ jobs:
         run: |
           echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
 
+      - name: Get the version
+        id: current_version
+        run: |
+          echo ::set-output name=value::$(echo $GITHUB_REF | cut -d / -f 3)
+
       # For speeding up the build, let's create a cache for conan packages.
       # A new branch will create a copy of the master cache,
       # but the master cache isn't updated until a merge to the master branch.
@@ -101,14 +106,14 @@ jobs:
       - name: Package
         working-directory: ${{ github.workspace }}/build
         run: |
-          conan conan export-pkg .. user/channel
+          conan export-pkg .. user/channel
 
       - name: Run integration test
         working-directory: ${{ github.workspace }}/test
         run: |
           mkdir build
           pushd build
-          conan test .. templatepp/0.4.0@user/channel
+          conan test .. templatepp/${{ steps.current_version.outputs.value }}@user/channel
 
       - name: Retrieve package information
         id: current_package
