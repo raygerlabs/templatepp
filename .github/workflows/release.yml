@@ -116,7 +116,7 @@ jobs:
       - name: Run integration test
         working-directory: ${{ github.workspace }}/test
         run: |
-          conan test . ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -pr:b default --build missing
+          conan test . ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
 
       - name: Store package information
         shell: bash
