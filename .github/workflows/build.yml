@@ -114,7 +114,7 @@ jobs:
           echo "::set-output name=value::$(cat ./build/VERSION)"
 
       - name: Run integration test
-        working-directory: ${{ github.workspace }}/test
+        working-directory: ${{ github.workspace }}/integration
         run: |
           conan test . ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
 
