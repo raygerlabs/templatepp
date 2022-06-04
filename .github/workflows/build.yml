@@ -116,7 +116,7 @@ jobs:
       - name: Run integration test
         working-directory: ${{ github.workspace }}/test
         run: |
-          conan test . ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel
+          conan test . ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -pr:b default --build missing
 
       - name: Retrieve package information
         id: current_package
