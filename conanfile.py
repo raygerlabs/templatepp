@@ -19,6 +19,7 @@ class TemplateppRecipe(ConanFile):
                      "templatepp/*",
                      "test/*",
                      "CMakeLists.txt",
+                     "CMakePresets.json",
                      "README.md",
                      "LICENSE")
 
