@@ -3,6 +3,7 @@ set(CMAKE_CXX_FLAGS_INIT
   /WX                        # Treat any compiler warning as error
   /permissive-               # Enforce standard conformance
   /EHsc                      # Enable C++ exceptions
+  /GR                        # Enable RTTI
   /MP                        # Build with multiple processors
   /GF                        # Enable string pooling
   /Gy                        # Enable function level linking
@@ -98,10 +99,30 @@ string(
     "${CMAKE_CXX_FLAGS_RELEASE_INIT}"
 )
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-set(CMAKE_SHARED_LINKER_FLAGS_PROFILE_INIT "/debug /opt:ref /opt:icf")
-set(CMAKE_EXE_LINKER_FLAGS_PROFILE_INIT    "/debug /opt:ref /opt:icf")
-set(CMAKE_MODULE_LINKER_FLAGS_PROFILE_INIT "/debug /opt:ref /opt:icf")
-set(CMAKE_SHARED_LINKER_FLAGS_RELEASE_INIT "/opt:ref /opt:icf")
-set(CMAKE_EXE_LINKER_FLAGS_RELEASE_INIT    "/opt:ref /opt:icf")
-set(CMAKE_MODULE_LINKER_FLAGS_RELEASE_INIT "/opt:ref /opt:icf")
+set(MSVC_LINKER_FLAGS_DEBUG
+  /DEBUG                     # Generate debug information
+)
+set(MSVC_LINKER_FLAGS_RELEASE
+  /INCREMENTAL:NO            # Disable incremental linking
+                             # Enable optimizations:
+  /OPT:REF                   # Eliminate unused functions or data
+  /OPT:ICF                   # Perform identical COMDAT folding 
+)
+string(
+  REPLACE ";" " "
+    MSVC_LINKER_FLAGS_DEBUG
+    "${MSVC_LINKER_FLAGS_DEBUG}"
+)
+string(
+  REPLACE ";" " "
+    MSVC_LINKER_FLAGS_RELEASE
+    "${MSVC_LINKER_FLAGS_RELEASE}"
+)
+set(CMAKE_SHARED_LINKER_FLAGS_PROFILE_INIT "/debug /incremental:no /opt:ref /opt:icf")
+set(CMAKE_EXE_LINKER_FLAGS_PROFILE_INIT    "/debug /incremental:no /opt:ref /opt:icf")
+set(CMAKE_MODULE_LINKER_FLAGS_PROFILE_INIT "/debug /incremental:no /opt:ref /opt:icf")
+set(CMAKE_SHARED_LINKER_FLAGS_RELEASE_INIT "/incremental:no /opt:ref /opt:icf")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE_INIT    "/incremental:no /opt:ref /opt:icf")
+set(CMAKE_MODULE_LINKER_FLAGS_RELEASE_INIT "/incremental:no /opt:ref /opt:icf")
+
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

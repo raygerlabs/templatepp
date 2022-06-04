@@ -48,7 +48,7 @@ if(NOT TARGET ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@)
       IMPORTED)
   endif()
   # copy INTERFACE_* properties
-  foreach (@PACKAGE_PREFIX@_PROPERTY_NAME IN ITEMS
+  foreach(@PACKAGE_PREFIX@_PROPERTY_NAME IN ITEMS
     COMPILE_DEFINITIONS
     COMPILE_FEATURES
     COMPILE_OPTIONS
@@ -65,7 +65,7 @@ if(NOT TARGET ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@)
         INTERFACE_${@PACKAGE_PREFIX@_PROPERTY_NAME}
         "${@PACKAGE_PREFIX@_PROPERTY_VALUE}")
     endif()
-  endforeach ()
+  endforeach()
   get_target_property(
     @PACKAGE_PREFIX@_CONFIGURATIONS
     ${@PACKAGE_PREFIX@_TARGET}
@@ -101,7 +101,7 @@ if(NOT TARGET ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@)
       endif()
     endforeach()
   endforeach()
-endif ()
-set (@PACKAGE_PREFIX@_LIBRARIES "${@PACKAGE_PREFIX@_TARGET}")
+endif()
+set(@PACKAGE_PREFIX@_LIBRARIES "${@PACKAGE_PREFIX@_TARGET}")
 #----------------------------------------------------------------------
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
