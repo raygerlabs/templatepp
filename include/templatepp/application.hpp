@@ -1,6 +1,6 @@
 #pragma once
 
-#include <config.hpp>
+#include <templatepp/config.hpp>
 
 namespace templatepp
 {

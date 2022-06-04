@@ -1,0 +1,36 @@
+[settings]
+    arch=x86_64
+    build_type=Release
+    compiler=Visual Studio
+    compiler.runtime=MD
+    compiler.version=16
+    os=Windows
+
+[requires]
+    templatepp/0.4.0
+
+[options]
+
+
+[full_settings]
+    arch=x86_64
+    build_type=Release
+    compiler=Visual Studio
+    compiler.runtime=MD
+    compiler.version=16
+    os=Windows
+
+[full_requires]
+    templatepp/0.4.0@user/channel:f780daa041b3f2f2a26082b8682c5560c10a25b0
+
+[full_options]
+    templatepp:shared=True
+    templatepp:with_packaging=True
+    templatepp:with_presets=False
+    templatepp:with_tests=False
+
+[recipe_hash]
+
+
+[env]
+

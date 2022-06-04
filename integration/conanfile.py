@@ -3,7 +3,9 @@ from conan.tools.build import cross_building
 from conan.tools.cmake import CMake, cmake_layout
 from os.path import join
 
-class TemplateppIntegrationTestRecipe(ConanFile):
+class TemplateppIntegrationRecipe(ConanFile):
+  name = "templatepp_integration"
+  license = "MIT"
   settings = "os", "compiler", "build_type", "arch"
   generators = "CMakeToolchain", "CMakeDeps"
 
@@ -20,4 +22,4 @@ class TemplateppIntegrationTestRecipe(ConanFile):
   def test(self):
     if not cross_building(self):
       path = join(self.build_folder, "bin")
-      self.run(f"{path}/integration_test", run_environment=True)
+      self.run(f"{path}/integration", run_environment=True)

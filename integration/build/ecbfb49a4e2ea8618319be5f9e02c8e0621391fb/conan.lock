@@ -1,0 +1,25 @@
+{
+ "graph_lock": {
+  "nodes": {
+   "0": {
+    "ref": "templatepp_integration/None@user/channel",
+    "options": "templatepp:shared=True\ntemplatepp:with_packaging=True\ntemplatepp:with_presets=False\ntemplatepp:with_tests=False",
+    "requires": [
+     "1"
+    ],
+    "path": "..\\..\\conanfile.py",
+    "context": "host"
+   },
+   "1": {
+    "ref": "templatepp/0.4.0@user/channel#7119f59ddbd7da6d97da701a2a6fc077",
+    "options": "shared=True\nwith_packaging=True\nwith_presets=False\nwith_tests=False",
+    "package_id": "f780daa041b3f2f2a26082b8682c5560c10a25b0",
+    "prev": "a9e76ba7057df143bb12b1561a8cfc24",
+    "context": "host"
+   }
+  },
+  "revisions_enabled": true
+ },
+ "version": "0.4",
+ "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Release\ncompiler=Visual Studio\ncompiler.runtime=MD\ncompiler.version=16\nos=Windows\nos_build=Windows\n[options]\n[build_requires]\n[env]\n"
+}

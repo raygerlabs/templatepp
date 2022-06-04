@@ -13,15 +13,8 @@ class TemplateppRecipe(ConanFile):
   options = { "shared": [True, False], "with_tests": [True, False], "with_presets": [True, False], "with_packaging": [True, False] }
   default_options = { "shared": True, "with_tests": False, "with_presets": False, "with_packaging": True }
   generators = "CMakeDeps"
-  exports = ("LICENSE")
-  exports_sources = ("cmake/*",
-                     "include/*",
-                     "templatepp/*",
-                     "test/*",
-                     "CMakeLists.txt",
-                     "CMakePresets.json",
-                     "README.md",
-                     "LICENSE")
+  exports = "LICENSE"
+  exports_sources = "cmake/*", "include/*", "integration/*" "src/*", "test/*", "CMakeLists.txt", "CMakePresets.json", "README.md", "LICENSE"
 
   def build_requirements(self):
     self.test_requires("gtest/[^1.11.0]@")

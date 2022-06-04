@@ -23,11 +23,13 @@ include(build_paths)
 include(install_paths)
 #----------------------------------------------------------------------
 # Source
+add_subdirectory(src)
 if (BUILD_TESTING)
   include(CTest)
   include(GoogleTest)
+  add_subdirectory(test)
 endif()
-add_subdirectory(templatepp)
+
 #----------------------------------------------------------------------
 # Install project commons
 file(WRITE ${CMAKE_BINARY_DIR}/VERSION ${PROJECT_VERSION})

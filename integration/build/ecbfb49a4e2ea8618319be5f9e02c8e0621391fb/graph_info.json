@@ -1,0 +1,26 @@
+{
+ "options": [
+  [
+   "templatepp:shared",
+   "True"
+  ],
+  [
+   "templatepp:with_packaging",
+   "True"
+  ],
+  [
+   "templatepp:with_presets",
+   "False"
+  ],
+  [
+   "templatepp:with_tests",
+   "False"
+  ]
+ ],
+ "root": {
+  "name": "templatepp_integration",
+  "version": null,
+  "user": "user",
+  "channel": "channel"
+ }
+}
