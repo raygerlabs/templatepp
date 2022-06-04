@@ -61,11 +61,6 @@ jobs:
           restore-keys: |
             conan-package-cache-master
 
-      - name: Get the version
-        id: current_version
-        run: |
-          echo ::set-output name=value::$(echo $GITHUB_REF | cut -d / -f 3)
-
       - name: Setup Python environment
         uses: actions/setup-python@v2
 
@@ -106,14 +101,7 @@ jobs:
       - name: Package
         working-directory: ${{ github.workspace }}/build
         run: |
-          conan export-pkg .. user/channel
-
-      - name: Run integration test
-        working-directory: ${{ github.workspace }}/test
-        run: |
-          mkdir build
-          pushd build
-          conan test .. templatepp/${{ steps.current_version.outputs.value }}@user/channel
+          conan package ..
 
       - name: Store package information
         shell: bash
