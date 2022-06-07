@@ -1,7 +1,8 @@
-#include <application.hpp>
+#include <templatepp/application.hpp>
+
 #include <gtest/gtest.h>
 
-TEST(application_test, application_starts_and_stops_gracefully)
+TEST(application_tests, graceful_start_and_shutdown)
 {
   templatepp::application app{};
   ASSERT_NO_THROW(app.start());

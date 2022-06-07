@@ -1,0 +1,23 @@
+#pragma once
+
+#ifndef @PACKAGE_PREFIX@_DLL
+#define @PACKAGE_PREFIX@_DLL @PACKAGE_IS_A_DLL@
+#endif
+
+#ifndef @PACKAGE_PREFIX@_API
+#if @PACKAGE_PREFIX@_DLL
+#if defined _MSC_VER
+#define @PACKAGE_PREFIX@_API __declspec(dllexport)
+#define @PACKAGE_PREFIX@_LOCAL
+#elif defined __GNUC__ && __GNUC__ >= 4
+#define @PACKAGE_PREFIX@_API __attribute__((visibility("default")))
+#define @PACKAGE_PREFIX@_LOCAL __attribute__((visibility("hidden")))
+#else
+#define @PACKAGE_PREFIX@_API
+#define @PACKAGE_PREFIX@_LOCAL
+#endif
+#else
+#define @PACKAGE_PREFIX@_API
+#define @PACKAGE_PREFIX@_LOCAL
+#endif
+#endif

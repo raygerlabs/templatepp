@@ -1,50 +1,62 @@
-#---------------------------------------------------------------------#
-add_library(${PROJECT_NAME})
-
-list(APPEND SOURCE_LIST
-  application.cpp
-)
-list(APPEND HEADER_LIST
-  ../include/${PROJECT_NAME}/details/configure.hpp
-  ../include/${PROJECT_NAME}/application.hpp
-)
-target_sources(${PROJECT_NAME}
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#----------------------------------------------------------------------
+add_library(templatepp)
+#----------------------------------------------------------------------
+configure_file(
+  config.hpp.in
+  ${PROJECT_BINARY_DIR}/include/templatepp/config.hpp
+  @ONLY)
+configure_file(
+  version.hpp.in
+  ${PROJECT_BINARY_DIR}/include/templatepp/version.hpp
+  @ONLY)
+target_sources(templatepp
   PRIVATE
-    ${SOURCE_LIST}
-  PUBLIC
+    application.cpp
+  PUBLIC INTERFACE
     FILE_SET HEADERS
       BASE_DIRS
-        ${CMAKE_SOURCE_DIR}
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_BINARY_DIR}/include
       FILES
-        ${HEADER_LIST}
+        ${PROJECT_BINARY_DIR}/include/templatepp/config.hpp
+        ${PROJECT_BINARY_DIR}/include/templatepp/version.hpp
+        ${PROJECT_SOURCE_DIR}/include/templatepp/application.hpp
+        ${PROJECT_SOURCE_DIR}/include/templatepp/sdl_utils.hpp
 )
-#---------------------------------------------------------------------#
-target_compile_definitions(${PROJECT_NAME}
+#----------------------------------------------------------------------
+target_include_directories(templatepp
   PUBLIC
-    $<$<BOOL:${BUILD_SHARED_LIBS}>:TEMPLATEPP_DLL=1>
-)
-#---------------------------------------------------------------------#
-target_include_directories(${PROJECT_NAME}
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}>
-    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/>
+    $<INSTALL_INTERFACE:${PACKAGE_INSTALL_INCLUDEDIR}>
   PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+    ${CMAKE_CURRENT_LIST_DIR}
 )
-#---------------------------------------------------------------------#
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Runtime")
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCE_LIST})
-source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${HEADER_LIST})
-#---------------------------------------------------------------------#
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION
-    bin
-  LIBRARY DESTINATION
-    lib
-  ARCHIVE DESTINATION
-    lib
-  INCLUDES DESTINATION
-    include
+#----------------------------------------------------------------------
+find_package(SDL2 CONFIG REQUIRED)
+target_compile_options(templatepp PUBLIC -Umain)
+target_link_libraries(templatepp
+  SDL2::SDL2
+)
+#----------------------------------------------------------------------
+set_target_properties(templatepp PROPERTIES FOLDER "Runtime")
+get_target_property(SOURCES templatepp SOURCES)
+get_target_property(INCLUDES templatepp HEADER_SET_TEMPLATEPP)
+source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCES} ${INCLUDES})
+#----------------------------------------------------------------------
+install(
+  TARGETS templatepp
+  EXPORT templatepp-targets
+  RUNTIME DESTINATION ${PACKAGE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${PACKAGE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${PACKAGE_INSTALL_LIBDIR}
+  INCLUDES DESTINATION ${PACKAGE_INSTALL_INCLUDEDIR}
   FILE_SET HEADERS
 )
-#---------------------------------------------------------------------#
+export(
+  TARGETS templatepp
+  NAMESPACE ${PROJECT_NAME}::
+  FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-targets.cmake
+)
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
