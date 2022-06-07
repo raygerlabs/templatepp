@@ -1,22 +1,22 @@
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-#----------------------------------------------------------------------
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#------------------------------------------------------------------------------
 include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake")
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 set(@PACKAGE_PREFIX@_TARGET_NAMESPACE
   @PROJECT_NAME@)
 set(@PACKAGE_PREFIX@_TARGET_PREFIX
   ${@PACKAGE_PREFIX@_TARGET_NAMESPACE}::)
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 get_filename_component(CMAKE_CURRENT_LIST_DIR
   "${CMAKE_CURRENT_LIST_FILE}"
   PATH)
 get_filename_component(_INSTALL_PREFIX
   "${CMAKE_CURRENT_LIST_DIR}/@INSTALL_PREFIX_REL2CONFIG_DIR@"
   ABSOLUTE)
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 set(@PACKAGE_PREFIX@_INCLUDE_DIR
   "${_INSTALL_PREFIX}/@PACKAGE_INSTALL_INCLUDEDIR@")
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 if(NOT DEFINED @PACKAGE_PREFIX@_SHARED)
   if(DEFINED @PACKAGE_NAME@_SHARED)
     set (@PACKAGE_PREFIX@_SHARED ${@PACKAGE_NAME@_SHARED})
@@ -24,7 +24,7 @@ if(NOT DEFINED @PACKAGE_PREFIX@_SHARED)
     set (@PACKAGE_PREFIX@_SHARED FALSE)
   endif()
 endif()
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 if(NOT @PACKAGE_PREFIX@_TARGET)
   if(@PACKAGE_NAME@_TARGET)
     set(@PACKAGE_PREFIX@_TARGET ${@PACKAGE_NAME@_TARGET})
@@ -34,7 +34,7 @@ if(NOT TARGET ${@PACKAGE_PREFIX@_TARGET})
   message(FATAL_ERROR "${@PACKAGE_PREFIX@_TARGET} library target "
                        "is missing from @PACKAGE_NAME@ installation!")
 endif()
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 if(NOT TARGET ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@)
   if(@PACKAGE_PREFIX@_SHARED)
     add_library(
@@ -102,6 +102,7 @@ if(NOT TARGET ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@)
     endforeach()
   endforeach()
 endif()
+#------------------------------------------------------------------------------
 set(@PACKAGE_PREFIX@_LIBRARIES "${@PACKAGE_PREFIX@_TARGET}")
-#----------------------------------------------------------------------
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#------------------------------------------------------------------------------
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
