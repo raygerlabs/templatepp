@@ -40,8 +40,18 @@ class TemplateppRecipe(ConanFile):
     self.options["sdl"].sdl2main = False
 #----------------------------------------------------------------------
   def imports(self):
-    self.copy("*", src="@bindirs", dst="bin")
-    self.copy("*", src="@libdirs", dst="lib")
+    self.copy("*.dll",
+      src="bin",
+      dst=f"bin/{self.settings.build_type}"
+    )
+    self.copy("*.dylib*",
+      src="lib",
+      dst="lib"
+    )
+    self.copy("*.so*",
+      src="lib",
+      dst="lib"
+    )
 #----------------------------------------------------------------------
   def configure_cmake(self):
     cmake = CMake(self)

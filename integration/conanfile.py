@@ -11,8 +11,18 @@ class TemplateppIntegrationRecipe(ConanFile):
   generators = "CMakeDeps"
 #----------------------------------------------------------------------
   def imports(self):
-    self.copy("*", src="@bindirs", dst="bin")
-    self.copy("*", src="@libdirs", dst="lib")
+    self.copy("*.dll",
+      src="bin",
+      dst=f"bin/{self.settings.build_type}"
+    )
+    self.copy("*.dylib*",
+      src="lib",
+      dst="lib"
+    )
+    self.copy("*.so*",
+      src="lib",
+      dst="lib"
+    )
 #----------------------------------------------------------------------
   def build(self):
     cmake = CMake(self)
@@ -21,7 +31,11 @@ class TemplateppIntegrationRecipe(ConanFile):
 #----------------------------------------------------------------------
   def test(self):
     if not tools.cross_building(self.settings):
-      os.chdir("bin")
+      if self.settings.os == "Windows":
+        os.chdir(f"bin/{self.settings.build_type}")
+      else:
+        os.chdir("bin")
+      
       self.run(f".{os.sep}integration")
 #----------------------------------------------------------------------
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
