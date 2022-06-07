@@ -8,4 +8,3 @@ TEST(application_tests, graceful_start_and_shutdown)
   ASSERT_NO_THROW(app.start());
   ASSERT_NO_THROW(app.stop());
 }
-

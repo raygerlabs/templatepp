@@ -1,6 +1,7 @@
 #include <templatepp/application.hpp>
+#undef main
 
-int main(int, char* [])
+int main()
 {
   templatepp::application app{};
   app.start();

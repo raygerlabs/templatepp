@@ -45,13 +45,13 @@ $ cmake -S . -B /path/to/the/build
 $ cmake --build /path/to/the/build --config Release
 $ cmake --install /path/to/the/build --config Release --prefix /path/to/wherever
 
-# 3. Execute unit tests
+# 3. Run unit tests
 $ ctest --test-dir /path/to/the/build -VV -C Release
 
-# 4. Create package
+# 4. Package
 $ cmake --build /path/to/the/build --config Release --target package
 
-# or if you prever, you can call cpack
+# or if you prefer, you can call cpack
 $ cd /path/to/the/build
 $ cpack
 ```
@@ -68,10 +68,10 @@ For convenience here is a short cheatsheet:
 $ mkdir build
 $ cd build
 
-# Install project dependencies:
+# Install dependencies:
 $ conan install .. -s build_type=Release -pr:b default --build missing
 
-# Build project
+# Build
 $ conan build .. --configure # only run cmake.configure(). Other methods will do nothing
 $ conan build .. --build     # only run cmake.build(). Other methods will do nothing
 $ conan build .. --install   # only run cmake.install(). Other methods will do nothing
@@ -79,6 +79,13 @@ $ conan build .. --test      # only run cmake.test(). Other methods will do noth
 # They can be combined
 $ conan build .. --configure --build # run cmake.configure() + cmake.build(), but not cmake.install() nor cmake.test
 
-# 3. Package project
+# 3. Package
 $ conan package ..
+
+# 4. Export conan package
+$ conan export-pkg .. user/channel
+
+# 5. Run integration test
+$ cd interation
+$ conan test . templatepp<version>@user/channel
 ```
