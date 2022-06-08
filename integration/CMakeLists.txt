@@ -10,7 +10,7 @@ list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake)
 #------------------------------------------------------------------------------
-project(integration VERSION 0.4.0)
+project(integration)
 #------------------------------------------------------------------------------
 include(build_options)
 include(build_paths)

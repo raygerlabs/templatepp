@@ -1,27 +1,22 @@
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #------------------------------------------------------------------------------
-include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake")
+include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake)
 #------------------------------------------------------------------------------
-set(@PACKAGE_PREFIX@_TARGET_NAMESPACE
-  @PROJECT_NAME@)
-set(@PACKAGE_PREFIX@_TARGET_PREFIX
-  ${@PACKAGE_PREFIX@_TARGET_NAMESPACE}::)
+set(@PACKAGE_PREFIX@_TARGET_NAMESPACE @PROJECT_NAME@)
+set(@PACKAGE_PREFIX@_TARGET_PREFIX ${@PACKAGE_PREFIX@_TARGET_NAMESPACE}::)
 #------------------------------------------------------------------------------
-get_filename_component(CMAKE_CURRENT_LIST_DIR
-  "${CMAKE_CURRENT_LIST_FILE}"
-  PATH)
-get_filename_component(_INSTALL_PREFIX
-  "${CMAKE_CURRENT_LIST_DIR}/@INSTALL_PREFIX_REL2CONFIG_DIR@"
-  ABSOLUTE)
+get_filename_component(CMAKE_CURRENT_LIST_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
+set(_REL_INSTALL_DIR ${CMAKE_CURRENT_LIST_DIR}/@INSTALL_PREFIX_REL2CONFIG_DIR@)
+get_filename_component(_INSTALL_PREFIX ${_REL_INSTALL_DIR} ABSOLUTE)
 #------------------------------------------------------------------------------
-set(@PACKAGE_PREFIX@_INCLUDE_DIR
-  "${_INSTALL_PREFIX}/@PACKAGE_INSTALL_INCLUDEDIR@")
+set(_REL_INCLUDE_DIR ${_INSTALL_PREFIX}/@PACKAGE_INSTALL_INCLUDEDIR@)
+set(@PACKAGE_PREFIX@_INCLUDE_DIR ${_REL_INCLUDE_DIR})
 #------------------------------------------------------------------------------
 if(NOT DEFINED @PACKAGE_PREFIX@_SHARED)
   if(DEFINED @PACKAGE_NAME@_SHARED)
-    set (@PACKAGE_PREFIX@_SHARED ${@PACKAGE_NAME@_SHARED})
+    set(@PACKAGE_PREFIX@_SHARED ${@PACKAGE_NAME@_SHARED})
   else()
-    set (@PACKAGE_PREFIX@_SHARED FALSE)
+    set(@PACKAGE_PREFIX@_SHARED FALSE)
   endif()
 endif()
 #------------------------------------------------------------------------------
@@ -31,21 +26,16 @@ if(NOT @PACKAGE_PREFIX@_TARGET)
   endif()
 endif()
 if(NOT TARGET ${@PACKAGE_PREFIX@_TARGET})
-  message(FATAL_ERROR "${@PACKAGE_PREFIX@_TARGET} library target "
-                       "is missing from @PACKAGE_NAME@ installation!")
+  message(FATAL_ERROR "${@PACKAGE_PREFIX@_TARGET} library target is missing "
+                      "from @PACKAGE_NAME@ installation!")
 endif()
 #------------------------------------------------------------------------------
-if(NOT TARGET ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@)
+set(_TARGET ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@)
+if(NOT TARGET ${_TARGET})
   if(@PACKAGE_PREFIX@_SHARED)
-    add_library(
-      ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@
-      SHARED
-      IMPORTED)
+    add_library(${_TARGET} SHARED IMPORTED)
   else()
-    add_library(
-      ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@
-      STATIC
-      IMPORTED)
+    add_library(${_TARGET} STATIC IMPORTED)
   endif()
   # copy INTERFACE_* properties
   foreach(@PACKAGE_PREFIX@_PROPERTY_NAME IN ITEMS
@@ -63,16 +53,13 @@ if(NOT TARGET ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@)
         ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@
         PROPERTIES
         INTERFACE_${@PACKAGE_PREFIX@_PROPERTY_NAME}
-        "${@PACKAGE_PREFIX@_PROPERTY_VALUE}")
+        ${@PACKAGE_PREFIX@_PROPERTY_VALUE})
     endif()
   endforeach()
-  get_target_property(
-    @PACKAGE_PREFIX@_CONFIGURATIONS
+  get_target_property(@PACKAGE_PREFIX@_CONFIGURATIONS
     ${@PACKAGE_PREFIX@_TARGET}
     IMPORTED_CONFIGURATIONS)
-  set_target_properties(
-    ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@
-    PROPERTIES
+  set_target_properties(${_TARGET} PROPERTIES
     IMPORTED_CONFIGURATIONS
     "${@PACKAGE_PREFIX@_CONFIGURATIONS}")
   foreach(@PACKAGE_PREFIX@_PROPERTY_NAME IN ITEMS
@@ -92,17 +79,15 @@ if(NOT TARGET ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@)
         IMPORTED_${@PACKAGE_PREFIX@_PROPERTY_NAME}_\
         ${@PACKAGE_PREFIX@_CONFIG})
       if(@PACKAGE_PREFIX@_PROPERTY_VALUE)
-        set_target_properties(
-          ${@PACKAGE_PREFIX@_TARGET_PREFIX}@PACKAGE_NAME@
-          PROPERTIES
+        set_target_properties(${_TARGET} PROPERTIES
           IMPORTED_${@PACKAGE_PREFIX@_PROPERTY_NAME}_\
           ${@PACKAGE_PREFIX@_CONFIG}
-          "${@PACKAGE_PREFIX@_PROPERTY_VALUE}")
+          ${@PACKAGE_PREFIX@_PROPERTY_VALUE}
       endif()
     endforeach()
   endforeach()
 endif()
 #------------------------------------------------------------------------------
-set(@PACKAGE_PREFIX@_LIBRARIES "${@PACKAGE_PREFIX@_TARGET}")
+set(@PACKAGE_PREFIX@_LIBRARIES ${@PACKAGE_PREFIX@_TARGET})
 #------------------------------------------------------------------------------
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

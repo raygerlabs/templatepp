@@ -84,51 +84,39 @@ jobs:
           conan profile update settings.compiler.version="${{ matrix.compiler_version }}" default
           conan profile update settings.compiler.libcxx="${{ matrix.compiler_libcxx }}" default
           conan profile show default
-      - name: Remove invalid setting from conan profile (Visual Studio)
+
+      - name: Remove useless setting for Visual Studio
+        shell: bash
         if: matrix.compiler == 'Visual Studio'
-        run: |
-          conan profile remove settings.compiler.libcxx default
+        run: conan profile remove settings.compiler.libcxx default
 
-      - name: Create build directory
-        run: |
-          cmake -E make_directory ${{ github.workspace }}/build
+      - name: Export sources
+        run: conan source . -sf tmp/source
 
-      - name: Configure
-        working-directory: ${{ github.workspace }}/build
-        run: |
-          conan install .. -s build_type=${{ env.BUILD_TYPE }} -o with_tests=True -o with_presets=True -pr:b default --build missing
+      - name: Install dependencies
+        run: conan install . -if tmp/install -s build_type=${{ env.BUILD_TYPE }} -o with_tests=True -o with_presets=True -pr:b default --build missing
 
-      - name: Build
-        working-directory: ${{ github.workspace }}/build
-        run: |
-          conan build ..
+      - name: Run build
+        run: conan build . -sf tmp/source -if tmp/install -bf tmp/build
 
       - name: Package
-        working-directory: ${{ github.workspace }}/build
-        run: |
-          conan package ..
+        run: conan package . -sf tmp/source -if tmp/install -bf tmp/build
 
-      - name: Export conan package
-        working-directory: ${{ github.workspace }}/build
-        run: |
-          conan remove ${{ env.APP_NAME }}/* -f
-          conan export-pkg .. user/channel -pr:b default
+      - name: Export package
+        run: conan export-pkg . user/channel -sf tmp/source -if tmp/install -bf tmp/build -pr:b default
 
       - name: Retrieve package version
         id: current_version
-        run: |
-          echo "::set-output name=value::$(cat ./build/VERSION)"
+        run: echo "::set-output name=value::$(cat ./tmp/build/VERSION)"
 
       - name: Run integration test
-        working-directory: ${{ github.workspace }}/integration
-        run: |
-          conan test . ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+        run: conan test integration ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -tbf tmp/test -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
 
       - name: Store package information
         shell: bash
         run: |
-          echo "$(basename "$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")")" > package_name.txt
-          echo "$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")" > package_path.txt
+          echo "$(basename "$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")")" > package_name.txt
+          echo "$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")" > package_path.txt
 
       - name: Retrieve package information
         id: current_package

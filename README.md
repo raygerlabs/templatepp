@@ -64,28 +64,30 @@ The [conan build stages](https://docs.conan.io/en/latest/reference/commands/deve
 For convenience here is a short cheatsheet:
 
 ```
-# Create build directory:
-$ mkdir build
-$ cd build
+# Copy the sources
+$ conan source . -sf tmp/source
 
 # Install dependencies:
-$ conan install .. -s build_type=Release -pr:b default --build missing
+$ conan install . -if tmp/install -s build_type=Release -pr:b default --build missing
 
 # Build
-$ conan build .. --configure # only run cmake.configure(). Other methods will do nothing
-$ conan build .. --build     # only run cmake.build(). Other methods will do nothing
-$ conan build .. --install   # only run cmake.install(). Other methods will do nothing
-$ conan build .. --test      # only run cmake.test(). Other methods will do nothing
+$ conan build . -sf tmp/source -if tmp/install -bf tmp/build
+
+# You can run each build stage separately:
+$ conan build . -sf tmp/source -if tmp/install -bf tmp/build --configure # only run cmake.configure(). Other methods will do nothing
+$ conan build . -sf tmp/source -if tmp/install -bf tmp/build --build     # only run cmake.build(). Other methods will do nothing
+$ conan build . -sf tmp/source -if tmp/install -bf tmp/build --install   # only run cmake.install(). Other methods will do nothing
+$ conan build . -sf tmp/source -if tmp/install -bf tmp/build --test      # only run cmake.test(). Other methods will do nothing
 # They can be combined
-$ conan build .. --configure --build # run cmake.configure() + cmake.build(), but not cmake.install() nor cmake.test
+$ conan build . -sf tmp/source -if tmp/install -bf tmp/build --configure --build # run cmake.configure() + cmake.build(), but not cmake.install() nor cmake.test
 
 # 3. Package
-$ conan package ..
+$ conan package . -sf tmp/source -if tmp/install -bf tmp/build
 
 # 4. Export conan package
-$ conan export-pkg .. user/channel
+$ conan export-pkg .. user/channel -sf tmp/source -if tmp/install -bf tmp/build -pr:b default
 
 # 5. Run integration test
 $ cd interation
-$ conan test . templatepp<version>@user/channel
+$ conan test . templatepp<version>@user/channel -tbf tmp/test -s build_type=Release -pr:b default --build missing
 ```

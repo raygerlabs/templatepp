@@ -28,7 +28,6 @@ class TemplateppRecipe(ConanFile):
     "with_packaging": True
   }
   generators = "CMakeDeps"
-  exports_sources = "*"
 #------------------------------------------------------------------------------
   def configure(self):
     self.options["sdl2"].shared = self.options.shared
@@ -47,6 +46,15 @@ class TemplateppRecipe(ConanFile):
     self.copy("*.dll", src="bin", dst=f"bin/{self.settings.build_type}")
     self.copy("*.dylib*", src="lib", dst="lib")
     self.copy("*.so*", src="lib", dst="lib")
+#------------------------------------------------------------------------------
+  def export_sources(self):
+    for d in ("cmake", "include", "src", "test"):
+      shutil.copytree(src=d, dst=os.path.join(self.export_sources_folder, d))
+    self.copy("CMakeLists.txt")
+    self.copy("CMakePresets.json")
+    self.copy("conanfile.py")
+    self.copy("LICENSE")
+    self.copy("README.md")
 #------------------------------------------------------------------------------
   def configure_cmake(self):
     cmake = CMake(self)
@@ -82,6 +90,6 @@ class TemplateppRecipe(ConanFile):
       self.run("cpack", self.build_folder)
 #------------------------------------------------------------------------------
   def package_info(self):
-    self.cpp_info.libs = tools.collect_libs(self)
+    self.cpp_info.libs = self.collect_libs()
 #------------------------------------------------------------------------------
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
