@@ -106,14 +106,14 @@ jobs:
         run: conan package . -sf tmp/source -if tmp/install -bf tmp/build
 
       - name: Export package
-        run: conan export-pkg . user/channel -sf tmp/source -if tmp/install -bf tmp/build -pr:b default
+        run: conan export-pkg . user/channel -sf tmp/source -if tmp/install -bf tmp/build
 
       - name: Retrieve package version
         id: current_version
         run: echo "::set-output name=value::$(cat ./tmp/build/VERSION)"
 
       - name: Run integration test
-        run: conan test integration ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -tbf tmp/test -s build_type=${{ env.BUILD_TYPE }} -pr:b default --build missing
+        run: conan test integration ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -tbf tmp/test -s build_type=${{ env.BUILD_TYPE }} --build missing
 
       - name: Store package information
         shell: bash
