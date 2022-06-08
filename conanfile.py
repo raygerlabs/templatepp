@@ -34,9 +34,7 @@ class TemplateppRecipe(ConanFile):
     self.options["sdl2"].shared = self.options.shared
     self.options["sdl2"].sdl2main = False
     if self.options.with_tests:
-      self.options["gtest"].shared = False # CTest/GTest has compatibility
-                                           # issues when GTest is shared
-                                           # library
+      self.options["gtest"].shared = False
 #------------------------------------------------------------------------------
   def build_requirements(self):
     if self.options.with_tests:
