@@ -111,6 +111,7 @@ jobs:
       - name: Export conan package
         working-directory: ${{ github.workspace }}/build
         run: |
+          conan remove templatepp/* -f
           conan export-pkg .. user/channel -pr:b default
 
       - name: Retrieve package version
