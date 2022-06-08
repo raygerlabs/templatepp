@@ -1,7 +1,7 @@
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-#----------------------------------------------------------------------
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#------------------------------------------------------------------------------
 add_library(templatepp)
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 configure_file(
   config.hpp.in
   ${PROJECT_BINARY_DIR}/include/templatepp/config.hpp
@@ -24,7 +24,7 @@ target_sources(templatepp
         ${PROJECT_SOURCE_DIR}/include/templatepp/application.hpp
         ${PROJECT_SOURCE_DIR}/include/templatepp/sdl_utils.hpp
 )
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 target_include_directories(templatepp
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/>
@@ -33,18 +33,17 @@ target_include_directories(templatepp
   PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
 )
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 find_package(SDL2 CONFIG REQUIRED)
-target_compile_options(templatepp PUBLIC -Umain)
 target_link_libraries(templatepp
   SDL2::SDL2
 )
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 set_target_properties(templatepp PROPERTIES FOLDER "Runtime")
 get_target_property(SOURCES templatepp SOURCES)
 get_target_property(INCLUDES templatepp HEADER_SET_TEMPLATEPP)
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCES} ${INCLUDES})
-#----------------------------------------------------------------------
+#------------------------------------------------------------------------------
 install(
   TARGETS templatepp
   EXPORT templatepp-targets
@@ -59,4 +58,5 @@ export(
   NAMESPACE ${PROJECT_NAME}::
   FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-targets.cmake
 )
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#------------------------------------------------------------------------------
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

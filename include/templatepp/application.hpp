@@ -1,8 +1,9 @@
+//-----------------------------------------------------------------------------
 #pragma once
-
+//-----------------------------------------------------------------------------
 #include <templatepp/config.hpp>
 #include <templatepp/sdl_utils.hpp>
-
+//-----------------------------------------------------------------------------
 namespace templatepp
 {
 class TEMPLATEPP_LOCAL application
@@ -15,3 +16,4 @@ private:
   sdl::unique_system system = {nullptr, nullptr};
 };
 } // namespace templatepp
+//-----------------------------------------------------------------------------
