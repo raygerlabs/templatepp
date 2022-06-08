@@ -30,14 +30,16 @@ class TemplateppRecipe(ConanFile):
   generators = "CMakeDeps"
   exports_sources = "*"
 #------------------------------------------------------------------------------
+  def configure(self):
+    self.options["*"].shared = True
+    self.options["sdl2"].sdl2main = False
+#------------------------------------------------------------------------------
   def build_requirements(self):
     if self.options.with_tests:
       self.test_requires("gtest/[^1.11.0]@")
 #------------------------------------------------------------------------------
   def requirements(self):
     self.requires("sdl/2.0.20")
-    self.options["sdl"].shared = self.options.shared
-    self.options["sdl"].sdl2main = False
 #------------------------------------------------------------------------------
   def imports(self):
     self.copy("*.dll", src="bin", dst=f"bin/{self.settings.build_type}")
@@ -46,6 +48,7 @@ class TemplateppRecipe(ConanFile):
 #------------------------------------------------------------------------------
   def configure_cmake(self):
     cmake = CMake(self)
+    cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
     cmake.definitions["BUILD_TESTING"] = self.options.with_tests
     cmake.definitions["BUILD_PACKAGING"] = self.options.with_packaging
     if self.options.with_presets:

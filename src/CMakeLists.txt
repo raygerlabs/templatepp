@@ -35,7 +35,6 @@ target_include_directories(templatepp
 )
 #------------------------------------------------------------------------------
 find_package(SDL2 CONFIG REQUIRED)
-target_compile_options(templatepp PUBLIC -Umain)
 target_link_libraries(templatepp
   SDL2::SDL2
 )
