@@ -90,6 +90,9 @@ jobs:
         if: matrix.compiler == 'Visual Studio'
         run: conan profile remove settings.compiler.libcxx default
 
+      - name: Remove package from local cache
+        run: conan remove ${{ env.APP_NAME }}/* -f
+
       - name: Export sources
         run: conan source . -sf tmp/source
 
