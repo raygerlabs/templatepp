@@ -103,7 +103,7 @@ jobs:
         run: conan package . -sf tmp/source -if tmp/install -bf tmp/build
 
       - name: Export package
-        run: conan export-pkg . user/channel -sf tmp/source -if tmp/install -bf tmp/build
+        run: conan export-pkg . user/channel -sf tmp/source -if tmp/install -bf tmp/build -f
 
       - name: Retrieve package version
         id: current_version
