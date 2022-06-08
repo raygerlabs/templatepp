@@ -102,12 +102,15 @@ jobs:
       - name: Package
         run: conan package . -sf tmp/source -if tmp/install -bf tmp/build
 
-      - name: Export package
-        run: conan export-pkg . user/channel -sf tmp/source -if tmp/install -bf tmp/build -f
-
       - name: Retrieve package version
         id: current_version
         run: echo "::set-output name=value::$(cat ./tmp/build/VERSION)"
+
+      - name: Remove package from local cache
+        run: conan remove ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }} -f
+
+      - name: Export package
+        run: conan export-pkg . user/channel -sf tmp/source -if tmp/install -bf tmp/build
 
       - name: Run integration test
         run: conan test integration ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -tbf tmp/test -s build_type=${{ env.BUILD_TYPE }} --build missing
