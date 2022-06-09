@@ -23,6 +23,23 @@ It is very important to emphasize we **do not** intend replacing any existing bu
 
 The intended usage of this template is subsequent replacement of names, folders, and modules. Due to the modular design the project components can be easily replaced.
 
+### Project Structure
+
+The project has the following submodules:
+- templatepp, the main library this project provides (src/include)
+- unit_tests, the unit tests of the main library (test)
+- integration, the integration test of the main library (integration)
+
+#### CMake Presets
+
+You can build the project with or without CMake presets. It is configurable via conan settings.
+Each preset provides debug and optimized build configs (profile and release).
+
+The following compiler presets are supported at the moment:
+- gcc
+- clang
+- msvc
+
 ### Build
 
 #### Cmake Workflow
@@ -32,8 +49,8 @@ Before starting with Cmake, you must install the project dependencies first. It 
 For convenience here is a short cheatsheet:
 
 ```
-# 1. Install project dependencies:
-$ conan install . -if /path/to/the/build -s build_type=Release -pr:b default --build missing
+# 1. Install project dependencies from conan remote:
+$ conan install . --install-folder /path/to/the/build -s build_type=Release -pr:b default --build missing
 
 # 2.a For a single-configuration generator:
 $ cmake -S . -B /path/to/the/build -DCMAKE_BUILD_TYPE=Release
@@ -64,30 +81,30 @@ The [conan build stages](https://docs.conan.io/en/latest/reference/commands/deve
 For convenience here is a short cheatsheet:
 
 ```
-# Copy the sources
-$ conan source . -sf tmp/source
+# Copy source files
+$ conan source . --source-folder tmp/source
 
-# Install dependencies:
-$ conan install . -if tmp/install -s build_type=Release -pr:b default --build missing
+# Install dependencies from conan remote:
+$ conan install . --install-folder tmp/install -s build_type=Release -pr:b default --build missing
 
-# Build
-$ conan build . -sf tmp/source -if tmp/install -bf tmp/build
+# Build the project
+$ conan build . --source-folder tmp/source --install-folder tmp/install --build-folder tmp/build
 
-# You can run each build stage separately:
-$ conan build . -sf tmp/source -if tmp/install -bf tmp/build --configure # only run cmake.configure(). Other methods will do nothing
-$ conan build . -sf tmp/source -if tmp/install -bf tmp/build --build     # only run cmake.build(). Other methods will do nothing
-$ conan build . -sf tmp/source -if tmp/install -bf tmp/build --install   # only run cmake.install(). Other methods will do nothing
-$ conan build . -sf tmp/source -if tmp/install -bf tmp/build --test      # only run cmake.test(). Other methods will do nothing
+# Each build stage can be run separately:
+$ conan build . --configure         <args...>     # only run cmake.configure(). Other methods will do nothing
+$ conan build . --build             <args...>     # only run cmake.build(). Other methods will do nothing
+$ conan build . --install           <args...>     # only run cmake.install(). Other methods will do nothing
+$ conan build . --test              <args...>     # only run cmake.test(). Other methods will do nothing
 # They can be combined
-$ conan build . -sf tmp/source -if tmp/install -bf tmp/build --configure --build # run cmake.configure() + cmake.build(), but not cmake.install() nor cmake.test
+$ conan build . --configure --build <args...> # run cmake.configure() + cmake.build(), but not cmake.install() nor cmake.test
 
-# 3. Package
-$ conan package . -sf tmp/source -if tmp/install -bf tmp/build
+# 3. Package in the local build folder
+$ conan package . --source-folder tmp/source --install-folder tmp/install --build-folder tmp/build
 
-# 4. Export conan package
-$ conan export-pkg .. user/channel -sf tmp/source -if tmp/install -bf tmp/build -pr:b default
+# 4. Export package to local conan cache
+$ conan export-pkg . user/channel --source-folder tmp/source --install-folder tmp/install --build-folder tmp/build
 
 # 5. Run integration test
 $ cd interation
-$ conan test . templatepp<version>@user/channel -tbf tmp/test -s build_type=Release -pr:b default --build missing
+$ conan test . templatepp<version>@user/channel --test-build-folder tmp/test --build missing
 ```

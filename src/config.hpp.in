@@ -1,10 +1,32 @@
-//-----------------------------------------------------------------------------
 #pragma once
-//-----------------------------------------------------------------------------
+
+/*!
+ * Whether or not debug mode is enabled.
+ * Possibles values are either 0 or 1.
+ */
+#ifndef @PACKAGE_PREFIX@_DEBUG
+#if defined _DEBUG
+#define @PACKAGE_PREFIX@_DEBUG 1
+#else
+#define @PACKAGE_PREFIX@_DEBUG 0
+#endif
+#endif
+
+/*!
+ * Whether or not DLL version of library is built.
+ * Possibles values are either 0 or 1.
+ */
 #ifndef @PACKAGE_PREFIX@_DLL
 #define @PACKAGE_PREFIX@_DLL @PACKAGE_IS_A_DLL@
 #endif
-//-----------------------------------------------------------------------------
+
+/*!
+ * Whether or not mark a function as DLL export.
+ * Usage:
+ * void TEMPLATEPP_API f() {} // export function 'f'
+ * void TEMPLATEPP_LOCAL g() {} // do not export function 'g'
+ * struct TEMPLATEPP_API S {}; // export struct 'S' and its member functions
+ */
 #ifndef @PACKAGE_PREFIX@_API
 #if @PACKAGE_PREFIX@_DLL
 #if defined _MSC_VER
@@ -22,4 +44,3 @@
 #define @PACKAGE_PREFIX@_LOCAL
 #endif
 #endif
-//-----------------------------------------------------------------------------

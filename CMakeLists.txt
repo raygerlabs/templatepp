@@ -17,6 +17,7 @@ project(templatepp VERSION 1.0.0)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(BUILD_TESTING "Build unit tests" ON)
 option(BUILD_PACKAGING "Build packages" ON)
+option(BUILD_DOC "Build documentation" ON)
 #------------------------------------------------------------------------------
 include(build_options)
 include(build_paths)
@@ -28,6 +29,9 @@ if (BUILD_TESTING)
   include(CTest)
   include(GoogleTest)
   add_subdirectory(test)
+endif()
+if (BUILD_DOC)
+  include(build_doc)
 endif()
 #------------------------------------------------------------------------------
 # Install project commons
