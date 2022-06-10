@@ -105,6 +105,6 @@ $ conan package . --source-folder tmp/source --install-folder tmp/install --buil
 $ conan export-pkg . user/channel --source-folder tmp/source --install-folder tmp/install --build-folder tmp/build
 
 # 5. Run integration test
-$ cd interation
+$ cd integration
 $ conan test . templatepp<version>@user/channel --test-build-folder tmp/test --build missing
 ```

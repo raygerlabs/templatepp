@@ -19,13 +19,15 @@ class TemplateppRecipe(ConanFile):
     "shared": [True, False],
     "with_tests": [True, False],
     "with_presets": [True, False],
-     "with_packaging": [True, False]
+    "with_packaging": [True, False],
+    "with_docs": [True, False]
   }
   default_options = {
     "shared": True,
     "with_tests": False,
     "with_presets": False,
-    "with_packaging": True
+    "with_packaging": True,
+    "with_docs": False
   }
   generators = "CMakeDeps"
 #------------------------------------------------------------------------------
@@ -61,6 +63,7 @@ class TemplateppRecipe(ConanFile):
     cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
     cmake.definitions["BUILD_TESTING"] = self.options.with_tests
     cmake.definitions["BUILD_PACKAGING"] = self.options.with_packaging
+    cmake.definitions["BUILD_DOC"] = self.options.with_docs
     if self.options.with_presets:
       if self.settings.compiler == "Visual Studio":
         cmake.configure(args=["--preset=msvc"])
