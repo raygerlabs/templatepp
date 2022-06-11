@@ -26,13 +26,15 @@ if(LATEX_PDFLATEX_FOUND STREQUAL "NO")
 else()
   add_custom_target(pdfdoc
     COMMAND make pdf
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+      ${PROJECT_BINARY_DIR}/doc/userguide 
+    COMMAND ${CMAKE_COMMAND} -E copy
+      ${PROJECT_BINARY_DIR}/doc/latex/refman.pdf
+      ${PROJECT_BINARY_DIR}/doc/userguide/${PROJECT_NAME}_user_guide.pdf
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doc/latex
     DEPENDS doxydoc
     COMMENT "Generating PDF version of API documentation"
     VERBATIM)
-  install(FILES ${PROJECT_BINARY_DIR}/doc/latex/refman.pdf
-    RENAME ${PROJECT_NAME}_user_guide.pdf
-    DESTINATION doc)
 endif()
 
 #------------------------------------------------------------------------------
