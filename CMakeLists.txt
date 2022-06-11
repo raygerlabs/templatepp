@@ -15,8 +15,8 @@ project(templatepp VERSION 1.0.0)
 #------------------------------------------------------------------------------
 # User options
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-option(BUILD_TESTING "Build unit tests" OFF)
-option(BUILD_PACKAGING "Build package" OFF)
+option(BUILD_TESTS "Build unit tests" OFF)
+option(BUILD_ARCHIVE "Build package" OFF)
 option(BUILD_DOC "Build API documentation" OFF)
 #------------------------------------------------------------------------------
 include(build_options)
@@ -32,7 +32,7 @@ endif()
 # Source
 add_subdirectory(src)
 
-if (BUILD_TESTING)
+if(BUILD_TESTS)
   include(CTest)
   include(GoogleTest)
   add_subdirectory(test)
@@ -53,8 +53,8 @@ install(
 include(export_config)
 #------------------------------------------------------------------------------
 # Execute CPack
-if (BUILD_PACKAGING)
-  include(package)
+if (BUILD_ARCHIVE)
+  include(archive)
 endif()
 #------------------------------------------------------------------------------
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
