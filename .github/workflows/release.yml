@@ -91,7 +91,7 @@ jobs:
         run: conan profile remove settings.compiler.libcxx default
 
       - name: Install dependencies
-        run: conan install . -if tmp/install -s build_type=${{ env.BUILD_TYPE }} -o with_presets=True -o with_cpack=True -o with_doc=True -pr:b default --build missing
+        run: conan install . -if tmp/install -s build_type=${{ env.BUILD_TYPE }} -o with_presets=True -o with_tests=True -o with_cpack=True -pr:b default --build missing
 
       - name: Run build
         run: conan build . -if tmp/install -bf tmp/build
