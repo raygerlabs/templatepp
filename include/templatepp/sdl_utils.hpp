@@ -48,7 +48,7 @@ using SDL_Handle = int*;
  * @param flags subsystem initialization flags
  * @returns handle for SDL library
  */
-SDL_Handle SDL_CreateSDL(Uint32 flags = SDL_INIT_EVERYTHING)
+inline SDL_Handle SDL_CreateSDL(Uint32 flags = SDL_INIT_EVERYTHING)
 {
   SDL_SetMainReady();
   return new std::remove_pointer_t<SDL_Handle>{SDL_Init(flags)};
@@ -58,7 +58,7 @@ SDL_Handle SDL_CreateSDL(Uint32 flags = SDL_INIT_EVERYTHING)
  * @brief Stops SDL library and deletes handle for it.
  * @param handle the handle for SDL library
  */
-void SDL_DestroySDL(SDL_Handle handle)
+inline void SDL_DestroySDL(SDL_Handle handle)
 {
   if (handle)
   {
@@ -79,7 +79,7 @@ using unique_system = std::unique_ptr<std::remove_pointer_t<SDL_Handle>,
  * @returns unique system type
  * @throws system_error if SDL library initialization fails
  */
-unique_system make_unique_system(std::uint32_t flags = SDL_INIT_EVERYTHING)
+inline unique_system make_unique_system(std::uint32_t flags = SDL_INIT_EVERYTHING)
 {
   return make_unique_resource(SDL_CreateSDL, SDL_DestroySDL, flags);
 }

@@ -91,17 +91,14 @@ jobs:
         if: matrix.compiler == 'Visual Studio'
         run: conan profile remove settings.compiler.libcxx default
 
-      - name: Export sources
-        run: conan source . -sf tmp/source
-
       - name: Install dependencies
-        run: conan install . -if tmp/install -s build_type=${{ env.BUILD_TYPE }} -o with_tests=True -o with_presets=True -pr:b default --build missing
+        run: conan install . -if tmp/install -s build_type=${{ env.BUILD_TYPE }} -o with_presets=True -o with_cpack=True -o with_doc=True -pr:b default --build missing
 
       - name: Run build
-        run: conan build . -sf tmp/source -if tmp/install -bf tmp/build
+        run: conan build . -if tmp/install -bf tmp/build
 
       - name: Package
-        run: conan package . -sf tmp/source -if tmp/install -bf tmp/build
+        run: conan package . -if tmp/install -bf tmp/build
 
       - name: Retrieve package version
         id: current_version
@@ -111,7 +108,7 @@ jobs:
         run: conan remove ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }} -f
 
       - name: Export package
-        run: conan export-pkg . user/channel -sf tmp/source -if tmp/install -bf tmp/build
+        run: conan export-pkg . user/channel -if tmp/install -bf tmp/build
 
       - name: Run integration test
         run: conan test integration ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -tbf tmp/test -s build_type=${{ env.BUILD_TYPE }} --build missing

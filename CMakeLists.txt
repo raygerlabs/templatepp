@@ -14,20 +14,19 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 project(templatepp VERSION 1.0.0)
 #------------------------------------------------------------------------------
 # User options
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
-option(BUILD_TESTING "Build unit tests" OFF)
-option(BUILD_PACKAGING "Build packages" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(BUILD_TESTING "Build unit tests" ON)
+option(BUILD_CPACK "Build packages" OFF)
 option(BUILD_DOC "Build documentation" OFF)
 #------------------------------------------------------------------------------
 include(build_options)
 include(build_paths)
 include(install_paths)
-#------------------------------------------------------------------------------
-# Source
 if (BUILD_DOC)
   include(build_doc)
 endif()
-
+#------------------------------------------------------------------------------
+# Source
 add_subdirectory(src)
 
 if (BUILD_TESTING)
@@ -50,9 +49,9 @@ install(
 #------------------------------------------------------------------------------
 include(export_config)
 #------------------------------------------------------------------------------
-# Archive package
-if (BUILD_PACKAGING)
-  include(package)
+# Execute CPack
+if (BUILD_CPACK)
+  include(cpack)
 endif()
 #------------------------------------------------------------------------------
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

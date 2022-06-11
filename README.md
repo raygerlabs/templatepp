@@ -81,9 +81,6 @@ The [conan build stages](https://docs.conan.io/en/latest/reference/commands/deve
 For convenience here is a short cheatsheet:
 
 ```
-# Copy source files
-$ conan source . --source-folder tmp/source
-
 # Install dependencies from conan remote:
 $ conan install . --install-folder tmp/install -s build_type=Release -pr:b default --build missing
 
@@ -98,13 +95,35 @@ $ conan build . --test              <args...>     # only run cmake.test(). Other
 # They can be combined
 $ conan build . --configure --build <args...> # run cmake.configure() + cmake.build(), but not cmake.install() nor cmake.test
 
-# 3. Package in the local build folder
+```
+
+### Package
+
+The project packaging can be done in multiple stages.
+
+```
+# To local build folder
 $ conan package . --source-folder tmp/source --install-folder tmp/install --build-folder tmp/build
 
-# 4. Export package to local conan cache
+# To local conan cache
 $ conan export-pkg . user/channel --source-folder tmp/source --install-folder tmp/install --build-folder tmp/build
 
-# 5. Run integration test
+# Verify package integrity
 $ cd integration
 $ conan test . templatepp<version>@user/channel --test-build-folder tmp/test --build missing
+```
+
+### Documentation
+
+As of now the API documentation can be generated only on Linux. The following tools must be available:
+
+```
+$ sudo apt update
+$ sudo apt install -y doxygen graphviz texlive-latex-extra
+```
+
+For generating the documentation, configure conan such as
+
+```
+$ conan install . -o with_doc=True
 ```
