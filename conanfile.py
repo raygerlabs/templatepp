@@ -41,8 +41,6 @@ class TemplateppRecipe(ConanFile):
   ]
 #------------------------------------------------------------------------------
   def configure(self):
-    if self.settings.os != "Linux": # API doc is only supported for Linux
-      self.options.with_doc = False
     self.options["gtest"].shared = False # CTest is broken with shared GTest lib
     self.options["sdl2"].shared = self.options.shared
     self.options["sdl2"].sdl2main = False # We have our own main() function
