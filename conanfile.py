@@ -17,7 +17,7 @@ class TemplateppRecipe(ConanFile):
   settings = "os", "compiler", "build_type", "arch"
   options = {
     "shared": [True, False],
-    "with_tests": [True],
+    "with_tests": [True, False],
     "with_presets": [True, False],
     "with_cpack": [True, False]
   }

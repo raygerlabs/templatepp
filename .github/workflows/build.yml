@@ -153,5 +153,5 @@ jobs:
     - name: Upload package
       uses: actions/upload-artifact@v3
       with:
-        name: userguide
-        path: ${{ runner.workspace }}/tmp/build/doc/userguide
+        name: ${{ env.APP_NAME }}_user_guide.pdf
+        path: ${{ runner.workspace }}/tmp/build/doc/userguide/*.pdf
