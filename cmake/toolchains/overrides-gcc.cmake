@@ -49,11 +49,13 @@ set(CMAKE_CXX_FLAGS_DEBUG_INIT
 #------------------------------------------------------------------------------
 set(CMAKE_CXX_FLAGS_PROFILE_INIT
   -O3                        # Enable full compiler code optimizations
+  -march=native              # Add intrinsic if available
   -D_PROFILE -DNDEBUG        # Disable debug assertions
 )
 #------------------------------------------------------------------------------
 set(CMAKE_CXX_FLAGS_RELEASE_INIT
   -O3                        # Enable full compiler code optimizations
+  -march=native              # Add intrinsic if available
   -D_RELEASE -DNDEBUG        # Disable debug assertions
 )
 #------------------------------------------------------------------------------
