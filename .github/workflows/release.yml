@@ -203,8 +203,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.current_release.outputs.url }}
-        asset_name: ${{ env.APP_NAME }}_user_guide.pdf
-        asset_path: ${{ github.workspace }}/tmp/build/doc/userguide/*.pdf
+        asset_name: userguide
+        asset_path: ${{ github.workspace }}/tmp/build/doc/userguide/
         asset_content_type: application/pdf
 
   upload-release:
