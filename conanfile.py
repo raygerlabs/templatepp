@@ -18,16 +18,25 @@ class TemplateppRecipe(ConanFile):
   options = {
     "shared": [True, False],
     "with_presets": [True, False],
-    "with_cpack": [True, False],
-    "with_doc": [True, False]
+    "with_cpack": [True, False]
   }
   default_options = {
     "shared": True,
     "with_presets": False,
-    "with_cpack": False,
-    "with_doc": False
+    "with_cpack": False
   }
   generators = "CMakeDeps"
+  exports = [
+    "README.md",
+    "LICENSE"
+  ]
+  exports_sources = [
+    "include/*",
+    "src/*",
+    "cmake/*",
+    "test/*",
+    "CMakeLists.txt"
+  ]
 #------------------------------------------------------------------------------
   def configure(self):
     if self.settings.os != "Linux": # API doc is only supported for Linux
@@ -47,20 +56,9 @@ class TemplateppRecipe(ConanFile):
     self.copy("*.dylib*", src="lib", dst="lib")
     self.copy("*.so*", src="lib", dst="lib")
 #------------------------------------------------------------------------------
-  def export_sources(self):
-    for d in ("src", "include", "cmake", "test"):
-      shutil.copytree(src=d, dst=os.path.join(self.export_sources_folder, d))
-    self.copy("CMakeLists.txt")
-    self.copy("CMakePresets.json")
-    self.copy("conanfile.py")
-    self.copy("LICENSE")
-    self.copy("README.md")
-#------------------------------------------------------------------------------
   def configure_cmake(self):
     cmake = CMake(self)
-    cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
-    cmake.definitions["BUILD_CPACK"] = self.options.with_cpack
-    cmake.definitions["BUILD_DOC"] = self.options.with_doc
+    cmake.definitions["BUILD_PACKAGING"] = self.options.with_cpack
     if self.options.with_presets: # Ignore cmake preset unless specified
       if self.settings.compiler == "Visual Studio":
         cmake.configure(args=["--preset=msvc"])

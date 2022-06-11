@@ -15,15 +15,18 @@ project(templatepp VERSION 1.0.0)
 #------------------------------------------------------------------------------
 # User options
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-option(BUILD_TESTING "Build unit tests" ON)
-option(BUILD_CPACK "Build packages" OFF)
-option(BUILD_DOC "Build documentation" OFF)
+option(BUILD_TESTING "Build unit tests" OFF)
+option(BUILD_PACKAGING "Build package" OFF)
+option(BUILD_DOC "Build API documentation" OFF)
 #------------------------------------------------------------------------------
 include(build_options)
 include(build_paths)
 include(install_paths)
+#------------------------------------------------------------------------------
+# Generate API documentation
 if (BUILD_DOC)
-  include(build_doc)
+  add_subdirectory(doc)
+  return()
 endif()
 #------------------------------------------------------------------------------
 # Source
@@ -39,18 +42,18 @@ endif()
 file(WRITE ${CMAKE_BINARY_DIR}/VERSION ${PROJECT_VERSION})
 install(
   FILES "${CMAKE_BINARY_DIR}/VERSION"
-  DESTINATION ${PACKAGE_INSTALL_DOCDIR})
+  DESTINATION .)
 install(
   FILES "${CMAKE_SOURCE_DIR}/README.md"
-  DESTINATION ${PACKAGE_INSTALL_DOCDIR})
+  DESTINATION .)
 install(
   FILES "${CMAKE_SOURCE_DIR}/LICENSE"
-  DESTINATION ${PACKAGE_INSTALL_DOCDIR})
+  DESTINATION .)
 #------------------------------------------------------------------------------
 include(export_config)
 #------------------------------------------------------------------------------
 # Execute CPack
-if (BUILD_CPACK)
+if (BUILD_PACKAGING)
   include(package)
 endif()
 #------------------------------------------------------------------------------
