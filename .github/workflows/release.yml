@@ -163,6 +163,50 @@ jobs:
           name: upload_url
           path: upload_url.txt
 
+  build_doc:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Install documentation tools
+      shell: bash
+      run: sudo apt install doxygen graphviz texlive-latex-extra
+
+    - name: Create build directory
+      run: cmake -E make_directory ${{runner.workspace}}/tmp/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/tmp/build
+      run: cmake $GITHUB_WORKSPACE -DBUILD_DOC=True
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/tmp/build
+      shell: bash
+      run: cmake --build . --target doxydoc pdfdoc
+
+    - name: Download release information
+      uses: actions/download-artifact@v2
+      with:
+        name: upload_url
+
+    - name: Load release information
+      id: current_release
+      run: |
+        echo "::set-output name=url::$(cat ${{ github.workspace }}/upload_url.txt)"
+
+    - name: Upload user guide
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.current_release.outputs.url }}
+        asset_name: userguide
+        asset_path: ${{ github.workspace }}/tmp/build/doc/userguide
+        asset_content_type: application/pdf
+
   upload-release:
     runs-on: ubuntu-latest
     needs: create-release
