@@ -17,11 +17,13 @@ class TemplateppRecipe(ConanFile):
   settings = "os", "compiler", "build_type", "arch"
   options = {
     "shared": [True, False],
+    "with_tests": [True],
     "with_presets": [True, False],
     "with_cpack": [True, False]
   }
   default_options = {
     "shared": True,
+    "with_tests": False,
     "with_presets": False,
     "with_cpack": False
   }
@@ -59,6 +61,7 @@ class TemplateppRecipe(ConanFile):
   def configure_cmake(self):
     cmake = CMake(self)
     cmake.definitions["BUILD_PACKAGING"] = self.options.with_cpack
+    cmake.definitions["BUILD_TESTING"] = self.options.with_tests
     if self.options.with_presets: # Ignore cmake preset unless specified
       if self.settings.compiler == "Visual Studio":
         cmake.configure(args=["--preset=msvc"])
