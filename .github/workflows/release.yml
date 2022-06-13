@@ -162,6 +162,8 @@ jobs:
 
   build-doc:
     runs-on: ubuntu-latest
+    needs:
+      - create-release
     steps:
       - uses: actions/checkout@v2
         with:
