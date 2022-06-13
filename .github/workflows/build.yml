@@ -45,8 +45,8 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-      - name: Retrieve current branch name
-        id: current_branch
+      - name: Get current branch name
+        id: this_branch
         run: |
           echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
 
@@ -57,7 +57,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.conan
-          key: conan-package-cache-${{ steps.current_branch.outputs.name }}
+          key: conan-package-cache-${{ steps.this_branch.outputs.name }}
           restore-keys: |
             conan-package-cache-master
 
@@ -85,47 +85,47 @@ jobs:
           conan profile update settings.compiler.libcxx="${{ matrix.compiler_libcxx }}" default
           conan profile show default
 
-      - name: Remove useless setting for Visual Studio
+      - name: Remove uncompatible conan setting for Visual Studio
         shell: bash
         if: matrix.compiler == 'Visual Studio'
         run: conan profile remove settings.compiler.libcxx default
 
       - name: Install dependencies
-        run: conan install . -if tmp/install -s build_type=${{ env.BUILD_TYPE }} -o with_presets=True -o with_tests=True -o with_archive=True -pr:b default --build missing
+        run: conan install . -if build -s build_type=${{ env.BUILD_TYPE }} -o with_presets=True -o with_tests=True -o with_archive=True -pr:b default --build missing
 
       - name: Run build
-        run: conan build . -if tmp/install -bf tmp/build
+        run: conan build . -bf build
+
+      - name: Get project info
+        id: this_project
+        run: |
+          echo "::set-output name=name::$(cat ./build/NAME)"
+          echo "::set-output name=version::$(cat ./build/VERSION)"
 
       - name: Package
         run: conan package . -if tmp/install -bf tmp/build
 
-      - name: Retrieve project information
-        id: current_project
-        run: |
-          echo "::set-output name=name::$(cat ${{ github.workspace }}/tmp/build/NAME)"
-          echo "::set-output name=version::$(cat ${{ github.workspace }}/tmp/build/VERSION)"
-
       - name: Remove package from local cache
-        run: conan remove ${{ steps.current_project.outputs.name }}/${{ steps.current_project.outputs.version }} -f
+        run: conan remove ${{ steps.this_project.outputs.name }}/${{ steps.this_project.outputs.version }} -f
 
       - name: Export package
-        run: conan export-pkg . user/channel -if tmp/install -bf tmp/build
+        run: conan export-pkg . user/channel -if build -bf build
 
       - name: Run integration test
-        run: conan test integration  ${{ steps.current_project.outputs.name }}/${{ steps.current_project.outputs.version }}@user/channel -tbf tmp/test -s build_type=${{ env.BUILD_TYPE }} --build missing
+        run: conan test integration ${{ steps.this_project.outputs.name }}/${{ steps.this_project.outputs.version }}@user/channel -tbf build -s build_type=${{ env.BUILD_TYPE }} --build missing
 
       - name: Retrieve package information
-        id: current_package
+        id: this_package
         shell: bash
         run: |
-          echo "::set-output name=name::$(basename "$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")")"
-          echo "::set-output name=path::$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")"
+          echo "::set-output name=name::$(basename "$(find "./build" -maxdepth 1 -name "${{ steps.this_project.outputs.name }}*.zip" -or -name "${{ steps.this_project.outputs.name }}*.tar.gz")")"
+          echo "::set-output name=path::$(find "./build" -maxdepth 1 -name "${{ steps.this_project.outputs.name }}*.zip" -or -name "${{ steps.this_project.outputs.name }}*.tar.gz")"
 
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.current_package.outputs.name }}
-          path: ${{ steps.current_package.outputs.path }}
+          name: ${{ steps.this_package.outputs.name }}
+          path: ${{ steps.this_package.outputs.path }}
 
   build_doc:
     runs-on: ubuntu-latest
@@ -138,27 +138,22 @@ jobs:
       shell: bash
       run: sudo apt install doxygen graphviz texlive-latex-extra
 
-    - name: Create build directory
-      run: cmake -E make_directory ${{runner.workspace}}/tmp/build
-
     - name: Configure CMake
       shell: bash
-      working-directory: ${{runner.workspace}}/tmp/build
-      run: cmake $GITHUB_WORKSPACE -DBUILD_DOC=True
+      run: cmake -DBUILD_DOC=TRUE -Bbuild
 
-    - name: Build
-      working-directory: ${{runner.workspace}}/tmp/build
+    - name: Build API documentation
       shell: bash
-      run: cmake --build . --target doxydoc pdfdoc
+      run: cmake --build build --target doxydoc pdfdoc
 
-    - name: Retrieve project information
-      id: current_project
+    - name: Get project info
+      id: this_project
       run: |
-        echo "::set-output name=name::$(cat ${{ github.workspace }}/tmp/build/NAME)"
-        echo "::set-output name=version::$(cat ${{ github.workspace }}/tmp/build/VERSION)"
+        echo "::set-output name=name::$(cat ./build/NAME)"
+        echo "::set-output name=version::$(cat ./build/VERSION)"
 
     - name: Upload user manual
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ steps.current_project.outputs.name }}-user-guide.pdf
-        path: ${{ github.workspace }}/tmp/build/doc/${{ steps.current_project.outputs.name }}-user-guide.pdf
+        name: ${{ steps.this_project.outputs.name }}-user-guide.pdf
+        path: ${{ github.workspace }}/tmp/build/doc/${{ steps.this_project.outputs.name }}-user-guide.pdf
