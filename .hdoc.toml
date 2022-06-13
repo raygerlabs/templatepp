@@ -11,6 +11,7 @@ paths = []
 use_system_includes = true
 
 [ignore]
+ignore_private_members = true
 paths = [
   "/test/",
   "/integration/",
@@ -18,3 +19,4 @@ paths = [
 
 [pages]
 homepage = "README.md"
+
