@@ -6,7 +6,6 @@ on:
       - 'v*'
 
 env:
-  APP_NAME: templatepp
   BUILD_TYPE: Release
 
 jobs:
@@ -99,24 +98,26 @@ jobs:
       - name: Package
         run: conan package . -if tmp/install -bf tmp/build
 
-      - name: Retrieve package version
-        id: current_version
-        run: echo "::set-output name=value::$(cat ./tmp/build/VERSION)"
+      - name: Retrieve project information
+        id: current_project
+        run: |
+          echo "::set-output name=name::$(cat ${{ github.workspace }}/tmp/build/NAME)"
+          echo "::set-output name=version::$(cat ${{ github.workspace }}/tmp/build/VERSION)"
 
       - name: Remove package from local cache
-        run: conan remove ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }} -f
+        run: conan remove ${{ steps.current_project.outputs.name }}/${{ steps.current_project.outputs.version }} -f
 
       - name: Export package
         run: conan export-pkg . user/channel -if tmp/install -bf tmp/build
 
       - name: Run integration test
-        run: conan test integration ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -tbf tmp/test -s build_type=${{ env.BUILD_TYPE }} --build missing
+        run: conan test integration ${{ steps.current_project.outputs.name }}/${{ steps.current_project.outputs.version }}@user/channel -tbf tmp/test -s build_type=${{ env.BUILD_TYPE }} --build missing
 
       - name: Store package information
         shell: bash
         run: |
-          echo "$(basename "$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")")" > package_name.txt
-          echo "$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")" > package_path.txt
+          echo "$(basename "$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")")" > package_name.txt
+          echo "$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")" > package_path.txt
 
       - name: Retrieve package information
         id: current_package
@@ -187,6 +188,12 @@ jobs:
       shell: bash
       run: cmake --build . --target doxydoc pdfdoc
 
+    - name: Retrieve project information
+      id: current_project
+      run: |
+        echo "::set-output name=name::$(cat ${{ github.workspace }}/tmp/build/NAME)"
+        echo "::set-output name=version::$(cat ${{ github.workspace }}/tmp/build/VERSION)"
+
     - name: Download release information
       uses: actions/download-artifact@v2
       with:
@@ -203,8 +210,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.current_release.outputs.url }}
-        asset_name: userguide
-        asset_path: ${{ github.workspace }}/tmp/build/doc/userguide/
+        asset_name: ${{ steps.current_project.outputs.name }}-user-guide.pdf
+        asset_path: ${{ github.workspace }}/tmp/build/doc/${{ steps.current_project.outputs.name }}-user-guide.pdf
         asset_content_type: application/pdf
 
   upload-release:

@@ -7,7 +7,6 @@ on:
     branches: [ master ]
 
 env:
-  APP_NAME: templatepp
   BUILD_TYPE: Release
 
 jobs:
@@ -100,28 +99,80 @@ jobs:
       - name: Package
         run: conan package . -if tmp/install -bf tmp/build
 
-      - name: Retrieve package version
-        id: current_version
-        run: echo "::set-output name=value::$(cat ./tmp/build/VERSION)"
+      - name: Retrieve project information
+        id: current_project
+        run: |
+          echo "::set-output name=name::$(cat ${{ github.workspace }}/tmp/build/NAME)"
+          echo "::set-output name=version::$(cat ${{ github.workspace }}/tmp/build/VERSION)"
 
       - name: Remove package from local cache
-        run: conan remove ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }} -f
+        run: conan remove ${{ steps.current_project.outputs.name }}/${{ steps.current_project.outputs.version }} -f
 
       - name: Export package
         run: conan export-pkg . user/channel -if tmp/install -bf tmp/build
 
       - name: Run integration test
-        run: conan test integration ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -tbf tmp/test -s build_type=${{ env.BUILD_TYPE }} --build missing
+        run: conan test integration  ${{ steps.current_project.outputs.name }}/${{ steps.current_project.outputs.version }}@user/channel -tbf tmp/test -s build_type=${{ env.BUILD_TYPE }} --build missing
 
       - name: Retrieve package information
         id: current_package
         shell: bash
         run: |
-          echo "::set-output name=name::$(basename "$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")")"
-          echo "::set-output name=path::$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")"
+          echo "::set-output name=name::$(basename "$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")")"
+          echo "::set-output name=path::$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")"
 
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.current_package.outputs.name }}
           path: ${{ steps.current_package.outputs.path }}
+
+  build_doc:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Install documentation tools
+      shell: bash
+      run: sudo apt install doxygen graphviz texlive-latex-extra
+
+    - name: Create build directory
+      run: cmake -E make_directory ${{runner.workspace}}/tmp/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/tmp/build
+      run: cmake $GITHUB_WORKSPACE -DBUILD_DOC=True
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/tmp/build
+      shell: bash
+      run: cmake --build . --target doxydoc pdfdoc
+
+    - name: Retrieve project information
+      id: current_project
+      run: |
+        echo "::set-output name=name::$(cat ${{ github.workspace }}/tmp/build/NAME)"
+        echo "::set-output name=version::$(cat ${{ github.workspace }}/tmp/build/VERSION)"
+
+    - name: Download release information
+      uses: actions/download-artifact@v2
+      with:
+        name: upload_url
+
+    - name: Load release information
+      id: current_release
+      run: |
+        echo "::set-output name=url::$(cat ${{ github.workspace }}/upload_url.txt)"
+
+    - name: Upload user guide
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.current_release.outputs.url }}
+        asset_name: ${{ steps.current_project.outputs.name }}-user-guide.pdf
+        asset_path: ${{ github.workspace }}/tmp/build/doc/${{ steps.current_project.outputs.name }}-user-guide.pdf
+        asset_content_type: application/pdf
