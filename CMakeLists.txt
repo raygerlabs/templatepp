@@ -23,6 +23,9 @@ include(build_options)
 include(build_paths)
 include(install_paths)
 #------------------------------------------------------------------------------
+file(WRITE ${CMAKE_BINARY_DIR}/NAME ${PROJECT_NAME})
+file(WRITE ${CMAKE_BINARY_DIR}/VERSION ${PROJECT_VERSION})
+#------------------------------------------------------------------------------
 # Generate API documentation
 if (BUILD_DOC)
   add_subdirectory(doc)
@@ -39,11 +42,6 @@ if(BUILD_TESTS)
 endif()
 #------------------------------------------------------------------------------
 # Install project commons
-file(WRITE ${CMAKE_BINARY_DIR}/NAME ${PROJECT_NAME})
-install(
-  FILES "${CMAKE_BINARY_DIR}/NAME"
-  DESTINATION .)
-file(WRITE ${CMAKE_BINARY_DIR}/VERSION ${PROJECT_VERSION})
 install(
   FILES "${CMAKE_BINARY_DIR}/VERSION"
   DESTINATION .)
