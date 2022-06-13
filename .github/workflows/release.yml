@@ -204,7 +204,7 @@ jobs:
       run: |
         echo "::set-output name=url::$(cat ${{ github.workspace }}/upload_url.txt)"
 
-    - name: Upload user guide
+    - name: Upload user manual
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

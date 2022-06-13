@@ -157,22 +157,8 @@ jobs:
         echo "::set-output name=name::$(cat ${{ github.workspace }}/tmp/build/NAME)"
         echo "::set-output name=version::$(cat ${{ github.workspace }}/tmp/build/VERSION)"
 
-    - name: Download release information
-      uses: actions/download-artifact@v2
+    - name: Upload user manual
+      uses: actions/upload-artifact@v3
       with:
-        name: upload_url
-
-    - name: Load release information
-      id: current_release
-      run: |
-        echo "::set-output name=url::$(cat ${{ github.workspace }}/upload_url.txt)"
-
-    - name: Upload user guide
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.current_release.outputs.url }}
-        asset_name: ${{ steps.current_project.outputs.name }}-user-guide.pdf
-        asset_path: ${{ github.workspace }}/tmp/build/doc/${{ steps.current_project.outputs.name }}-user-guide.pdf
-        asset_content_type: application/pdf
+        name: ${{ steps.current_project.outputs.name }}-user-guide.pdf
+        path: ${{ github.workspace }}/tmp/build/doc/${{ steps.current_project.outputs.name }}-user-guide.pdf
