@@ -97,7 +97,7 @@ $ conan build . --configure --build <args...> # run cmake.configure() + cmake.bu
 
 ```
 
-### Package
+### Packaging
 
 The project packaging can be done in multiple stages.
 
@@ -107,23 +107,80 @@ $ conan package . --source-folder tmp/source --install-folder tmp/install --buil
 
 # To local conan cache
 $ conan export-pkg . user/channel --source-folder tmp/source --install-folder tmp/install --build-folder tmp/build
+```
 
+### Integration
+
+```
 # Verify package integrity
-$ cd integration
-$ conan test . templatepp<version>@user/channel --test-build-folder tmp/test --build missing
+$ conan test integration templatepp<version>@user/channel --test-build-folder tmp/test --build missing
 ```
 
 ### Documentation
 
-As of now the API documentation can be generated only on Linux. The following tools must be available:
+#### Doxygen
+
+You must have the following tools available on your unix system.
 
 ```
 $ sudo apt update
 $ sudo apt install -y doxygen graphviz texlive-latex-extra
 ```
 
-For generating the documentation, configure conan such as
+For generating the documentation, configure CMake such as
 
 ```
-$ conan install . -o with_doc=True
+$ cmake -Bbuild -DBUILD_DOC=TRUE
+$ cmake --build build --target doxydoc pdfdoc
 ```
+
+API documentation shall be generated under /path/to/the/build/<doc>
+
+The user manual is automatically generated when the release job runs.
+
+#### hdoc
+
+The user guide can be found here:
+- [Getting Started](https://hdoc.io/docs/intro/getting-started/)
+- [Troubleshooting](https://hdoc.io/docs/intro/troubleshooting/)
+- [API Doc](https://hdoc.io/docs/features/api-docs/)
+- [Pages](https://hdoc.io/docs/features/markdown-pages/)
+- [Configuration](https://hdoc.io/docs/reference/config-file-reference/)
+- [Exclusion](https://hdoc.io/docs/features/excluding-code/)
+
+The generated API documentation can be found here:
+- [https://docs.hdoc.io/raygerlabs/templatepp/](https://docs.hdoc.io/raygerlabs/templatepp/)
+
+As of now, **hdoc** is not automated.
+
+### Continuous Integration
+
+This template provides a basic infrastructure for acceptable CI behaviour.
+
+#### Build
+
+Every new Pull Request or merge to the master branch, triggers a new build. The build workflow can be found at .github/workflows/build.yml.
+
+The build job will perform the following:
+- configures the environment (linux, windows, mac)
+- compiles the code
+- runs the unit tests
+- packages the output binaries
+- export the package to local conan cache
+- runs the integration test
+- uploads the artifacts to the articatory
+
+#### Release
+
+If a new git tag is pushed, it will trigger the release job. The release job can be found at .github/workflows/release.yml.
+```
+$ git tag v1.0.0
+$ git push origin v1.0.0
+```
+
+The release job will perform the following:
+- Executes the same step as per the build
+- Creates a new github release
+- Generates API documentation (user manual)
+- Uploads the user manual to the github release
+- Uploads the artifacts to the github release
