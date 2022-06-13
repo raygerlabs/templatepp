@@ -138,23 +138,6 @@ API documentation shall be generated under /path/to/the/build/<doc>
 
 The user manual is automatically generated when the release job runs.
 
-#### hdoc
-
-You can download **hdoc** from [here](https://app.hdoc.io/releases/downloads/)
-
-More information on configuring hdoc:
-- [Getting Started](https://hdoc.io/docs/intro/getting-started/)
-- [Troubleshooting](https://hdoc.io/docs/intro/troubleshooting/)
-- [API Doc](https://hdoc.io/docs/features/api-docs/)
-- [Pages](https://hdoc.io/docs/features/markdown-pages/)
-- [Configuration](https://hdoc.io/docs/reference/config-file-reference/)
-- [Exclusion](https://hdoc.io/docs/features/excluding-code/)
-
-The generated API documentation can be found here:
-- [https://docs.hdoc.io/raygerlabs/templatepp/](https://docs.hdoc.io/raygerlabs/templatepp/)
-
-**As of now, *hdoc* is not automated.**
-
 ### Continuous Integration
 
 This template provides a basic infrastructure for acceptable CI behaviour.
