@@ -46,8 +46,7 @@ jobs:
 
       - name: Retrieve current branch name
         id: current_branch
-        run: |
-          echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
 
       # For speeding up the build, let's create a cache for conan packages.
       # A new branch will create a copy of the master cache,
@@ -153,8 +152,7 @@ jobs:
           prerelease: false
 
       - name: Save release information
-        run: |
-          echo '${{ steps.current_release.outputs.upload_url }}' > upload_url.txt
+        run: echo '${{ steps.current_release.outputs.upload_url }}' > upload_url.txt
 
       - name: Upload release information
         uses: actions/upload-artifact@v2
@@ -162,7 +160,7 @@ jobs:
           name: upload_url
           path: upload_url.txt
 
-  build_doc:
+  build-doc:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -185,8 +183,7 @@ jobs:
 
       - name: Get project information
         id: current_project
-        run: |
-          echo "::set-output name=name::$(cat ${{ github.workspace }}/build/NAME)"
+        run: echo "::set-output name=name::$(cat ${{ github.workspace }}/build/NAME)"
 
       - name: Get user manual details
         id: user_manual
@@ -195,25 +192,24 @@ jobs:
           echo "::set-output name=name::$(basename "$(find "${{ github.workspace }}/build/doc" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.pdf")")"
           echo "::set-output name=path::$(find "${{ github.workspace }}/build/doc" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.pdf")"
 
-    - name: Download release information
-      uses: actions/download-artifact@v2
-      with:
-        name: upload_url
+      - name: Download release information
+        uses: actions/download-artifact@v2
+        with:
+          name: upload_url
 
-    - name: Load release information
-      id: current_release
-      run: |
-        echo "::set-output name=url::$(cat ${{ github.workspace }}/upload_url.txt)"
+      - name: Load release information
+        id: current_release
+        run: echo "::set-output name=url::$(cat ${{ github.workspace }}/upload_url.txt)"
 
-    - name: Upload user manual
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.current_release.outputs.url }}
-        asset_name: ${{ steps.user_manual.outputs.name }}
-        asset_path: ${{ steps.user_manual.outputs.path }}
-        asset_content_type: application/pdf
+      - name: Upload user manual
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.current_release.outputs.url }}
+          asset_name: ${{ steps.user_manual.outputs.name }}
+          asset_path: ${{ steps.user_manual.outputs.path }}
+          asset_content_type: application/pdf
 
   upload-release:
     runs-on: ubuntu-latest
@@ -241,13 +237,11 @@ jobs:
 
       - name: Load release information
         id: current_release
-        run: |
-          echo "::set-output name=url::$(cat ${{ github.workspace }}/upload_url.txt)"
+        run: echo "::set-output name=url::$(cat ${{ github.workspace }}/upload_url.txt)"
 
       - name: Load package information
         id: current_package
-        run: |
-          echo "::set-output name=name::$(cat ${{ github.workspace }}/package_name.txt)"
+        run: echo "::set-output name=name::$(cat ${{ github.workspace }}/package_name.txt)"
 
       - name: Download release package
         uses: actions/download-artifact@v2

@@ -47,8 +47,7 @@ jobs:
 
       - name: Get current branch
         id: current_branch
-        run: |
-          echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
 
       # For speeding up the build, let's create a cache for conan packages.
       # A new branch will create a copy of the master cache,
@@ -125,7 +124,7 @@ jobs:
           name: ${{ steps.current_archive.outputs.name }}
           path: ${{ steps.current_archive.outputs.path }}
 
-  build_doc:
+  build-doc:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -148,8 +147,7 @@ jobs:
 
       - name: Get project information
         id: current_project
-        run: |
-          echo "::set-output name=name::$(cat ${{ github.workspace }}/build/NAME)"
+        run: echo "::set-output name=name::$(cat ${{ github.workspace }}/build/NAME)"
 
       - name: Get user manual details
         id: user_manual
