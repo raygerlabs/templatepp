@@ -106,4 +106,55 @@ string(
     CMAKE_CXX_FLAGS_RELEASE_INIT
     "${CMAKE_CXX_FLAGS_RELEASE_INIT}"
 )
+
+#------------------------------------------------------------------------------
+# Linker flags
+#------------------------------------------------------------------------------
+
+# Enable debugging for Debug and Profile
+foreach(_BINTYPE IN ITEMS
+  EXE
+  SHARED
+  MODULE
+)
+foreach(_BUILDTYPE IN ITEMS
+  DEBUG
+  PROFILE
+)
+set(CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT
+  ${CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT}
+  /debug                     # Generate debugging information
+)
+string(
+  REPLACE ";" " "
+    CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT
+    "${CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT}"
+)
+endforeach()
+endforeach()
+
+# Enable optimizations for Profile and Release
+foreach(_BINTYPE IN ITEMS
+  EXE
+  SHARED
+  MODULE
+)
+foreach(_BUILDTYPE IN ITEMS
+  PROFILE
+  RELEASE
+)
+set(CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT
+  ${CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT}
+  /opt:ref                   # Eliminate unused data or functions
+  /opt:icf                   # Enable COMDAT folding
+  /incremental:no            # Disable incremental linkage
+)
+string(
+  REPLACE ";" " "
+    CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT
+    "${CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT}"
+)
+endforeach()
+endforeach()
+
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
