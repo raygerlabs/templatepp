@@ -36,7 +36,6 @@ class TemplateppRecipe(ConanFile):
     "include/*",
     "src/*",
     "cmake/*",
-    "!test/*",
     "CMakeLists.txt"
   ]
 #------------------------------------------------------------------------------
