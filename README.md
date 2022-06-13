@@ -140,7 +140,9 @@ The user manual is automatically generated when the release job runs.
 
 #### hdoc
 
-The user guide can be found here:
+You can download **hdoc** from [here](https://app.hdoc.io/releases/downloads/)
+
+More information on configuring hdoc:
 - [Getting Started](https://hdoc.io/docs/intro/getting-started/)
 - [Troubleshooting](https://hdoc.io/docs/intro/troubleshooting/)
 - [API Doc](https://hdoc.io/docs/features/api-docs/)
@@ -151,7 +153,7 @@ The user guide can be found here:
 The generated API documentation can be found here:
 - [https://docs.hdoc.io/raygerlabs/templatepp/](https://docs.hdoc.io/raygerlabs/templatepp/)
 
-As of now, **hdoc** is not automated.
+**As of now, *hdoc* is not automated.**
 
 ### Continuous Integration
 
