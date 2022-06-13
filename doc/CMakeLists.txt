@@ -1,39 +1,43 @@
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-
+set(DOC_BUILD_DIR ${PROJECT_BINARY_DIR}/doc)
 #------------------------------------------------------------------------------
 # Generate Doxygen API documentation
 #------------------------------------------------------------------------------
 find_package(Doxygen)
-if(DOXYGEN_FOUND STREQUAL "NO")
-  message(STATUS "Doxygen not found. Cannot generate API documentation.")
-else()
+if(DOXYGEN_FOUND)
+  # Generate Doxygen configuration file
   configure_file(${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in
-    ${PROJECT_BINARY_DIR}/Doxyfile
+    ${DOC_BUILD_DIR}/Doxyfile
     @ONLY)
+
+  # Cmake target for generating doxygen API doc
   add_custom_target(doxydoc
-    COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    WORKING_DIRECTORY ${DOC_BUILD_DIR}
+    COMMAND ${DOXYGEN_EXECUTABLE} ${DOC_BUILD_DIR}/Doxyfile
     COMMENT "Generating API documentation"
     VERBATIM)
+else()
+  message(ERROR "Doxygen is missing."
+                "Cannot generate API documentation.")
 endif()
 
 #------------------------------------------------------------------------------
 # Generate PDF version of documentation
 #------------------------------------------------------------------------------
 find_package(LATEX COMPONENTS PDFLATEX)
-if(LATEX_PDFLATEX_FOUND STREQUAL "NO")
-  message(STATUS "PDFLatex not found. Cannot generate PDF.")
+if(NOT EXISTS ${PDFLATEX_COMPILER})
+  message(ERROR "pdflatex compiler is missing." 
+                "Cannot generate PDF version of user manual.")
 else()
+  # CMake target for generating PDF version of user manual
   add_custom_target(pdfdoc
     COMMAND make pdf
-    COMMAND ${CMAKE_COMMAND} -E make_directory
-      ${PROJECT_BINARY_DIR}/doc/userguide 
-    COMMAND ${CMAKE_COMMAND} -E copy
-      ${PROJECT_BINARY_DIR}/doc/latex/refman.pdf
-      ${PROJECT_BINARY_DIR}/doc/userguide/${PROJECT_NAME}_user_guide.pdf
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doc/latex
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      ${DOC_BUILD_DIR}/latex/refman.pdf
+      ${DOC_BUILD_DIR}/${PROJECT_NAME}-user-manual.pdf
+    WORKING_DIRECTORY ${DOC_BUILD_DIR}
     DEPENDS doxydoc
-    COMMENT "Generating PDF version of API documentation"
+    COMMENT "Generating PDF version of user manual"
     VERBATIM)
 endif()
 

@@ -125,33 +125,3 @@ jobs:
         with:
           name: ${{ steps.current_package.outputs.name }}
           path: ${{ steps.current_package.outputs.path }}
-
-  build_doc:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    
-    - name: Install documentation tools
-      shell: bash
-      run: sudo apt install doxygen graphviz texlive-latex-extra
-
-    - name: Create build directory
-      run: cmake -E make_directory ${{runner.workspace}}/tmp/build
-
-    - name: Configure CMake
-      shell: bash
-      working-directory: ${{runner.workspace}}/tmp/build
-      run: cmake $GITHUB_WORKSPACE -DBUILD_DOC=True
-
-    - name: Build
-      working-directory: ${{runner.workspace}}/tmp/build
-      shell: bash
-      run: cmake --build . --target doxydoc pdfdoc
-
-    - name: Upload package
-      uses: actions/upload-artifact@v3
-      with:
-        name: userguide
-        path: ${{ runner.workspace }}/tmp/build/doc/userguide/

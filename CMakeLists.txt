@@ -39,6 +39,10 @@ if(BUILD_TESTS)
 endif()
 #------------------------------------------------------------------------------
 # Install project commons
+file(WRITE ${CMAKE_BINARY_DIR}/NAME ${PROJECT_NAME})
+install(
+  FILES "${CMAKE_BINARY_DIR}/NAME"
+  DESTINATION .)
 file(WRITE ${CMAKE_BINARY_DIR}/VERSION ${PROJECT_VERSION})
 install(
   FILES "${CMAKE_BINARY_DIR}/VERSION"
