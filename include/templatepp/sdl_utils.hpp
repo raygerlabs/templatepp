@@ -1,19 +1,30 @@
-//-----------------------------------------------------------------------------
 #pragma once
-//-----------------------------------------------------------------------------
+
 #if defined _MSC_VER
 #pragma warning(push, 0)
 #endif
 #define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
+#include <SDL2/SDL.h> // SDL_Init, SDL_Quit
 #if defined _MSC_VER
 #pragma warning(pop)
 #endif
-#include <memory>
-#include <system_error>
-//-----------------------------------------------------------------------------
+
+#include <memory>       // unique_ptr, forward, decay
+#include <system_error> // system_error, system_category
+
 namespace sdl
 {
+/*!
+ * @brief Constructs a specific SDL resource.
+ *
+ * @param ctor the function that creates the SDL resource
+ * @param dtor the function that destroys the SDL resource
+ * @param args SDL subsystem initialization flags
+ *
+ * @returns unique pointer that owns the SDL resource
+ *
+ * @throws system_error if initialization fails
+ */
 template<typename Ctor, typename Dtor, typename... Args>
 auto make_unique_resource(Ctor ctor, Dtor dtor, Args&&... args)
 {
@@ -25,28 +36,51 @@ auto make_unique_resource(Ctor ctor, Dtor dtor, Args&&... args)
   return std::unique_ptr<std::decay_t<decltype(*res)>, decltype(dtor)>(res,
                                                                        dtor);
 }
-//-----------------------------------------------------------------------------
-using SDL_System = int;
-SDL_System* SDL_CreateSystem(Uint32 flags = SDL_INIT_EVERYTHING)
+
+/*!
+ * A handle for SDL library.
+ * For storing the status code of the SDL_Init() function.
+ */
+using SDL_Handle = int*;
+
+/*!
+ * @brief Initializes SDL library and creates handle for it.
+ * @param flags subsystem initialization flags
+ * @returns handle for SDL library
+ */
+inline SDL_Handle SDL_CreateSDL(Uint32 flags = SDL_INIT_EVERYTHING)
 {
-  SDL_SetMainReady(); // Circumvent failure of SDL_Init()
-                      // when not using SDL_main() as an entry point.
-  return new SDL_System{SDL_Init(flags)};
+  SDL_SetMainReady();
+  return new std::remove_pointer_t<SDL_Handle>{SDL_Init(flags)};
 }
 
-void SDL_DestroySystem(SDL_System* system)
+/*!
+ * @brief Stops SDL library and deletes handle for it.
+ * @param handle the handle for SDL library
+ */
+inline void SDL_DestroySDL(SDL_Handle handle)
 {
-  if (system)
+  if (handle)
   {
-    delete system;
+    delete handle;
     SDL_Quit();
   }
 }
-//-----------------------------------------------------------------------------
-using unique_system = std::unique_ptr<SDL_System, decltype(&SDL_DestroySystem)>;
-unique_system make_unique_system(std::uint32_t flags = SDL_INIT_EVERYTHING)
+
+/*!
+ * A unique pointer type for managing SDL startup and shutdown.
+ */
+using unique_system = std::unique_ptr<std::remove_pointer_t<SDL_Handle>,
+                                      decltype(&SDL_DestroySDL)>;
+
+/*!
+ * @brief Creates a unique pointer that manages SDL library lifetime.
+ * @param flags subsystem initialization flags
+ * @returns unique system type
+ * @throws system_error if SDL library initialization fails
+ */
+inline unique_system make_unique_system(std::uint32_t flags = SDL_INIT_EVERYTHING)
 {
-  return make_unique_resource(SDL_CreateSystem, SDL_DestroySystem, flags);
+  return make_unique_resource(SDL_CreateSDL, SDL_DestroySDL, flags);
 }
 } // namespace sdl
-//-----------------------------------------------------------------------------

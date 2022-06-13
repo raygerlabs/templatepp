@@ -1,0 +1,22 @@
+[project]
+name = "templatepp"
+version = "1.0.0"
+git_repo_url = "https://github.com/raygerlabs/templatepp/blob/master/"
+
+[paths]
+compile_commands = "tmp/build/compile_commands.json"
+
+[includes]
+paths = []
+use_system_includes = true
+
+[ignore]
+ignore_private_members = true
+paths = [
+  "/test/",
+  "/integration/",
+]
+
+[pages]
+homepage = "README.md"
+

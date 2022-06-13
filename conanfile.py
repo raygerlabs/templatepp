@@ -17,23 +17,33 @@ class TemplateppRecipe(ConanFile):
   settings = "os", "compiler", "build_type", "arch"
   options = {
     "shared": [True, False],
-    "with_tests": [True, False],
     "with_presets": [True, False],
-     "with_packaging": [True, False]
+    "with_tests": [True, False],
+    "with_archive": [True, False]
   }
   default_options = {
     "shared": True,
-    "with_tests": False,
     "with_presets": False,
-    "with_packaging": True
+    "with_tests": False,
+    "with_archive": False
   }
   generators = "CMakeDeps"
+  exports = [
+    "README.md",
+    "LICENSE"
+  ]
+  exports_sources = [
+    "include/*",
+    "src/*",
+    "cmake/*",
+    "CMakeLists.txt"
+  ]
 #------------------------------------------------------------------------------
   def configure(self):
-    self.options["sdl2"].shared = self.options.shared
-    self.options["sdl2"].sdl2main = False
     if self.options.with_tests:
-      self.options["gtest"].shared = False
+      self.options["gtest"].shared = False # CTest is broken with shared GTest lib
+    self.options["sdl2"].shared = self.options.shared
+    self.options["sdl2"].sdl2main = False # We have our own main() function
 #------------------------------------------------------------------------------
   def build_requirements(self):
     if self.options.with_tests:
@@ -47,21 +57,11 @@ class TemplateppRecipe(ConanFile):
     self.copy("*.dylib*", src="lib", dst="lib")
     self.copy("*.so*", src="lib", dst="lib")
 #------------------------------------------------------------------------------
-  def export_sources(self):
-    for d in ("cmake", "include", "src", "test"):
-      shutil.copytree(src=d, dst=os.path.join(self.export_sources_folder, d))
-    self.copy("CMakeLists.txt")
-    self.copy("CMakePresets.json")
-    self.copy("conanfile.py")
-    self.copy("LICENSE")
-    self.copy("README.md")
-#------------------------------------------------------------------------------
   def configure_cmake(self):
     cmake = CMake(self)
-    cmake.definitions["BUILD_SHARED_LIBS"] = self.options.shared
-    cmake.definitions["BUILD_TESTING"] = self.options.with_tests
-    cmake.definitions["BUILD_PACKAGING"] = self.options.with_packaging
-    if self.options.with_presets:
+    cmake.definitions["BUILD_TESTS"] = self.options.with_tests
+    cmake.definitions["BUILD_ARCHIVE"] = self.options.with_archive
+    if self.options.with_presets: # Ignore cmake preset unless specified
       if self.settings.compiler == "Visual Studio":
         cmake.configure(args=["--preset=msvc"])
       elif self.settings.compiler == "clang":
@@ -80,13 +80,13 @@ class TemplateppRecipe(ConanFile):
   def build(self):
     cmake = self.configure_cmake()
     cmake.build()
-    if self.options.with_tests:
+    if self.options.with_tests and not tools.cross_building(self):
       cmake.test()
 #------------------------------------------------------------------------------
   def package(self):
     cmake = self.configure_cmake()
     cmake.install()
-    if self.options.with_packaging:
+    if self.options.with_archive:
       self.run("cpack", self.build_folder)
 #------------------------------------------------------------------------------
   def package_info(self):

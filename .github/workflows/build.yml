@@ -7,7 +7,6 @@ on:
     branches: [ master ]
 
 env:
-  APP_NAME: templatepp
   BUILD_TYPE: Release
 
 jobs:
@@ -46,10 +45,9 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-      - name: Retrieve current branch name
+      - name: Get current branch
         id: current_branch
-        run: |
-          echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
 
       # For speeding up the build, let's create a cache for conan packages.
       # A new branch will create a copy of the master cache,
@@ -71,7 +69,6 @@ jobs:
           sudo apt-get -y install libx11-dev libx11-xcb-dev libfontenc-dev libice-dev libsm-dev libxau-dev libxaw7-dev libxcomposite-dev libxcursor-dev libxdamage-dev libxdmcp-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxinerama-dev libxkbfile-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxrender-dev libxres-dev libxss-dev libxt-dev libxtst-dev libxv-dev libxvmc-dev libxxf86vm-dev xtrans-dev libxcb-render0-dev libxcb-render-util0-dev libxcb-xkb-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-xinerama0-dev xkb-data libxcb-dri3-dev libxcb-util-dev libegl-dev
 
       - name: Install/Upgrade Conan
-        shell: bash
         run: |
           pip3 install --upgrade conan
           conan --version
@@ -86,45 +83,43 @@ jobs:
           conan profile update settings.compiler.libcxx="${{ matrix.compiler_libcxx }}" default
           conan profile show default
 
-      - name: Remove useless setting for Visual Studio
-        shell: bash
+      - name: Remove uncompatible conan setting for Visual Studio
         if: matrix.compiler == 'Visual Studio'
         run: conan profile remove settings.compiler.libcxx default
 
-      - name: Export sources
-        run: conan source . -sf tmp/source
-
       - name: Install dependencies
-        run: conan install . -if tmp/install -s build_type=${{ env.BUILD_TYPE }} -o with_tests=True -o with_presets=True -pr:b default --build missing
+        run: conan install ${{ github.workspace }} -if build -s build_type=${{ env.BUILD_TYPE }} -o with_presets=True -o with_tests=True -o with_archive=True -pr:b default --build missing
 
       - name: Run build
-        run: conan build . -sf tmp/source -if tmp/install -bf tmp/build
+        run: conan build ${{ github.workspace }} -if build -bf build -pf package
 
       - name: Package
-        run: conan package . -sf tmp/source -if tmp/install -bf tmp/build
+        run: conan package ${{ github.workspace }} -if build -bf build -pf package
 
-      - name: Retrieve package version
-        id: current_version
-        run: echo "::set-output name=value::$(cat ./tmp/build/VERSION)"
+      - name: Get project information
+        id: current_project
+        run: |
+          echo "::set-output name=name::$(cat ${{ github.workspace }}/build/NAME)"
+          echo "::set-output name=version::$(cat ${{ github.workspace }}/build/VERSION)"
 
       - name: Remove package from local cache
-        run: conan remove ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }} -f
+        run: conan remove ${{ steps.current_project.outputs.name }}/${{ steps.current_project.outputs.version }} -f
 
       - name: Export package
-        run: conan export-pkg . user/channel -sf tmp/source -if tmp/install -bf tmp/build
+        run: conan export-pkg ${{ github.workspace }} user/channel -if build -bf build
 
       - name: Run integration test
-        run: conan test integration ${{ env.APP_NAME }}/${{ steps.current_version.outputs.value }}@user/channel -tbf tmp/test -s build_type=${{ env.BUILD_TYPE }} --build missing
+        run: conan test ${{ github.workspace }}/integration ${{ steps.current_project.outputs.name }}/${{ steps.current_project.outputs.version }}@user/channel -s build_type=${{ env.BUILD_TYPE }} -tbf ${{ github.workspace }}/build/integration --build missing
 
-      - name: Retrieve package information
-        id: current_package
+      - name: Get archive information
+        id: current_archive
         shell: bash
         run: |
-          echo "::set-output name=name::$(basename "$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")")"
-          echo "::set-output name=path::$(find "${{ github.workspace }}/tmp/build" -maxdepth 1 -name "${{ env.APP_NAME }}*.zip" -or -name "${{ env.APP_NAME }}*.tar.gz")"
+          echo "::set-output name=name::$(basename "$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")")"
+          echo "::set-output name=path::$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")"
 
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.current_package.outputs.name }}
-          path: ${{ steps.current_package.outputs.path }}
+          name: ${{ steps.current_archive.outputs.name }}
+          path: ${{ steps.current_archive.outputs.path }}

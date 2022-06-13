@@ -1,8 +1,29 @@
-//-----------------------------------------------------------------------------
 #pragma once
-//-----------------------------------------------------------------------------
-#define @PACKAGE_PREFIX@_VERSION_MAJOR @PACKAGE_VERSION_MAJOR@
-#define @PACKAGE_PREFIX@_VERSION_MINOR @PACKAGE_VERSION_MINOR@
-#define @PACKAGE_PREFIX@_VERSION_PATCH @PACKAGE_VERSION_PATCH@
-#define @PACKAGE_PREFIX@_VERSION_STRING "@PACKAGE_VERSION@"
-//-----------------------------------------------------------------------------
+
+/*!
+ * The major version number.
+ */
+#define @PACKAGE_PREFIX@_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+
+/*!
+ * The minor version number.
+ */
+#define @PACKAGE_PREFIX@_VERSION_MINOR @PROJECT_VERSION_MINOR@
+
+/*!
+ * The patch version number.
+ */
+#define @PACKAGE_PREFIX@_VERSION_PATCH @PROJECT_VERSION_PATCH@
+
+/*!
+ * The full version number.
+ */
+#define @PACKAGE_PREFIX@_VERSION \
+  (@PACKAGE_PREFIX@_VERSION_MAJOR * 1000 \
+  + @PACKAGE_PREFIX@_VERSION_MINOR * 100 \
+  + @PACKAGE_PREFIX@_VERSION_PATCH)
+
+/*!
+ * The version string.
+ */
+#define @PACKAGE_PREFIX@_VERSION_STRING "@PROJECT_VERSION@"

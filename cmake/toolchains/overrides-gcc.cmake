@@ -39,9 +39,12 @@ set(CMAKE_CXX_FLAGS_INIT
                              # promoted to double
   -Wformat=2                 # Warn on security issues around functions
                              # that format output (ie printf)
+  -msse2                     # Enable use of instructions in the
+                             # SSE2 extended instruction sets
 )
 #------------------------------------------------------------------------------
 set(CMAKE_CXX_FLAGS_DEBUG_INIT
+  -D_FORTIFY_SOURCE=2        # Detect runtime overflow
   -g                         # Enable native debugging information
   -O0                        # Disable compiler code optimizations
   -D_DEBUG -DDEBUG           # Enable debug assertions

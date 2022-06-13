@@ -1,5 +1,9 @@
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+
 #------------------------------------------------------------------------------
+# Compiler flags
+#------------------------------------------------------------------------------
+
 set(CMAKE_CXX_FLAGS_INIT
   /WX                        # Treat any compiler warning as error
   /permissive-               # Enforce standard conformance
@@ -59,7 +63,7 @@ set(CMAKE_CXX_FLAGS_INIT
                              # more than one user-defined conversion
                              # has been implicitly applied
 )
-#------------------------------------------------------------------------------
+
 set(CMAKE_CXX_FLAGS_DEBUG_INIT
   /Zi /Zo                    # Enable debugging information
   /Od                        # Disable compiler code optimizations
@@ -67,6 +71,7 @@ set(CMAKE_CXX_FLAGS_DEBUG_INIT
   /GS                        # Enable buffer security checks
   /D_DEBUG /DDEBUG           # Enable debug assertions
 )
+
 set(CMAKE_CXX_FLAGS_PROFILE_INIT
   /Zi /Zo                    # Enable debugging information
   /Ox                        # Enable compiler code optimizations
@@ -74,12 +79,13 @@ set(CMAKE_CXX_FLAGS_PROFILE_INIT
   /GS-                       # Disable buffer security checks
   /D_PROFILE /DNDEBUG        # Disable debug assertions
 )
+
 set(CMAKE_CXX_FLAGS_RELEASE_INIT
   /Ox                        # Enable compiler code optimizations
   /GS-                       # Disable buffer security checks
   /D_RELEASE /DNDEBUG        # Disable debug assertions
 )
-#------------------------------------------------------------------------------
+
 string(
   REPLACE ";" " "
     CMAKE_CXX_FLAGS_INIT
@@ -100,15 +106,55 @@ string(
     CMAKE_CXX_FLAGS_RELEASE_INIT
     "${CMAKE_CXX_FLAGS_RELEASE_INIT}"
 )
+
 #------------------------------------------------------------------------------
-set(CMAKE_EXE_LINKER_FLAGS_DEBUG_INIT "/debug")
-set(CMAKE_SHARED_LINKER_FLAGS_DEBUG_INIT "/debug")
-set(CMAKE_MODULE_LINKER_FLAGS_DEBUG_INIT "/debug")
-set(CMAKE_EXE_LINKER_FLAGS_PROFILE_INIT "/debug /opt:ref /opt:icf")
-set(CMAKE_SHARED_LINKER_FLAGS_PROFILE_INIT "/debug /opt:ref /opt:icf")
-set(CMAKE_MODULE_LINKER_FLAGS_PROFILE_INIT "/debug /opt:ref /opt:icf")
-set(CMAKE_EXE_LINKER_FLAGS_RELEASE_INIT "/opt:ref /opt:icf")
-set(CMAKE_SHARED_LINKER_FLAGS_RELEASE_INIT "/opt:ref /opt:icf")
-set(CMAKE_MODULE_LINKER_FLAGS_RELEASE_INIT "/opt:ref /opt:icf")
+# Linker flags
 #------------------------------------------------------------------------------
+
+# Enable debugging for Debug and Profile
+foreach(_BINTYPE IN ITEMS
+  EXE
+  SHARED
+  MODULE
+)
+foreach(_BUILDTYPE IN ITEMS
+  DEBUG
+  PROFILE
+)
+set(CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT
+  ${CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT}
+  /debug                     # Generate debugging information
+)
+string(
+  REPLACE ";" " "
+    CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT
+    "${CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT}"
+)
+endforeach()
+endforeach()
+
+# Enable optimizations for Profile and Release
+foreach(_BINTYPE IN ITEMS
+  EXE
+  SHARED
+  MODULE
+)
+foreach(_BUILDTYPE IN ITEMS
+  PROFILE
+  RELEASE
+)
+set(CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT
+  ${CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT}
+  /opt:ref                   # Eliminate unused data or functions
+  /opt:icf                   # Enable COMDAT folding
+  /incremental:no            # Disable incremental linkage
+)
+string(
+  REPLACE ";" " "
+    CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT
+    "${CMAKE_${_BINTYPE}_LINKER_FLAGS_${_BUILDTYPE}_INIT}"
+)
+endforeach()
+endforeach()
+
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

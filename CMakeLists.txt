@@ -14,39 +14,49 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 project(templatepp VERSION 1.0.0)
 #------------------------------------------------------------------------------
 # User options
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
-option(BUILD_TESTING "Build unit tests" ON)
-option(BUILD_PACKAGING "Build packages" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(BUILD_TESTS "Build unit tests" OFF)
+option(BUILD_ARCHIVE "Build package" OFF)
+option(BUILD_DOC "Build API documentation" OFF)
 #------------------------------------------------------------------------------
 include(build_options)
 include(build_paths)
 include(install_paths)
 #------------------------------------------------------------------------------
+file(WRITE ${CMAKE_BINARY_DIR}/NAME ${PROJECT_NAME})
+file(WRITE ${CMAKE_BINARY_DIR}/VERSION ${PROJECT_VERSION})
+#------------------------------------------------------------------------------
+# Generate API documentation
+if (BUILD_DOC)
+  add_subdirectory(doc)
+  return()
+endif()
+#------------------------------------------------------------------------------
 # Source
 add_subdirectory(src)
-if (BUILD_TESTING)
+
+if(BUILD_TESTS)
   include(CTest)
   include(GoogleTest)
   add_subdirectory(test)
 endif()
 #------------------------------------------------------------------------------
 # Install project commons
-file(WRITE ${CMAKE_BINARY_DIR}/VERSION ${PROJECT_VERSION})
 install(
   FILES "${CMAKE_BINARY_DIR}/VERSION"
-  DESTINATION ${PACKAGE_INSTALL_DOCDIR})
+  DESTINATION .)
 install(
   FILES "${CMAKE_SOURCE_DIR}/README.md"
-  DESTINATION ${PACKAGE_INSTALL_DOCDIR})
+  DESTINATION .)
 install(
   FILES "${CMAKE_SOURCE_DIR}/LICENSE"
-  DESTINATION ${PACKAGE_INSTALL_DOCDIR})
+  DESTINATION .)
 #------------------------------------------------------------------------------
 include(export_config)
 #------------------------------------------------------------------------------
-# Archive package
-if (BUILD_PACKAGING)
-  include(package)
+# Execute CPack
+if (BUILD_ARCHIVE)
+  include(archive)
 endif()
 #------------------------------------------------------------------------------
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

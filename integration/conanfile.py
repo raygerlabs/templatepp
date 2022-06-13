@@ -21,7 +21,7 @@ class TemplateppIntegrationRecipe(ConanFile):
     cmake.build()
 #------------------------------------------------------------------------------
   def test(self):
-    if not tools.cross_building(self.settings):
+    if not tools.cross_building(self):
       if self.settings.os == "Windows":
         os.chdir(f"bin/{self.settings.build_type}")
       else:
