@@ -103,7 +103,7 @@ jobs:
           echo "::set-output name=version::$(cat ./build/VERSION)"
 
       - name: Package
-        run: conan package . -if tmp/install -bf tmp/build
+        run: conan package . -if build -bf build
 
       - name: Remove package from local cache
         run: conan remove ${{ steps.this_project.outputs.name }}/${{ steps.this_project.outputs.version }} -f
