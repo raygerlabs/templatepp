@@ -114,6 +114,7 @@ jobs:
 
       - name: Get archive information
         id: current_archive
+        shell: bash
         run: |
           echo "::set-output name=name::$(basename "$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")")"
           echo "::set-output name=path::$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")"
@@ -152,6 +153,7 @@ jobs:
 
       - name: Get user manual details
         id: user_manual
+        shell: bash
         run: |
           echo "::set-output name=name::$(basename "$(find "${{ github.workspace }}/build/doc" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.pdf")")"
           echo "::set-output name=path::$(find "${{ github.workspace }}/build/doc" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.pdf")"
