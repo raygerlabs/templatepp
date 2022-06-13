@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Get current branch
-        id: get_current_branch
+        id: current_branch
         run: |
           echo "::set-output name=name::$(echo ${GITHUB_REF#refs/heads/})"
 
@@ -57,7 +57,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.conan
-          key: conan-package-cache-${{ steps.get_current_branch.outputs.name }}
+          key: conan-package-cache-${{ steps.current_branch.outputs.name }}
           restore-keys: |
             conan-package-cache-master
 
@@ -70,7 +70,6 @@ jobs:
           sudo apt-get -y install libx11-dev libx11-xcb-dev libfontenc-dev libice-dev libsm-dev libxau-dev libxaw7-dev libxcomposite-dev libxcursor-dev libxdamage-dev libxdmcp-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxinerama-dev libxkbfile-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxrender-dev libxres-dev libxss-dev libxt-dev libxtst-dev libxv-dev libxvmc-dev libxxf86vm-dev xtrans-dev libxcb-render0-dev libxcb-render-util0-dev libxcb-xkb-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-xinerama0-dev xkb-data libxcb-dri3-dev libxcb-util-dev libegl-dev
 
       - name: Install/Upgrade Conan
-        shell: bash
         run: |
           pip3 install --upgrade conan
           conan --version
@@ -86,62 +85,46 @@ jobs:
           conan profile show default
 
       - name: Remove uncompatible conan setting for Visual Studio
-        shell: bash
         if: matrix.compiler == 'Visual Studio'
         run: conan profile remove settings.compiler.libcxx default
 
-      - name: Create build environment
-        run: cmake -E make_directory ${{runner.workspace}}/build
-
       - name: Install dependencies
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
-        run: conan install .. -s build_type=${{ env.BUILD_TYPE }} -o with_presets=True -o with_tests=True -o with_archive=True -pr:b default --build missing
+        run: conan install ${{ github.workspace }} -if build -s build_type=${{ env.BUILD_TYPE }} -o with_presets=True -o with_tests=True -o with_archive=True -pr:b default --build missing
 
       - name: Run build
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
-        run: conan build ..
+        run: conan build ${{ github.workspace }} -if build -bf build -pf package
 
       - name: Package
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
-        run: conan package ..
+        run: conan package ${{ github.workspace }} -if build -bf build -pf package
 
-      - name: Get project details
-        id: get_project_details
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
+      - name: Get project information
+        id: current_project
         run: |
-          echo "::set-output name=name::$(cat NAME)"
-          echo "::set-output name=version::$(cat VERSION)"
+          echo "::set-output name=name::$(cat ${{ github.workspace }}/build/NAME)"
+          echo "::set-output name=version::$(cat ${{ github.workspace }}/build/VERSION)"
 
       - name: Remove package from local cache
-        run: conan remove ${{ steps.get_project_details.outputs.name }}/${{ steps.get_project_details.outputs.version }} -f
+        run: conan remove ${{ steps.current_project.outputs.name }}/${{ steps.current_project.outputs.version }} -f
 
       - name: Export package
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
-        run: conan export-pkg .. user/channel -if tmp/install -bf tmp/build
+        run: conan export-pkg ${{ github.workspace }} user/channel -if build -bf build -pdf package
 
       - name: Run integration test
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
-        run: conan test ../integration ${{ steps.this_project.outputs.name }}/${{ steps.this_project.outputs.version }}@user/channel -s build_type=${{ env.BUILD_TYPE }} --build missing
+        run: conan test ${{ github.workspace }}/integration ${{ steps.current_project.outputs.name }}/${{ steps.current_project.outputs.version }}@user/channel -s build_type=${{ env.BUILD_TYPE }} --build missing
 
-      - name: Get package details
-        id: get_package_details
+      - name: Get archive information
+        id: current_archive
         shell: bash
-        working-directory: ${{runner.workspace}}/build
+        working-directory: ${{ github.workspace }}/build
         run: |
-          echo "::set-output name=name::$(basename "$(find "." -maxdepth 1 -name "${{ steps.get_project_details.outputs.name }}*.zip" -or -name "${{ steps.get_project_details.outputs.name }}*.tar.gz")")"
-          echo "::set-output name=path::$(find "." -maxdepth 1 -name "${{ steps.get_project_details.outputs.name }}*.zip" -or -name "${{ steps.get_project_details.outputs.name }}*.tar.gz")"
+          echo "::set-output name=name::$(basename "$(find "." -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")")"
+          echo "::set-output name=path::$(find "." -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")"
 
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.get_package_details.outputs.name }}
-          path: ${{ steps.get_package_details.outputs.path }}
+          name: ${{ steps.current_archive.outputs.name }}
+          path: ${{ steps.current_archive.outputs.path }}
 
   build_doc:
     runs-on: ubuntu-latest
@@ -151,36 +134,34 @@ jobs:
           fetch-depth: 0
 
       - name: Install documentation tools
-        shell: bash
-        run: sudo apt install doxygen graphviz texlive-latex-extra
+        run: sudo apt install -y doxygen graphviz texlive-latex-extra
+
+      - name: Create build environment
+        run: cmake -E make_directory ${{ github.workspace }}/build
 
       - name: Configure CMake
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
-        run: cmake -DBUILD_DOC=TRUE ..
+        run: cmake ${{ github.workspace }} -B ${{ github.workspace }}/build -DBUILD_DOC=TRUE
 
       - name: Build API documentation
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
+        working-directory: ${{ github.workspace }}/build
         run: cmake --build . --target doxydoc pdfdoc
 
-      - name: Get project details
-        id: get_project_details
-        shell: bash
-        working-directory: ${{runner.workspace}}/build
+      - name: Get project information
+        id: current_project
+        working-directory: ${{ github.workspace }}/build
         run: |
           echo "::set-output name=name::$(cat NAME)"
 
       - name: Get user manual details
-        id: get_user_manual_details
+        id: user_manual
         shell: bash
-        working-directory: ${{runner.workspace}}/build/doc
+        working-directory: ${{ github.workspace }}/build/doc
         run: |
-          echo "::set-output name=name::$(basename "$(find "." -maxdepth 1 -name "${{ steps.get_project_details.outputs.name }}*.pdf")")"
-          echo "::set-output name=path::$(find "." -maxdepth 1 -name "${{ steps.get_project_details.outputs.name }}*.pdf")"
+          echo "::set-output name=name::$(basename "$(find "." -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.pdf")")"
+          echo "::set-output name=path::$(find "." -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.pdf")"
 
       - name: Upload user manual
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.get_user_manual_details.outputs.name }}
-          path: ${{ steps.get_user_manual_details.outputs.path }}
+          name: ${{ steps.user_manual.outputs.name }}
+          path: ${{ steps.user_manual.outputs.path }}
