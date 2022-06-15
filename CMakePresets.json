@@ -7,21 +7,58 @@
   },
   "configurePresets": [
     {
-      "name": "gcc",
+      "name": "_configTypes",
+      "hidden": true,
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchains/toolchain-gcc.cmake"
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Profile;Release"
+      }
+    },
+    {
+      "name": "gcc",
+      "inherits": [ "_configTypes" ],
+      "cacheVariables": {
+        "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/toolchains/overrides-gcc.cmake"
+      },
+      "condition": {
+          "type": "inList",
+          "string": "${hostSystemName}",
+          "list": ["Darwin", "Linux"]
+      }
+    },
+    {
+      "name": "apple-clang",
+      "inherits": [ "_configTypes" ],
+      "cacheVariables": {
+        "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/toolchains/overrides-clang.cmake"
+      },
+      "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Darwin"
       }
     },
     {
       "name": "clang",
+      "inherits": [ "_configTypes" ],
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchains/toolchain-clang.cmake"
+        "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/toolchains/overrides-clang.cmake"
+      },
+      "condition": {
+          "type": "inList",
+          "string": "${hostSystemName}",
+          "list": ["Darwin", "Linux"]
       }
     },
     {
-      "name": "msvc",
+      "name": "Visual Studio",
+      "inherits": [ "_configTypes" ],
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchains/toolchain-msvc.cmake"
+        "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/toolchains/overrides-msvc.cmake"
+      },
+      "condition": {
+          "type": "equals",
+          "lhs": "${hostSystemName}",
+          "rhs": "Windows"
       }
     }
   ]
