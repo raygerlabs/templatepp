@@ -1,6 +1,6 @@
 [![build](https://github.com/raygerlabs/templatepp/actions/workflows/build.yml/badge.svg)](https://github.com/raygerlabs/templatepp/actions/workflows/build.yml)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Coverage Status](https://coveralls.io/repos/github/raygerlabs/templatepp/badge.svg?branch=master)](https://coveralls.io/github/raygerlabs/templatepp?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/raygerlabs/templatepp/badge.svg)](https://coveralls.io/github/raygerlabs/templatepp)
 
 # templatepp
 
