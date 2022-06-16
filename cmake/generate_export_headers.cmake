@@ -4,9 +4,9 @@
 string(TOUPPER ${PROJECT_NAME} PACKAGE_PREFIX)
 
 if(BUILD_SHARED_LIBS)
-  set(IS_DLL 1)
+  set(PACKAGE_IS_A_DLL 1)
 else()
-  set(IS_DLL 0)
+  set(PACKAGE_IS_A_DLL 0)
 endif()
 
 # Write utility files

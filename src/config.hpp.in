@@ -17,7 +17,7 @@
  * Possibles values are either 0 or 1.
  */
 #ifndef @PACKAGE_PREFIX@_DLL
-#define @PACKAGE_PREFIX@_DLL @IS_DLL@
+#define @PACKAGE_PREFIX@_DLL @PACKAGE_IS_A_DLL@
 #endif
 
 /*!
