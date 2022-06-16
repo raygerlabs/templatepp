@@ -27,3 +27,4 @@
  * The version string.
  */
 #define @PACKAGE_PREFIX@_VERSION_STRING "@PROJECT_VERSION@"
+

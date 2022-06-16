@@ -3,13 +3,21 @@
 //-----------------------------------------------------------------------------
 namespace templatepp
 {
-void application::start()
+application::application() : system{sdl::make_unique_system(SDL_INIT_VIDEO)}
 {
-  system = sdl::make_unique_system();
 }
-void application::stop()
+
+application::~application()
 {
   system.reset();
+}
+
+void application::start()
+{
+}
+
+void application::stop()
+{
 }
 } // namespace templatepp
 //-----------------------------------------------------------------------------

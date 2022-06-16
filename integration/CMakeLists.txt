@@ -17,12 +17,10 @@ include(build_paths)
 include(install_paths)
 
 add_executable(integration)
-
 target_sources(integration PRIVATE integration.cpp)
 
 find_package(templatepp CONFIG REQUIRED)
 target_link_libraries(integration templatepp::templatepp)
-
 set_target_properties(integration PROPERTIES FOLDER "Tests")
 get_target_property(SOURCES integration SOURCES)
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${SOURCES})

@@ -2,16 +2,6 @@
 
 add_library(templatepp)
 
-configure_file(
-  config.hpp.in
-  ${PROJECT_BINARY_DIR}/include/templatepp/config.hpp
-  @ONLY)
-  
-configure_file(
-  version.hpp.in
-  ${PROJECT_BINARY_DIR}/include/templatepp/version.hpp
-  @ONLY)
-
 target_sources(templatepp
   PRIVATE
     application.cpp
@@ -41,10 +31,17 @@ target_link_libraries(templatepp
   SDL2::SDL2
 )
 
-set_target_properties(templatepp PROPERTIES FOLDER "Runtime")
+set_target_properties(templatepp
+  PROPERTIES
+    FOLDER "Runtime"
+)
 get_target_property(SOURCES templatepp SOURCES)
 get_target_property(INCLUDES templatepp HEADER_SET_TEMPLATEPP)
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCES} ${INCLUDES})
+
+add_clang_format(templatepp)
+add_clang_tidy(templatepp)
+sanitize(templatepp)
 
 install(
   TARGETS templatepp

@@ -29,7 +29,7 @@
       "name": "apple-clang",
       "inherits": [ "_configTypes" ],
       "cacheVariables": {
-        "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/toolchains/overrides-clang.cmake"
+        "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/toolchains/overrides-gcc.cmake"
       },
       "condition": {
           "type": "equals",
@@ -41,7 +41,7 @@
       "name": "clang",
       "inherits": [ "_configTypes" ],
       "cacheVariables": {
-        "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/toolchains/overrides-clang.cmake"
+        "CMAKE_USER_MAKE_RULES_OVERRIDE": "${sourceDir}/cmake/toolchains/overrides-gcc.cmake"
       },
       "condition": {
           "type": "inList",
