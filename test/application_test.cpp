@@ -1,11 +1,24 @@
-//-----------------------------------------------------------------------------
-#include <templatepp/application.hpp>
+
 #include <gtest/gtest.h>
-//-----------------------------------------------------------------------------
-TEST(application_tests, graceful_start_and_shutdown)
-{
+#include <templatepp/application.hpp>
+
+class ApplicationTest : public ::testing::Test {
+ protected:
+  void SetUp() override
+  {
+    app.start();
+  }
+
+  void TearDown() override
+  {
+    app.stop();
+  }
+
   templatepp::application app{};
-  ASSERT_NO_THROW(app.start());
-  ASSERT_NO_THROW(app.stop());
+};
+
+TEST_F(ApplicationTest, GracefulStartAndStop)
+{
 }
+
 //-----------------------------------------------------------------------------

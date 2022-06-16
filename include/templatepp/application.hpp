@@ -7,11 +7,21 @@
 namespace templatepp
 {
 /*!
- * Provides a basic application entry point.
+ * A basic application.
  */
 class TEMPLATEPP_LOCAL application
 {
 public:
+  /*!
+   * @brief Constructs application.
+   */
+  TEMPLATEPP_API application();
+  
+  /*!
+   * @brief Destroys application.
+   */
+  TEMPLATEPP_API ~application();
+  
   /*!
    * @brief Starts the application.
    * @throws system_error if initialization fails
@@ -30,3 +40,4 @@ private:
   sdl::unique_system system = {nullptr, nullptr};
 };
 } // namespace templatepp
+
