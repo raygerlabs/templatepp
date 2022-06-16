@@ -128,7 +128,7 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ${{ github.workspace }}/tmp/build/coverage.info
+          path-to-lcov: ${{ github.workspace }}/build/coverage.info
 
       - name: Upload package
         uses: actions/upload-artifact@v3
