@@ -128,7 +128,7 @@ jobs:
           echo "::set-output name=path::$(cat package_path.txt)"
 
       - name: Post code coverage
-        if: matrix.name == "linux"
+        if: matrix.name == 'linux'
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

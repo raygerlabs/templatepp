@@ -124,7 +124,7 @@ jobs:
           echo "::set-output name=path::$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")"
 
       - name: Post code coverage
-        if: matrix.name == "linux"
+        if: matrix.name == 'linux'
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
