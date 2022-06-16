@@ -68,6 +68,11 @@ jobs:
         run: |
           sudo apt-get -y install libx11-dev libx11-xcb-dev libfontenc-dev libice-dev libsm-dev libxau-dev libxaw7-dev libxcomposite-dev libxcursor-dev libxdamage-dev libxdmcp-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxinerama-dev libxkbfile-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxrender-dev libxres-dev libxss-dev libxt-dev libxtst-dev libxv-dev libxvmc-dev libxxf86vm-dev xtrans-dev libxcb-render0-dev libxcb-render-util0-dev libxcb-xkb-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-xinerama0-dev xkb-data libxcb-dri3-dev libxcb-util-dev libegl-dev
 
+      - name: Install linux packages required by coverage
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get -y install lcov
+
       - name: Install/Upgrade Conan
         run: |
           pip3 install --upgrade conan
@@ -119,6 +124,7 @@ jobs:
           echo "::set-output name=path::$(find "${{ github.workspace }}/build" -maxdepth 1 -name "${{ steps.current_project.outputs.name }}*.zip" -or -name "${{ steps.current_project.outputs.name }}*.tar.gz")"
 
       - name: Post code coverage
+        if: matrix.name == "linux"
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
