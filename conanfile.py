@@ -7,7 +7,7 @@ from conans import ConanFile, CMake, tools
 import os
 import shutil
 
-class TemplateppRecipe(ConanFile):
+class MainRecipe(ConanFile):
   name = "templatepp"
   version = "1.0.0"
   description = "A cross-platform project template for modern C and C++."

@@ -6,7 +6,7 @@ from conans import ConanFile, CMake, tools
 import os
 import shutil
 
-class TemplateppIntegrationRecipe(ConanFile):
+class IntegrationRecipe(ConanFile):
   settings = "os", "compiler", "build_type", "arch"
   generators = "CMakeDeps"
 

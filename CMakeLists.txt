@@ -16,14 +16,16 @@ list(APPEND CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR})
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+# Provide user options
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(BUILD_TESTS       "Build unit tests" OFF)
 option(ENABLE_LINT       "Enable static code analysis (clang/gcc only)" OFF)
 option(ENABLE_SANITIZER  "Enable code sanitizer (clang/gcc only)" OFF)
 option(ENABLE_COVERAGE   "Enable code coverage (clang/gcc only)" OFF)
 option(GENERATE_DOC      "Generate API documentation (clang/gcc only)" OFF)
-option(ONLY_DOC          "Generate API documentation only (clang/gcc only)" OFF)
+option(ONLY_DOC          "Build API documentation only (clang/gcc only)" OFF)
 
+# Add utility modules to the project
 include(build_options)
 include(build_paths)
 include(install_paths)
@@ -32,6 +34,8 @@ include(static_analysis)
 include(sanity_checks)
 include(generate_export_headers)
 include(generate_doc)
+
+# Exit as soon as possible when the user requests ONLY_DOC!
 if (GENERATE_DOC AND ONLY_DOC)
   return()
 endif()

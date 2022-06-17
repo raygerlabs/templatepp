@@ -53,9 +53,6 @@ set(CMAKE_CXX_FLAGS_INIT
 
   -Wformat=2                 # Warn on security issues around functions
                              # that format output (ie printf)
-
-  -msse2                     # Enable use of instructions in the
-                             # SSE2 extended instruction sets
 )
 #------------------------------------------------------------------------------
 set(CMAKE_CXX_FLAGS_DEBUG_INIT
