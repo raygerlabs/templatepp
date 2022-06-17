@@ -18,12 +18,12 @@ function(sanitize _target_name)
     # because they aren't compatible with each other.
     # For example, -fsanitize=leak and -fsanitize=thread combo is not
     # TODO: Think about how to provide a better control on sanitizers!
-    target_compile_options(${_target_name} PRIVATE
+    target_compile_options(${_target_name} PUBLIC
       -fsanitize=address
       -fsanitize=leak
       -fsanitize=undefined
     )
-    target_link_options(${_target_name} PRIVATE
+    target_link_options(${_target_name} PUBLIC
       -fsanitize=address
       -fsanitize=leak
       -fsanitize=undefined
